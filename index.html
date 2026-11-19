@@ -2669,16 +2669,12 @@ function buildSnapshot(studentId, yearId, termId, opts = {}) {
   const rep = settingsOf().report;
   const comp = rows.filter(r => r.kind === 'competency' && r.percent !== null);
   const first = st.fullName.split(/\s+/)[0];
-  /* Every term of the year up to this one, for the three-term progress table. */
+  /* Every term of the year up to this one, for the three-term progress table. Nursery reports never rank learners. */
   const thisTerm = term ? term.order : 1;
-  const classmates = Array.from(new Set(db.enrolments.filter(e => e.yearId === yearId && e.classId === classId).map(e => e.studentId).concat(studentsIn(classId).map(x => x.id))));
   const termsData = (yearId ? db.terms.filter(t => t.yearId === yearId).sort((x, y) => x.order - y.order) : []).map(t => {
-    if (t.order > thisTerm) return { id: t.id, name: t.name, order: t.order, pending: true, areas: {}, percent: null, position: null, classSize: classmates.length };
+    if (t.order > thisTerm) return { id: t.id, name: t.name, order: t.order, pending: true, areas: {}, percent: null };
     const tr = t.id === termId ? rows : reportAreaRows(studentId, classId, t.id);
-    const pct = overallOf(tr).percent;
-    const scores = classmates.map(id => overallOf(reportAreaRows(id, classId, t.id)).percent).filter(v => v !== null);
-    const position = pct === null ? null : 1 + scores.filter(v => v > pct + 1e-9).length;
-    return { id: t.id, name: t.name, order: t.order, pending: false, areas: Object.fromEntries(tr.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: pct, position, classSize: scores.length };
+    return { id: t.id, name: t.name, order: t.order, pending: false, areas: Object.fromEntries(tr.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: overallOf(tr).percent };
   });
   const lowAtt = attendance.rate !== null && attendance.rate < rep.attendanceThreshold;
   const auto = overall.band
@@ -2722,7 +2718,7 @@ function reportSheetHtml(snap, o = {}) {
   const at = snap.attendance;
   const st = snap.student;
   const bands = (snap.bands && snap.bands.length ? snap.bands : bandsSorted()).slice().sort((a, b) => b.min - a.min);
-  const terms = snap.terms && snap.terms.length ? snap.terms : [{ id: snap.termId, name: snap.termName, order: 1, areas: Object.fromEntries(snap.areas.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: snap.overall.percent, position: null, classSize: null }];
+  const terms = snap.terms && snap.terms.length ? snap.terms : [{ id: snap.termId, name: snap.termName, order: 1, areas: Object.fromEntries(snap.areas.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: snap.overall.percent }];
   const cols = [0, 1, 2].map(i => terms[i] || null);
   const ranges = bands.map((b, i) => `${b.min}-${i === 0 ? 100 : bands[i - 1].min}`);
   const commentBox = (name, value, label) => (o.editable
@@ -2768,7 +2764,6 @@ function reportSheetHtml(snap, o = {}) {
       <tbody>${body || '<tr><td colspan="13">No subjects are registered for this class yet.</td></tr>'}</tbody>
       <tfoot>
         <tr><td class="rw-area">Percentage (%)</td>${perTerm(t => (t.percent === null ? '—' : fmtPct(t.percent)))}</tr>
-        <tr><td class="rw-area">Position in class</td>${perTerm(t => (t.position ? `${t.position} / ${t.classSize}` : '—'))}</tr>
         <tr><td class="rw-area">Class teacher’s signature</td>${perTerm(() => '')}</tr>
       </tfoot>
     </table>
