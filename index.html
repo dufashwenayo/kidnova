@@ -417,6 +417,13 @@ h2{font-size:22px;font-weight:700}
 .auth-switch{text-align:center;margin-top:22px}
 .auth-foot{text-align:center}
 .auth-wrap.one{grid-template-columns:minmax(0,1fr)}
+.auth-wrap.reg{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}
+.auth-wrap.reg .auth-side{position:sticky;top:12px;height:calc(100vh - 24px);min-height:0}
+.reg-box{width:100%;max-width:760px;margin:24px auto;padding:8px 0}
+.reg-box .fieldset{background:#fff}
+.copy-row{display:flex;gap:8px}
+.copy-row .input{flex:1;font-size:12.5px}
+@media (max-width:900px){.auth-wrap.reg{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:900px){
   .auth-wrap{grid-template-columns:minmax(0,1fr);padding:0}
   .auth-side{display:none}
@@ -487,8 +494,9 @@ h2{font-size:22px;font-weight:700}
 'use strict';
 /* ==========================================================================
    KIDNOVA · Nursery School Management System
-   All school records live in one shared Supabase workspace (kn_workspace); access is by membership (kn_members).
-   The first account becomes the Super Admin, who then adds other users. See supabase.sql.
+   Each school's records live in its own Supabase workspace row (kn_workspace). Access is by membership
+   (kn_members): the first account is the global Super Admin; schools join through single-use registration
+   links (kn_invites) and the director email on that form becomes the school-level login. See supabase.sql.
    ========================================================================== */
 
 /* ---------- 1. Helpers ---------- */
@@ -546,6 +554,7 @@ function readImageFile(file, maxSide, mime) {
 
 /* ---------- 2. Constants ---------- */
 const NAV = [
+  { key: 'schools', label: 'Schools', group: 'Overview', superOnly: true },
   { key: 'dashboard', label: 'Dashboard', group: 'Overview' },
   { key: 'school', label: 'School Information', group: 'Overview' },
   { key: 'students', label: 'Students', group: 'People' },
@@ -559,11 +568,12 @@ const NAV = [
   { key: 'settings', label: 'Settings', group: 'Administration' },
 ];
 const PAGE_META = {
-  dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
+  schools: 'Schools', register: 'Register school', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
   classes: 'Classes', teachers: 'Teachers', years: 'Academic Years', terms: 'Academic Terms',
   assessments: 'Assessments', attendance: 'Attendance', reports: 'Report Generation', settings: 'Settings',
 };
 const ICON = {
+  schools: '<path d="M2 20h20M4 20V10l4-3 4 3v10M12 20V6l4-3 4 3v14"/><path d="M7 13h2M15 9h2M15 13h2"/>',
   dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
   school: '<path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/>',
   students: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
@@ -643,31 +653,48 @@ function normalizeDb(d) {
 const CFG = window.NSMS_CONFIG || {};
 const CONFIGURED = !!(CFG.supabaseUrl && CFG.supabaseKey && window.supabase);
 const sb = CONFIGURED ? window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: true, autoRefreshToken: true } }) : null;
-let authUser = null, myRole = null;
-const ws = { rev: 0 };
+let authUser = null, myRole = null, mySchool = null;
+const ws = { rev: 0, schoolId: null, list: [] };
 const save = { timer: null, inFlight: null, dirty: false, state: 'saved' };
-const ROLE_LABEL = { super_admin: 'SUPER ADMIN', admin: 'ADMINISTRATOR' };
+const ROLE_LABEL = { super_admin: 'GLOBAL SUPER ADMIN', director: 'SCHOOL DIRECTOR', admin: 'SCHOOL ADMINISTRATOR' };
+const ROLE_NAME = { super_admin: 'Super Admin', director: 'Director', admin: 'Administrator' };
 const isSuper = () => myRole === 'super_admin';
+const isDirector = () => myRole === 'director';
 function currentAdmin() {
   const u = authUser || {}, m = u.user_metadata || {};
   return { name: (m.full_name || (u.email || 'Administrator').split('@')[0]).toUpperCase(), role: ROLE_LABEL[myRole] || 'USER', email: u.email || '' };
 }
 function requireSuper() { if (!isSuper()) throw new AppError('Only the Super Admin can do this.'); }
-async function fetchWorkspace() {
-  const { data, error } = await sb.from('kn_workspace').select('data, rev').eq('id', 1).maybeSingle();
+async function fetchWorkspace(schoolId) {
+  const { data, error } = await sb.from('kn_workspace').select('data, rev').eq('school_id', schoolId).maybeSingle();
   if (error) throw new Error('Could not load school records: ' + error.message);
   return data;
 }
-async function loadDb() {
-  const row = await fetchWorkspace();
-  ws.rev = row ? Number(row.rev) : 0;
-  const d = row && row.data;
-  if (d && d.version === 1 && Array.isArray(d.schools)) return normalizeDb(d);
+async function loadWorkspaceList() {
+  const { data, error } = await sb.from('kn_workspace').select('school_id, school_name, reg_number, created_at').order('school_name');
+  if (error) throw new Error('Could not load schools: ' + error.message);
+  ws.list = data || [];
+  return ws.list;
+}
+async function loadDb(schoolId) {
+  if (!schoolId) { ws.rev = 0; return null; }
+  const row = await fetchWorkspace(schoolId);
+  if (!row) throw new Error('This school could not be found or you no longer have access to it.');
+  ws.rev = Number(row.rev);
+  const d = row.data;
+  if (d && d.version === 1 && Array.isArray(d.schools)) { const n = normalizeDb(d); n.activeSchoolId = n.schools[0] ? n.schools[0].id : null; return n; }
   return null;
 }
+async function openWorkspace(schoolId) {
+  if (save.state !== 'saved') await flushSave();
+  ws.schoolId = schoolId || null;
+  db = (await loadDb(ws.schoolId)) || emptyDb();
+  try { if (isSuper() && schoolId) localStorage.setItem('kn.ws', schoolId); } catch (e) { /* storage blocked */ }
+  save.state = 'saved';
+  resetContext();
+}
 async function reloadLatest(message) {
-  const fresh = await loadDb();
-  db = fresh || emptyDb();
+  db = (await loadDb(ws.schoolId)) || emptyDb();
   save.state = 'saved';
   clearTransient();
   render();
@@ -683,13 +710,14 @@ function setSaveState(state) {
 async function flushSave() {
   clearTimeout(save.timer); save.timer = null;
   if (!db || !authUser) return;
+  if (!ws.schoolId) { setSaveState('saved'); return; }
   if (save.inFlight) { save.dirty = true; return save.inFlight; }
   save.dirty = false;
   setSaveState('saving');
-  save.inFlight = sb.rpc('kn_save', { p_data: db, p_rev: ws.rev }).then(async ({ data, error }) => {
+  save.inFlight = sb.rpc('kn_save', { p_school: ws.schoolId, p_data: db, p_rev: ws.rev }).then(async ({ data, error }) => {
     save.inFlight = null;
     if (error && /KN_CONFLICT/.test(error.message)) {
-      await reloadLatest('Another administrator saved changes at the same time. The latest records were loaded — please redo your last change.');
+      await reloadLatest('Another user saved changes to this school at the same time. The latest records were loaded — please redo your last change.');
       return;
     }
     if (error) {
@@ -708,12 +736,12 @@ function persist() {
   clearTimeout(save.timer);
   save.timer = setTimeout(flushSave, 700);
 }
-/* Pick up changes made by other administrators when the tab regains focus. */
+/* Pick up changes made by other users of the same school when the tab regains focus. */
 window.addEventListener('focus', async () => {
-  if (!db || !authUser || !myRole || save.state !== 'saved' || $('#modalRoot').hidden === false) return;
+  if (!db || !authUser || !myRole || !ws.schoolId || save.state !== 'saved' || $('#modalRoot').hidden === false) return;
   try {
-    const row = await fetchWorkspace();
-    if (row && Number(row.rev) !== ws.rev && save.state === 'saved') await reloadLatest('Records were updated by another administrator.');
+    const row = await fetchWorkspace(ws.schoolId);
+    if (row && Number(row.rev) !== ws.rev && save.state === 'saved') await reloadLatest('Records were updated by another user.');
   } catch (e) { /* offline: keep working copy */ }
 });
 window.addEventListener('beforeunload', e => {
@@ -878,7 +906,7 @@ function applyRoute() {
 function renderNav() {
   const groups = ['Overview', 'People', 'Academic', 'Administration'];
   $('#nav').innerHTML = groups.map(g => {
-    const items = NAV.filter(n => n.group === g);
+    const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()));
     const current = ui.page === 'student' ? 'students' : ui.page;
     return `<div class="nav-label">${g}</div>` + items.map(n => `<a href="#${n.key}" class="${current === n.key ? 'on' : ''}">${icon(n.key)}<span>${esc(n.label)}</span></a>`).join('');
   }).join('');
@@ -888,8 +916,8 @@ function renderTopbar() {
   const c = ctx();
   const ay = activeYear();
   const tm = activeTerm();
-  const schoolSel = db.schools.length > 1
-    ? `<select class="input sm" data-change="school-switch" aria-label="Active school">${db.schools.map(s => `<option value="${esc(s.id)}" ${s.id === sid() ? 'selected' : ''}>${esc(s.name)}${s.status !== 'Active' ? ' (inactive)' : ''}</option>`).join('')}</select>`
+  const schoolSel = isSuper() && ws.list.length
+    ? `<label class="year-pill">${icon('school')}<select data-change="ws-switch" aria-label="Open school">${ws.schoolId ? '' : '<option value="">Choose a school…</option>'}${ws.list.map(w => `<option value="${esc(w.school_id)}" ${w.school_id === ws.schoolId ? 'selected' : ''}>${esc(w.school_name)}</option>`).join('')}</select></label>`
     : '';
   const yearSel = sc && c.year
     ? `<label class="year-pill">${icon('years')}<select data-change="view-year" aria-label="Academic year">${yearsSorted().map(y => `<option value="${esc(y.id)}" ${y.id === c.year.id ? 'selected' : ''}>${esc(y.name)}${y.status === 'Active' ? ' · current' : ''}</option>`).join('')}</select></label>`
@@ -907,7 +935,7 @@ function renderSideSchool() {
   const sc = curSchool();
   $('#sideSchool').innerHTML = sc
     ? `<a class="side-school" href="#school">${logoHtml(sc, 'sm')}<div><strong>${esc(sc.name)}</strong><span>${esc(sc.regNumber || '')}</span></div></a>`
-    : `<a class="side-school empty" href="#school"><span class="logo sm ph">+</span><div><strong>No school yet</strong><span>Set up your school</span></div></a>`;
+    : `<a class="side-school empty" href="#schools"><span class="logo sm ph">+</span><div><strong>No school open</strong><span>${ws.list.length ? 'Choose one on Schools' : 'Invite a school on Schools'}</span></div></a>`;
 }
 function renderMiniCal() {
   const today = todayISO();
@@ -957,8 +985,8 @@ function render() {
   renderChrome();
   const page = ui.page;
   let html;
-  if (!curSchool() && page !== 'school' && page !== 'settings') {
-    html = `<div class="card"><div class="empty-hero"><span class="kn-mark big"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="kgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e88e5"/><stop offset="1" stop-color="#0b5aa0"/></linearGradient></defs><rect width="40" height="40" rx="11" fill="url(#kgB)"/><path d="M20 7.5l2.9 8.1 8.6.3-6.8 5.3 2.4 8.3L20 24.6l-7.1 4.9 2.4-8.3-6.8-5.3 8.6-.3z" fill="#fff"/><circle cx="31" cy="9" r="2.4" fill="#ffd166"/></svg></span><h2>Welcome to KIDNOVA</h2><p class="muted" style="margin:8px auto 16px;max-width:480px">Create the school on the School Information page before using students, classes, assessments, attendance or reports.</p><button type="button" class="btn primary" data-action="nav-school">Open School Information</button></div></div>`;
+  if (!curSchool() && page !== 'settings' && page !== 'schools') {
+    html = isSuper() ? `<div class="card"><div class="empty-hero"><span class="kn-mark big">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgE')}</span><h2>${ws.list.length ? 'Open a school' : 'Welcome to KIDNOVA'}</h2><p class="muted" style="margin:8px auto 16px;max-width:520px">${ws.list.length ? 'Choose a school from the Schools page or the school menu at the top to work on its records.' : 'No school has registered yet. Create a registration link on the Schools page, copy it and send it to the school. The school fills in its details and the director email, and that director gets access to their school.'}</p><button type="button" class="btn primary" data-action="nav-schools">Open Schools</button></div></div>` : `<div class="card"><div class="empty-hero"><span class="kn-mark big"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="kgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e88e5"/><stop offset="1" stop-color="#0b5aa0"/></linearGradient></defs><rect width="40" height="40" rx="11" fill="url(#kgB)"/><path d="M20 7.5l2.9 8.1 8.6.3-6.8 5.3 2.4 8.3L20 24.6l-7.1 4.9 2.4-8.3-6.8-5.3 8.6-.3z" fill="#fff"/><circle cx="31" cy="9" r="2.4" fill="#ffd166"/></svg></span><h2>Welcome to KIDNOVA</h2><p class="muted" style="margin:8px auto 16px;max-width:480px">Create the school on the School Information page before using students, classes, assessments, attendance or reports.</p><button type="button" class="btn primary" data-action="nav-school">Open School Information</button></div></div>`;
   } else {
     html = (VIEWS[page] || VIEWS.dashboard)();
   }
@@ -1052,6 +1080,7 @@ Object.assign(ACTIONS, {
   'close-sidebar': () => { ui.sidebarOpen = false; document.body.classList.remove('nav-open'); },
   'return-current': () => { resetContext(); render(); },
   'nav-school': () => go('school'),
+  'nav-schools': () => go('schools'),
   'print-page': () => window.print(),
 });
 
@@ -1103,6 +1132,20 @@ function schoolSetupHtml() {
   <div class="card"><div class="card-h"><div><h3>School registration</h3><p>All fields marked * are required.</p></div></div>
   <form data-form="school" data-arg="new"><div class="card-b">${schoolFormHtml(null, true)}</div><div class="card-f"><button type="submit" class="btn primary">Create school</button></div></form></div>`;
 }
+function buildSchool(data, yearIn, logo) {
+  validateYearDates([], yearIn.name, yearIn.openDate, yearIn.closeDate, '');
+  const id = uid('sch');
+  db.schools.push({ id, ...data, logo: logo || '', status: 'Active', createdAt: nowISO() });
+  db.settings[id] = defaultSettings();
+  const { classes, areas } = makeClasses(id);
+  db.classes.push(...classes);
+  db.learningAreas.push(...areas);
+  const y = makeYear(id, yearIn.name, yearIn.openDate, yearIn.closeDate, 'Active', db.settings[id].termNames);
+  db.academicYears.push(y.year);
+  db.terms.push(...y.terms);
+  db.activeSchoolId = id;
+  return id;
+}
 function createSchool(data, yearIn, logo) {
   if (db.schools.some(s => s.regNumber.toLowerCase() === data.regNumber.toLowerCase())) throw new AppError('A school with this registration number already exists.');
   validateYearDates([], yearIn.name, yearIn.openDate, yearIn.closeDate, '');
@@ -1149,12 +1192,13 @@ CHANGES['logo-pick'] = async el => {
   if (prev) prev.innerHTML = `<span class="logo lg"><img src="${ui.pendingLogo}" alt=""></span>`;
   toast('Logo ready. Save to apply it.', 'info');
 };
-CHANGES['school-switch'] = el => { db.activeSchoolId = el.value; resetContext(); persist(); render(); };
+CHANGES['ws-switch'] = async el => { requireSuper(); if (!el.value) return; await openWorkspace(el.value); go('dashboard'); render(); toast('Opened ' + (curSchool() ? curSchool().name : 'school') + '.', 'info'); };
 CHANGES['view-year'] = el => { ui.viewYearId = el.value; ui.viewTermId = null; clearTransient(); render(); };
 ACTIONS['school-new'] = () => { ui.pendingLogo = null; openForm({ title: 'Create a new school', form: 'school', arg: 'new', wide: true, submit: 'Create school', html: schoolFormHtml(null, true) }); };
 ACTIONS['school-edit'] = () => { requireWritable(); ui.pendingLogo = null; const sc = curSchool(); openForm({ title: 'Edit school details', form: 'school', arg: sc.id, wide: true, submit: 'Save details', html: schoolFormHtml(sc, false) }); };
 ACTIONS['school-open'] = el => { db.activeSchoolId = el.dataset.id; resetContext(); persist(); render(); };
 ACTIONS['school-status'] = async el => {
+  requireSuper();
   const sc = byId('schools', el.dataset.id);
   const next = sc.status === 'Active' ? 'Inactive' : 'Active';
   if (next === 'Inactive') {
@@ -1166,7 +1210,7 @@ ACTIONS['school-status'] = async el => {
 };
 VIEWS.school = () => {
   const sc = curSchool();
-  if (!sc) return schoolSetupHtml();
+  if (!sc) return '';
   const learners = S('students').filter(s => s.status === 'Active').length;
   const yr = activeYear();
   const rows = db.schools.map(s => {
@@ -1177,8 +1221,8 @@ VIEWS.school = () => {
       : `<button type="button" class="btn xs" data-action="school-open" data-id="${s.id}">Open</button>`;
     return `<tr><td><div class="who">${logoHtml(s, 'sm')}<div><strong>${esc(s.name)}</strong><span>${esc(s.district)} · ${esc(s.sector)}</span></div></div></td><td class="nowrap">${esc(s.regNumber)}</td><td>${badge(s.status)}</td><td>${cy ? esc(cy.name) : '<span class="muted">None</span>'}</td><td class="r num">${n}</td><td class="r nowrap">${open} <button type="button" class="btn xs ${s.status === 'Active' ? 'danger' : 'light'}" data-action="school-status" data-id="${s.id}">${s.status === 'Active' ? 'Deactivate' : 'Activate'}</button></td></tr>`;
   }).join('');
-  return pageHead('School Information', 'Registration details, contacts, leadership and the schools managed by this system.',
-    `<button type="button" class="btn" data-action="school-edit">Edit details</button><button type="button" class="btn primary" data-action="school-new">Create new school</button>`) + `
+  return pageHead('School Information', 'Registration details, contacts and leadership of this school.',
+    `${isSuper() ? `<button type="button" class="btn ${sc.status === 'Active' ? 'danger' : 'light'}" data-action="school-status" data-id="${esc(sc.id)}">${sc.status === 'Active' ? 'Deactivate school' : 'Activate school'}</button>` : ''}<button type="button" class="btn primary" data-action="school-edit">Edit details</button>`) + `
   <div class="hero">${logoHtml(sc, 'lg')}<div><h2>${esc(sc.name)}</h2><p>“${esc(sc.motto || '—')}” · Registration ${esc(sc.regNumber)}</p></div>
     <div class="pills"><div class="pill"><strong>${learners}</strong>Active learners</div><div class="pill"><strong>${esc(yr ? yr.name : '—')}</strong>Current year</div><div class="pill"><strong>${esc(sc.status)}</strong>Status</div></div></div>
   <div class="grid g2 mt">
@@ -1187,8 +1231,7 @@ VIEWS.school = () => {
     <div class="card"><div class="card-h"><div><h3>Registration & location</h3></div></div>
       <div class="card-b"><dl class="kv">${kvRow('Registration no.', esc(sc.regNumber))}${kvRow('District', esc(sc.district))}${kvRow('Sector', esc(sc.sector))}${kvRow('Cell', esc(sc.cell))}${kvRow('Village', esc(sc.village))}${kvRow('Physical address', esc(sc.address))}</dl></div></div>
   </div>
-  <div class="card mt"><div class="card-h"><div><h3>Schools in this system</h3><p>Additional schools are created here, and every module then works on the selected school only.</p></div></div>
-    <div class="table-wrap mt"><table class="tbl"><thead><tr><th>School</th><th>Reg. no.</th><th>Status</th><th>Current year</th><th class="r">Active learners</th><th class="r">Actions</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+`;
 };
 
 /* ---------- 12. Academic years ---------- */
@@ -3095,7 +3138,10 @@ ACTIONS['data-import-apply'] = async () => {
   if (!pending) return;
   const ok = await confirmDialog(`Replace all data in your account with <strong>${esc(pending.name)}</strong>? Current records will be lost unless they have been exported.`, { title: 'Replace all data', ok: 'Replace data', danger: true });
   if (!ok) return;
+  if (!ws.schoolId) throw new AppError('Open a school first.');
+  if (pending.data.schools.length !== 1 || pending.data.schools[0].id !== curSchool().id) throw new AppError('This backup belongs to a different school. Only a backup of ' + curSchool().name + ' can be restored here.');
   db = normalizeDb(pending.data);
+  db.activeSchoolId = db.schools[0].id;
   ui.pendingImport = null;
   resetContext();
   logActivity('Backup imported', pending.name);
@@ -3126,46 +3172,56 @@ ACTIONS['data-clear-all'] = async () => {
   persist();
   go('school');
 };
-/* ---------- Users & access (Super Admin) ---------- */
+/* ---------- Users & access ---------- */
+const schoolNameOf = id => (ws.list.find(w => w.school_id === id) || {}).school_name || (curSchool() && ws.schoolId === id ? curSchool().name : '—');
 async function loadMembers() {
-  const { data, error } = await sb.from('kn_members').select('user_id, email, full_name, role, created_at').order('created_at');
-  if (error) { ui.members = { error: error.message }; } else ui.members = { list: data };
+  const { data, error } = await sb.from('kn_members').select('user_id, email, full_name, role, school_id, created_at').order('created_at');
+  ui.members = error ? { error: error.message } : { list: data };
   if (ui.page === 'settings' && ui.settingsSection === 'users') render();
 }
 function settingsUsersHtml() {
   if (!ui.members) { loadMembers(); return '<div class="card"><div class="card-b muted">Loading users…</div></div>'; }
   if (ui.members.error) return `<div class="banner bad">${esc(ui.members.error)}</div>`;
   const me = authUser.id;
+  const canManage = m => m.user_id !== me && m.role !== 'super_admin' && (isSuper() || (isDirector() && m.role === 'admin' && m.school_id === mySchool));
   const rows = ui.members.list.map(m => `<tr><td><div class="who"><span class="avatar ph">${esc(initials(m.full_name || m.email))}</span><div><strong>${esc(m.full_name || '—')}</strong><span>${esc(m.email)}</span></div></div></td>
-    <td>${badge(m.role === 'super_admin' ? 'Super Admin' : 'Administrator', m.role === 'super_admin' ? 'navy' : 'info')}</td><td class="nowrap">${fmtStamp(m.created_at)}</td>
-    <td class="r nowrap">${isSuper() && m.user_id !== me ? `<button type="button" class="btn xs" data-action="member-role" data-id="${esc(m.user_id)}">${m.role === 'super_admin' ? 'Make Administrator' : 'Make Super Admin'}</button> <button type="button" class="btn xs danger" data-action="member-remove" data-id="${esc(m.user_id)}">Remove</button>` : (m.user_id === me ? '<span class="small muted">You</span>' : '')}</td></tr>`).join('');
-  return `<div class="card"><div class="card-h"><div><h3>Users &amp; access</h3><p>People who can sign in to KIDNOVA. Everyone works on the same school records. Only a Super Admin can add, change or remove users, restore backups or clear data.</p></div>
-    ${isSuper() ? '<button type="button" class="btn primary sm" data-action="member-add">Add user</button>' : ''}</div>
-    <div class="table-wrap mt"><table class="tbl"><thead><tr><th>User</th><th>Role</th><th>Added</th><th class="r">Actions</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+    <td>${badge(ROLE_NAME[m.role] || m.role, m.role === 'super_admin' ? 'navy' : m.role === 'director' ? 'ok' : 'info')}</td>
+    <td>${m.school_id ? esc(schoolNameOf(m.school_id)) : '<span class="muted">All schools</span>'}</td><td class="nowrap">${fmtStamp(m.created_at)}</td>
+    <td class="r nowrap">${canManage(m) ? `${isSuper() ? `<button type="button" class="btn xs" data-action="member-role" data-id="${esc(m.user_id)}">${m.role === 'director' ? 'Make Administrator' : 'Make Director'}</button> ` : ''}<button type="button" class="btn xs danger" data-action="member-remove" data-id="${esc(m.user_id)}">Remove</button>` : (m.user_id === me ? '<span class="small muted">You</span>' : '')}</td></tr>`).join('');
+  const intro = isSuper()
+    ? 'Everyone who can sign in to KIDNOVA. Directors and administrators only see their own school. New schools join through registration links on the Schools page.'
+    : 'People with access to your school. Directors can add administrators for their school.';
+  return `<div class="card"><div class="card-h"><div><h3>Users &amp; access</h3><p>${intro}</p></div>
+    ${isSuper() || isDirector() ? '<button type="button" class="btn primary sm" data-action="member-add">Add user</button>' : ''}</div>
+    <div class="table-wrap mt"><table class="tbl"><thead><tr><th>User</th><th>Role</th><th>School</th><th>Added</th><th class="r">Actions</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 ACTIONS['member-add'] = () => {
-  requireSuper();
+  if (!isSuper() && !isDirector()) throw new AppError('Only the Super Admin or the school director can add users.');
+  if (isSuper() && !ws.list.length) throw new AppError('No school has registered yet. Create a registration link on the Schools page first.');
+  const schoolPick = isSuper()
+    ? field('School *', `<select class="input" name="school">${ws.list.map(w => `<option value="${esc(w.school_id)}" ${w.school_id === ws.schoolId ? 'selected' : ''}>${esc(w.school_name)}</option>`).join('')}</select>`)
+      + field('Role *', '<select class="input" name="role"><option value="admin">Administrator — school records</option><option value="director">Director — school records and staff</option></select>')
+    : `<input type="hidden" name="school" value="${esc(mySchool)}"><input type="hidden" name="role" value="admin">`;
   openForm({ title: 'Add user', form: 'member-add', submit: 'Create user', html: `<div class="form-grid">
     ${field('Full name *', '<input class="input" name="name" required autocomplete="off">', '', 'span2')}
     ${field('Email *', '<input class="input" type="email" name="email" required autocomplete="off">')}
     ${field('Temporary password *', '<input class="input" name="password" minlength="6" required autocomplete="new-password">', 'At least 6 characters. Share it with the user privately.')}
-    ${field('Role *', '<select class="input" name="role"><option value="admin">Administrator — full school records</option><option value="super_admin">Super Admin — also manages users and data</option></select>', '', 'span2')}
+    ${schoolPick}
   </div>` });
 };
 FORMS['member-add'] = async fd => {
-  requireSuper();
-  const name = String(fd.get('name') || '').trim(), email = String(fd.get('email') || '').trim().toLowerCase(), password = String(fd.get('password') || ''), role = String(fd.get('role') || 'admin');
+  const name = String(fd.get('name') || '').trim(), email = String(fd.get('email') || '').trim().toLowerCase(), password = String(fd.get('password') || '');
+  const role = String(fd.get('role') || 'admin'), school = String(fd.get('school') || '');
   if (!name) throw new AppError('Enter the user’s full name.');
   if (!isEmail(email)) throw new AppError('Enter a valid email address.');
   if (password.length < 6) throw new AppError('The password must be at least 6 characters.');
-  /* Create the login with a throwaway client so the Super Admin stays signed in. */
+  /* Create the login with a throwaway client so the current user stays signed in. */
   const tmp = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: false, autoRefreshToken: false, storageKey: 'kn-tmp-' + Date.now() } });
   const res = await tmp.auth.signUp({ email, password, options: { data: { full_name: name } } });
   if (res.error && !/already/i.test(res.error.message)) throw new AppError('Could not create the login: ' + res.error.message);
-  const { error } = await sb.rpc('kn_add_member', { p_email: email, p_name: name, p_role: role });
+  const { error } = await sb.rpc('kn_add_member', { p_email: email, p_name: name, p_role: role, p_school: school });
   if (error) throw new AppError(error.message);
-  logActivity('User added', `${name} · ${role === 'super_admin' ? 'Super Admin' : 'Administrator'}`);
-  persist();
+  if (ws.schoolId === school) { logActivity('User added', `${name} · ${ROLE_NAME[role]}`); persist(); }
   toast(res.error ? `${email} already had an account; access granted with their existing password.` : `User created. They can log in now with ${email}.`, 'ok', 6000);
   ui.members = null;
   render();
@@ -3174,32 +3230,124 @@ FORMS['member-add'] = async fd => {
 ACTIONS['member-role'] = async el => {
   requireSuper();
   const m = ui.members.list.find(x => x.user_id === el.dataset.id); if (!m) return;
-  const to = m.role === 'super_admin' ? 'admin' : 'super_admin';
+  const to = m.role === 'director' ? 'admin' : 'director';
   const { error } = await sb.from('kn_members').update({ role: to }).eq('user_id', m.user_id);
   if (error) throw new AppError(error.message);
-  logActivity('User role changed', `${m.email} → ${to === 'super_admin' ? 'Super Admin' : 'Administrator'}`); persist();
+  toast(`${m.email} is now ${ROLE_NAME[to]}.`);
   ui.members = null; render();
 };
 ACTIONS['member-remove'] = async el => {
-  requireSuper();
   const m = ui.members.list.find(x => x.user_id === el.dataset.id); if (!m) return;
-  const ok = await confirmDialog(`Remove access for <strong>${esc(m.email)}</strong>? They will no longer be able to open KIDNOVA. Their login stays in Supabase and can be given access again later.`, { title: 'Remove user', ok: 'Remove access', danger: true });
+  const ok = await confirmDialog(`Remove access for <strong>${esc(m.email)}</strong>? They will no longer be able to open KIDNOVA. Their login stays and can be given access again later.`, { title: 'Remove user', ok: 'Remove access', danger: true });
   if (!ok) return;
   const { error } = await sb.from('kn_members').delete().eq('user_id', m.user_id);
   if (error) throw new AppError(error.message);
-  logActivity('User removed', m.email); persist();
   ui.members = null; render();
 };
+
+/* ---------- Schools & registration links (Super Admin) ---------- */
+const inviteUrl = token => `${location.origin}${location.pathname}?register=${encodeURIComponent(token)}`;
+async function loadSchoolsData() {
+  try {
+    await loadWorkspaceList();
+    const [inv, mem] = await Promise.all([
+      sb.from('kn_invites').select('token, note, created_at, expires_at, used_at, school_id').order('created_at', { ascending: false }),
+      sb.from('kn_members').select('email, full_name, role, school_id').eq('role', 'director'),
+    ]);
+    if (inv.error) throw new Error(inv.error.message);
+    ui.schoolsData = { invites: inv.data || [], directors: mem.data || [] };
+  } catch (e) { ui.schoolsData = { error: e.message }; }
+  if (ui.page === 'schools') render();
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); } finally { t.remove(); }
+  }
+  toast('Link copied. Paste it into WhatsApp, SMS or email to the school.', 'ok', 4500);
+}
+function linkShareHtml(token, note) {
+  const url = inviteUrl(token);
+  const msg = `Hello${note ? ' ' + note : ''}, please register your school on KIDNOVA using this link: ${url}`;
+  return `<p class="muted" style="margin-bottom:12px">Send this link to the school. They fill in the school details and the <strong>director email</strong>; that email becomes the director's login with access to their school only. The link works once and expires in 30 days.</p>
+    <div class="copy-row"><input class="input" readonly value="${esc(url)}" onclick="this.select()"><button type="button" class="btn primary" data-action="invite-copy" data-token="${esc(token)}">Copy link</button></div>
+    <div class="row mt"><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">Share on WhatsApp</a><a class="btn sm" href="mailto:?subject=${encodeURIComponent('Register your school on KIDNOVA')}&body=${encodeURIComponent(msg)}">Send by email</a></div>`;
+}
+VIEWS.schools = () => {
+  if (!isSuper()) return '';
+  const head = pageHead('Schools', 'Every school registered on KIDNOVA. Invite a new school with a registration link.', '<button type="button" class="btn primary" data-action="invite-new">Create registration link</button>');
+  if (!ui.schoolsData) { loadSchoolsData(); return head + '<div class="card"><div class="card-b muted">Loading schools…</div></div>'; }
+  if (ui.schoolsData.error) return head + `<div class="banner bad">${esc(ui.schoolsData.error)}</div>`;
+  const { invites, directors } = ui.schoolsData;
+  const now = new Date().toISOString();
+  const pending = invites.filter(i => !i.used_at && i.expires_at > now).length;
+  const schoolRows = ws.list.map(w => {
+    const dir = directors.filter(d => d.school_id === w.school_id);
+    return `<tr><td><strong>${esc(w.school_name)}</strong></td><td class="nowrap">${esc(w.reg_number || '—')}</td>
+      <td>${dir.length ? dir.map(d => `${esc(d.full_name || '')}<span class="sub">${esc(d.email)}</span>`).join('') : '<span class="muted">—</span>'}</td>
+      <td class="nowrap">${fmtStamp(w.created_at)}</td>
+      <td class="r">${w.school_id === ws.schoolId ? '<span class="badge navy">Open</span>' : `<button type="button" class="btn xs primary" data-action="ws-open" data-id="${esc(w.school_id)}">Open</button>`}</td></tr>`;
+  }).join('');
+  const invRows = invites.map(i => {
+    const st = i.used_at ? 'Used' : i.expires_at < now ? 'Expired' : 'Waiting';
+    return `<tr><td>${esc(i.note || '—')}</td><td>${badge(st, st === 'Used' ? 'ok' : st === 'Expired' ? 'bad' : 'warn')}</td><td class="nowrap">${fmtStamp(i.created_at)}</td>
+      <td>${i.used_at ? esc(schoolNameOf(i.school_id)) : `<span class="small muted">Expires ${fmtStamp(i.expires_at)}</span>`}</td>
+      <td class="r nowrap">${st === 'Waiting' ? `<button type="button" class="btn xs" data-action="invite-copy" data-token="${esc(i.token)}">Copy link</button> <button type="button" class="btn xs" data-action="invite-show" data-token="${esc(i.token)}" data-note="${esc(i.note)}">Share</button> <button type="button" class="btn xs danger" data-action="invite-delete" data-token="${esc(i.token)}">Cancel</button>` : ''}</td></tr>`;
+  }).join('');
+  return head + `<div class="grid g3">
+      <div class="card stat accent"><span class="lbl">Registered schools</span><span class="val">${ws.list.length}</span><span class="sub">each with its own records</span></div>
+      <div class="card stat warn"><span class="lbl">Links waiting</span><span class="val">${pending}</span><span class="sub">sent, not yet submitted</span></div>
+      <div class="card stat ok"><span class="lbl">School directors</span><span class="val">${directors.length}</span><span class="sub">with school-level access</span></div>
+    </div>
+    <div class="card mt"><div class="card-h"><div><h3>Registered schools</h3><p>Open a school to view or manage its records as Super Admin.</p></div></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th>School</th><th>Reg. no.</th><th>Director</th><th>Registered</th><th class="r">Actions</th></tr></thead>
+      <tbody>${schoolRows || `<tr><td colspan="5">${emptyState('No schools yet', 'Create a registration link, copy it and send it to the school.')}</td></tr>`}</tbody></table></div></div>
+    <div class="card mt"><div class="card-h"><div><h3>Registration links</h3><p>Each link registers one school and expires after 30 days.</p></div></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Sent to</th><th>Status</th><th>Created</th><th>School</th><th class="r">Actions</th></tr></thead>
+      <tbody>${invRows || `<tr><td colspan="5">${emptyState('No links yet', 'Use “Create registration link” to invite a school.')}</td></tr>`}</tbody></table></div></div>`;
+};
+ACTIONS['invite-new'] = () => {
+  requireSuper();
+  openForm({ title: 'Create registration link', form: 'invite-new', submit: 'Create link', html: field('Sent to (optional)', '<input class="input" name="note" maxlength="80" placeholder="e.g. Ineza Nursery School – Mrs. Uwase">', 'A label to help you recognise the link later. The school types its own details in the form.') });
+};
+FORMS['invite-new'] = async fd => {
+  requireSuper();
+  const note = String(fd.get('note') || '').trim();
+  const { data, error } = await sb.rpc('kn_create_invite', { p_note: note });
+  if (error) throw new AppError(error.message);
+  ui.schoolsData = null;
+  render();
+  openModal({ title: 'Registration link ready', body: `<div class="modal-b">${linkShareHtml(data, note)}</div><div class="modal-f"><button type="button" class="btn" data-action="close-modal">Done</button></div>` });
+  copyText(inviteUrl(data));
+  return false;
+};
+ACTIONS['invite-copy'] = el => copyText(inviteUrl(el.dataset.token));
+ACTIONS['invite-show'] = el => openModal({ title: 'Share registration link', body: `<div class="modal-b">${linkShareHtml(el.dataset.token, el.dataset.note)}</div><div class="modal-f"><button type="button" class="btn" data-action="close-modal">Done</button></div>` });
+ACTIONS['invite-delete'] = async el => {
+  requireSuper();
+  const ok = await confirmDialog('Cancel this registration link? Anyone who has it will no longer be able to register a school with it.', { title: 'Cancel link', ok: 'Cancel link', danger: true });
+  if (!ok) return;
+  const { error } = await sb.from('kn_invites').delete().eq('token', el.dataset.token);
+  if (error) throw new AppError(error.message);
+  ui.schoolsData = null; render();
+};
+ACTIONS['ws-open'] = async el => {
+  requireSuper();
+  await openWorkspace(el.dataset.id);
+  go('dashboard');
+  toast('Opened ' + (curSchool() ? curSchool().name : 'school') + '.', 'info');
+};
+
 function settingsDataHtml() {
   const counts = `${db.schools.length} school(s) · ${db.students.length} learner record(s) · ${db.attendance.length} attendance record(s) · ${db.results.length} result(s)`;
   const pending = ui.pendingImport;
   return `<div class="grid g2">
-    <div class="card"><div class="card-h"><div><h3>Export backup</h3><p>Download everything stored in your account as a JSON file.</p></div></div><div class="card-b"><p class="small muted">${counts}</p></div><div class="card-f"><button type="button" class="btn primary" data-action="data-export">Download JSON backup</button></div></div>
-    <div class="card"><div class="card-h"><div><h3>Import backup</h3><p>Replaces all current data with a backup file exported from this system.</p></div></div>
+    <div class="card"><div class="card-h"><div><h3>Export backup</h3><p>Download all records of this school as a JSON file.</p></div></div><div class="card-b"><p class="small muted">${counts}</p></div><div class="card-f"><button type="button" class="btn primary" data-action="data-export">Download JSON backup</button></div></div>
+    <div class="card"><div class="card-h"><div><h3>Restore backup</h3><p>Replaces this school’s records with a backup of the same school. Super Admin only.</p></div></div>
       <div class="card-b"><input class="input" type="file" accept="application/json,.json" data-change="data-import-pick" aria-label="Backup file">
       ${pending ? `<div class="banner info mt">${esc(pending.name)} is valid: ${esc(pending.summary)}.</div>` : '<p class="small muted mt">Only files exported from this system are accepted.</p>'}</div>
       <div class="card-f"><button type="button" class="btn danger" data-action="data-import-apply" ${pending ? '' : 'disabled'}>Replace data with backup</button></div></div>
-    <div class="card"><div class="card-h"><div><h3>Clear all data</h3><p>Removes every school and record from your account. The system then opens on the empty school setup state.</p></div></div><div class="card-f"><button type="button" class="btn danger" data-action="data-clear-all">Clear all data</button></div></div>
   </div>`;
 }
 function settingsActivityHtml() {
@@ -3210,13 +3358,13 @@ function settingsActivityHtml() {
 }
 VIEWS.settings = () => {
   const noSchool = !curSchool();
-  const sections = noSchool ? SETTINGS_SECTIONS.filter(([k]) => k === 'data' || k === 'users') : SETTINGS_SECTIONS;
+  const sections = noSchool ? SETTINGS_SECTIONS.filter(([k]) => k === 'users') : SETTINGS_SECTIONS;
   const cur = sections.some(([k]) => k === ui.settingsSection) ? ui.settingsSection : sections[0][0];
   const bodies = {
     school: settingsSchoolHtml, calendar: settingsCalendarHtml, classes: settingsClassesHtml, areas: settingsAreasHtml,
     grading: settingsGradingHtml, attendance: settingsAttendanceHtml, report: settingsReportHtml, data: settingsDataHtml, users: settingsUsersHtml, activity: settingsActivityHtml,
   };
-  return pageHead('Settings', noSchool ? 'No school is configured yet. The data tools remain available.' : 'Configuration for the selected school. Every change is recorded in the activity log.')
+  return pageHead('Settings', noSchool ? 'No school is open. User management remains available.' : 'Configuration for the selected school. Every change is recorded in the activity log.')
     + `<div class="split"><nav class="subnav" aria-label="Settings sections">${sections.map(([k, l]) => `<button type="button" class="${cur === k ? 'on' : ''}" data-action="settings-section" data-section="${k}">${l}</button>`).join('')}</nav>
     <div style="min-width:0">${bodies[cur]()}</div></div>`;
 };
@@ -3315,9 +3463,76 @@ function showNoAccess() {
   root.innerHTML = `<div class="auth-wrap one"><section class="auth-main"><div class="auth-box" style="text-align:center">
     <span class="kn-mark big">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgD')}</span>
     <h1 class="auth-h">Your account has no access yet</h1>
-    <p class="muted">You are signed in as <strong>${esc(authUser.email)}</strong>, but the Super Admin has not given this account access to KIDNOVA. Ask them to add you under Settings → Users &amp; access.</p>
+    <p class="muted">You are signed in as <strong>${esc(authUser.email)}</strong>, but this account has no access to a school. Ask your school director or the KIDNOVA Super Admin to add you, or register your school using the link KIDNOVA sent you.</p>
     <button type="button" class="btn primary auth-submit" style="margin-top:22px" id="naOut">Sign out</button></div></section></div>`;
   $('#naOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+}
+/* ---------- Public school registration (via link) ---------- */
+function regShell(inner) {
+  return `<div class="auth-wrap reg"><aside class="auth-side">${AUTH_ART}<div class="auth-cap"><small>School registration</small><strong>Join KIDNOVA in a few minutes.</strong></div></aside>
+    <section class="auth-main"><div class="auth-top"><div class="kn-brand"><span class="kn-mark">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgR')}</span><strong>KIDNOVA</strong></div></div>
+    <div class="reg-box">${inner}</div><p class="auth-foot small faint">© ${new Date().getFullYear()} KIDNOVA</p></section></div>`;
+}
+async function showRegister(token) {
+  $('#app').hidden = true;
+  const root = $('#authRoot');
+  root.hidden = false;
+  document.title = 'Register your school · KIDNOVA';
+  root.innerHTML = regShell('<p class="muted">Checking your registration link…</p>');
+  const { data: st, error } = await sb.rpc('kn_check_invite', { p_token: token });
+  const msgs = { used: 'This registration link has already been used. If your school is registered, log in with the director email.', expired: 'This registration link has expired. Ask KIDNOVA for a new link.', invalid: 'This registration link is not valid. Check that you copied the whole link.' };
+  if (error || st !== 'ok') {
+    root.innerHTML = regShell(`<h1 class="auth-h">Registration link unavailable</h1><div class="banner bad"><span>${esc(error ? error.message : msgs[st] || msgs.invalid)}</span></div><a class="btn primary auth-submit" href="${esc(location.pathname)}">Go to login</a>`);
+    return;
+  }
+  ui.pendingLogo = null;
+  db = emptyDb();
+  root.innerHTML = regShell(`<h1 class="auth-h" style="text-align:left">Register your school</h1>
+    <p class="muted" style="margin:-12px 0 18px">Fill in your school’s details. Fields marked * are required. The <strong>director email</strong> becomes the director’s KIDNOVA login with access to this school.</p>
+    <div id="regMsg"></div>
+    <form id="regForm" novalidate>
+      <fieldset class="fieldset"><legend>School details</legend>${schoolFormHtml(null, true)}</fieldset>
+      <fieldset class="fieldset mt"><legend>Director login</legend><div class="form-grid">
+        ${field('Director email *', '<input class="input" type="email" name="dirEmail" required autocomplete="email">', 'Required. This email gets school-level access.', 'span2')}
+        ${field('Password *', '<input class="input" type="password" name="dirPass" minlength="6" required autocomplete="new-password">', 'At least 6 characters.')}
+        ${field('Confirm password *', '<input class="input" type="password" name="dirPass2" minlength="6" required autocomplete="new-password">')}
+      </div></fieldset>
+      <button type="submit" class="btn primary auth-submit mt">Submit registration</button>
+    </form>`);
+  $('#regForm').onsubmit = e => { e.preventDefault(); submitRegistration(token, e.target); };
+}
+async function submitRegistration(token, form) {
+  const msg = $('#regMsg');
+  const fail = m => { msg.innerHTML = `<div class="banner bad"><span>${esc(m)}</span></div>`; msg.scrollIntoView({ behavior: 'smooth', block: 'center' }); btn.disabled = false; btn.textContent = 'Submit registration'; };
+  const btn = $('.auth-submit', form);
+  const fd = new FormData(form);
+  let data, yearIn;
+  try {
+    data = readSchoolFields(fd);
+    yearIn = { name: String(fd.get('yearName') || '').trim(), openDate: fd.get('yearOpen'), closeDate: fd.get('yearClose') };
+  } catch (err) { return fail(err.message); }
+  const email = String(fd.get('dirEmail') || '').trim().toLowerCase(), pass = String(fd.get('dirPass') || ''), pass2 = String(fd.get('dirPass2') || '');
+  if (!isEmail(email)) return fail('Enter the director’s email address. It is required for school access.');
+  if (pass.length < 6) return fail('The director password must be at least 6 characters.');
+  if (pass !== pass2) return fail('The two passwords do not match.');
+  btn.disabled = true; btn.textContent = 'Registering…';
+  const existing = await sb.auth.getSession();
+  if (existing.data && existing.data.session) await sb.auth.signOut();
+  let res = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: data.director } } });
+  if (res.error && /already/i.test(res.error.message)) res = await sb.auth.signInWithPassword({ email, password: pass });
+  if (res.error) return fail(/invalid login/i.test(res.error.message) ? 'This director email already has an account with a different password. Enter its correct password or use another email.' : res.error.message);
+  if (!res.data.session) return fail('The director account could not be signed in. Please try again.');
+  authUser = res.data.session.user;
+  db = emptyDb();
+  let schoolId;
+  try { schoolId = buildSchool(data, yearIn, ui.pendingLogo || ''); logActivity('School registered', `${data.name} · director ${email}`); }
+  catch (err) { return fail(err.message); }
+  ui.pendingLogo = null;
+  const { error } = await sb.rpc('kn_redeem_invite', { p_token: token, p_school_id: schoolId, p_school_name: data.name, p_reg: data.regNumber, p_director_email: email, p_data: db });
+  if (error) { db = null; return fail(error.message); }
+  history.replaceState(null, '', location.pathname + '#dashboard');
+  toast('Welcome to KIDNOVA! Your school is registered.', 'ok', 6000);
+  await startApp(authUser);
 }
 let started = false;
 async function startApp(user) {
@@ -3331,16 +3546,24 @@ async function startApp(user) {
     myRole = role || null;
   } catch (e) { $('#view').innerHTML = `<div class="banner bad">${esc(e.message)}</div>`; return; }
   if (!myRole) { showNoAccess(); return; }
-  try { db = (await loadDb()) || emptyDb(); }
-  catch (e) { $('#view').innerHTML = `<div class="banner bad">${esc(e.message)}</div>`; return; }
-  save.state = 'saved';
+  try {
+    const { data: me } = await sb.from('kn_members').select('school_id').eq('user_id', user.id).maybeSingle();
+    mySchool = me ? me.school_id : null;
+    let target = mySchool;
+    if (isSuper()) {
+      await loadWorkspaceList();
+      let last = null; try { last = localStorage.getItem('kn.ws'); } catch (e) { /* storage blocked */ }
+      target = (ws.list.find(w => w.school_id === last) || ws.list[0] || {}).school_id || null;
+    }
+    await openWorkspace(target);
+  } catch (e) { $('#view').innerHTML = `<div class="banner bad">${esc(e.message)}</div>`; return; }
   if (!started) {
     started = true;
     window.addEventListener('hashchange', () => { applyRoute(); render(); });
     $('#modalRoot').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modalRoot').hidden) closeModal(); });
   }
-  if (!location.hash) history.replaceState(null, '', db.schools.length ? '#dashboard' : '#school');
+  if (!location.hash || location.hash === '#register') history.replaceState(null, '', location.pathname + (curSchool() ? '#dashboard' : isSuper() ? '#schools' : '#dashboard'));
   applyRoute();
   render();
 }
@@ -3349,6 +3572,12 @@ async function init() {
   const hs = await sb.rpc('kn_has_super');
   if (hs.error) { showAuth('signin', 'The KIDNOVA database is not set up yet (run supabase.sql in the Supabase SQL editor). Details: ' + hs.error.message); $('.auth-submit').disabled = true; return; }
   authHasSuper = !!hs.data;
+  const regToken = new URLSearchParams(location.search).get('register');
+  if (regToken) {
+    await showRegister(regToken);
+    sb.auth.onAuthStateChange((event, session) => { if (session && authUser && session.user.id === authUser.id) authUser = session.user; });
+    return;
+  }
   const { data } = await sb.auth.getSession();
   if (data && data.session) await startApp(data.session.user);
   else showAuth(authHasSuper ? 'signin' : 'signup');
