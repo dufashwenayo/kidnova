@@ -295,9 +295,71 @@ textarea.input{min-height:76px;resize:vertical}
 .print-only{display:none}
 .report-sheet textarea.input{font-size:12px;min-height:58px}
 
+/* ---------- Colour levels ---------- */
+.lvl{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:650;color:var(--ink);white-space:nowrap}
+.lvl i{width:14px;height:14px;border-radius:4px;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.lv-pick{display:inline-flex;gap:4px;justify-content:flex-end}
+.lv{position:relative;cursor:pointer}
+.lv input{position:absolute;opacity:0;pointer-events:none}
+.lv span{display:grid;place-items:center;width:34px;height:30px;border-radius:8px;background:color-mix(in srgb,var(--c) 22%,#fff);color:#333;font-weight:700;font-size:12px;border:2px solid transparent}
+.lv input:checked+span{background:var(--c);color:#fff;border-color:rgba(0,0,0,.25);box-shadow:0 0 0 2px #fff inset}
+.lv input:focus-visible+span{outline:2px solid var(--navy);outline-offset:2px}
+.lv.none span{background:#f1f4f8;color:var(--muted);width:28px}
+.lv.none input:checked+span{background:#dfe5ee;color:var(--ink);border-color:#c5cfdc;box-shadow:none}
+.lv input:disabled+span{cursor:not-allowed;opacity:.7}
+/* ---------- Rwanda nursery report card ---------- */
+.report-sheet.rw{padding:10mm 11mm;font-size:10.5px;line-height:1.3;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.report-sheet.rw *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rw-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:6px}
+.rw-id{font-weight:700;color:#1d3c78;font-family:Georgia,"Times New Roman",serif;font-size:10.5px}
+.rw-id p{margin:1px 0}
+.rw-id strong{color:#111}
+.rw-rep{font-size:11px;letter-spacing:.02em}
+.rw-arms{display:block;width:18mm;height:auto;margin:2px 0 3px 7mm}
+.rw-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.rw-logo{width:18mm;height:18mm;object-fit:contain}
+.rw-legend{border:1.5px solid #222;display:flex;flex-direction:column;min-width:56mm}
+.rw-legend div{display:flex;align-items:center;border-top:1px solid #222;font-weight:700;font-size:10px}
+.rw-legend div:first-child{border-top:0}
+.rw-legend i{width:9mm;align-self:stretch;display:grid;place-items:center;font-style:normal;color:#fff;border-right:1px solid #222;padding:2px 0}
+.rw-legend span{padding:2px 6px;color:#1d3c78}
+.rw-tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.rw-tbl th,.rw-tbl td{border:1.2px solid #222;padding:0}
+.rw-tbl .rw-col1{width:36%}
+.rw-tbl thead th{font-family:Georgia,"Times New Roman",serif;color:#1d3c78;font-size:9.5px;padding:3px 2px;text-align:center}
+.rw-tbl thead tr:first-child th:first-child{border:0}
+.rw-tbl .rw-title{font-size:12px;letter-spacing:.04em}
+.rw-tbl .rw-subj{text-align:left;font-size:11px;vertical-align:bottom}
+.rw-area{padding:1px 5px!important;font-size:9.6px;height:4.5mm}
+.rw-grp td{background:#e7ecf5;font-weight:700;color:#1d3c78;padding:2px 5px;font-family:Georgia,"Times New Roman",serif;font-size:10px}
+.rw-c{background:color-mix(in srgb,var(--c) 22%,#fff);text-align:center;font-weight:800;color:#fff;font-size:11px}
+.rw-c.on{background:var(--c);box-shadow:inset 0 0 0 1.5px #111}
+.rw-tbl tfoot td{height:5.2mm;font-size:10px}
+.rw-tbl td.c{text-align:center;font-weight:700}
+.rw-notes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.rw-notes .rs-box{padding:5px 8px}
+.rw-notes h4{margin-bottom:3px!important}
+.rw-notes .rs-comment{min-height:18px;font-size:10px}
+.rw-notes textarea.input{min-height:42px;font-size:11px}
+.rw-att{margin:4px 0 0;font-size:10px;color:#333}
+.rw-foot{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;margin-top:5px;align-items:start}
+.rw-foot h4,.rw-head-sign h4{font-size:10px;font-family:Georgia,"Times New Roman",serif;color:#1d3c78;margin-bottom:4px}
+.rw-legend2{display:grid;gap:3px}
+.rw-legend2 div{display:grid;grid-template-columns:30mm 1fr;align-items:center;gap:6px;font-weight:700;color:#1d3c78;font-size:10px;text-align:right}
+.rw-legend2 i{height:4mm;border:1.2px solid #222}
+.rw-sign{width:100%;border-collapse:collapse}
+.rw-sign th,.rw-sign td{border:1.2px solid #222;font-size:9.5px;padding:2px;text-align:center}
+.rw-sign td{height:8mm}
+.rw-head-sign{display:flex;justify-content:space-between;align-items:flex-end;margin-top:5px}
+.rw-head-sign p{margin:0 0 2px;font-weight:700}
+.rw-head-sign span{display:block;width:70mm;border-bottom:1px solid #333;height:6mm}
+.report-sheet.rw .rs-stamp{width:34mm;height:15mm}
+.report-sheet.rw .rs-foot{margin-top:6px}
+
 /* ---------- Print ---------- */
 @media print{
   @page{size:A4;margin:10mm}
+  .report-sheet.rw{padding:0}
   body{background:#fff}
   .sidebar,.topbar,.banners,.toasts,.modal-root,.no-print,.scrim{display:none!important}
   .app{display:block}
@@ -602,13 +664,30 @@ const TONE = {
   Achieved: 'ok', Developing: 'warn', 'Not yet': 'bad', Pending: 'muted', Female: 'info', Male: 'info',
 };
 const badge = (text, tone) => `<span class="badge ${tone || TONE[text] || ''}">${esc(text)}</span>`;
-const DEFAULT_CLASSES = [
-  { name: 'Baby Class', code: 'BBY', capacity: 20, areas: [['Motor Development', 'competency', 0], ['Language & Communication', 'competency', 0], ['Early Numeracy', 'numerical', 20], ['Creative Arts', 'competency', 0], ['Personal & Social Skills', 'competency', 0]] },
-  { name: 'Middle Class', code: 'MID', capacity: 22, areas: [['Kinyarwanda Literacy', 'numerical', 50], ['English Language', 'numerical', 50], ['Early Mathematics', 'numerical', 50], ['Environmental Awareness', 'competency', 0], ['Creative Arts', 'competency', 0], ['Physical Education', 'competency', 0]] },
-  { name: 'Top Class', code: 'TOP', capacity: 24, areas: [['Kinyarwanda Reading & Writing', 'numerical', 100], ['English Language', 'numerical', 100], ['Mathematics', 'numerical', 100], ['Science & Environment', 'numerical', 100], ['Creative Arts', 'competency', 0], ['Life Skills', 'competency', 0]] },
+/* Rwanda nursery curriculum (report-card sections). Each area is rated with the 4 colour levels. */
+const RW_AREAS = [
+  ['', ['Ubumenyi bw’ibidukikije', 'Imibare', 'Ikinyarwanda', 'Icyongereza']],
+  ['UBUGENI N’UMUCO', ['Gushushanya', 'Gusiga amabara', 'Gutaka/Komeka', 'Kubumba/Kubaka', 'Kuzinga/Kuboha', 'Kuririmba no kubyina']],
+  ['IBONEZA BUZIMA', ['Imyitozo y’ingingo nini n’intoya', 'Isuku y’umubiri', 'Kwiyitaho no kwita ku bintu bye', 'Gukaraba intoki mbere yo gufungura']],
+  ['IMYITWARIRE N’ITERAMBERE MU MBAMUTIMA', ['Imibanire ye n’abandi', 'Gukora icyo asabwe (kumvira)', 'Ubwitange n’amatsiko', 'Kwigirira icyizere', 'Kugaragaza no gucunga imbamutima', 'Guhugira ku mirimo no kudacika intege', 'Gusukura aho yakoreye no gushyira ibintu mu mwanya wabyo']],
 ];
-const COMP_LABEL = { A: 'Achieved', D: 'Developing', N: 'Not yet' };
-const COMP_POINTS = { A: 2, D: 1, N: 0 };
+const RW_AREA_LIST = RW_AREAS.flatMap(([group, names]) => names.map(name => [name, 'competency', 0, group]));
+const DEFAULT_CLASSES = [
+  { name: 'Baby Class', code: 'BBY', capacity: 20, areas: RW_AREA_LIST },
+  { name: 'Middle Class', code: 'MID', capacity: 22, areas: RW_AREA_LIST },
+  { name: 'Top Class', code: 'TOP', capacity: 24, areas: RW_AREA_LIST },
+];
+/* Colour levels used to rate learners. Each level counts as a percentage so it can be averaged with marks. */
+const LEVELS = [
+  { key: 'G', code: '1', label: 'Birahebuje', en: 'Excellent', pct: 95, color: '#21a04a' },
+  { key: 'B', code: '2', label: 'Nibyiza cyane', en: 'Very good', pct: 85, color: '#2a9fd8' },
+  { key: 'Y', code: '3', label: 'Nibyiza', en: 'Good', pct: 75, color: '#f3c22c' },
+  { key: 'R', code: '4', label: 'Aragerageza', en: 'Trying', pct: 65, color: '#e2472f' },
+];
+const LEVEL_BY_KEY = Object.fromEntries(LEVELS.map(l => [l.key, l]));
+/* A/D/N are ratings from the earlier three-level scale, kept readable. */
+const RATING_PCT = { G: 95, B: 85, Y: 75, R: 65, A: 95, D: 75, N: 65 };
+const COMP_LABEL = { G: 'Birahebuje', B: 'Nibyiza cyane', Y: 'Nibyiza', R: 'Aragerageza', A: 'Birahebuje', D: 'Nibyiza', N: 'Aragerageza' };
 const COLLECTIONS = ['schools', 'academicYears', 'terms', 'classes', 'learningAreas', 'teachers', 'assignments', 'students', 'enrolments', 'promotions', 'assessments', 'results', 'attendance', 'reportNotes', 'reportCards', 'activity'];
 const ACTIONS = {}, FORMS = {}, CHANGES = {}, INPUTS = {}, VIEWS = {};
 
@@ -624,12 +703,12 @@ function defaultSettings() {
   return {
     termNames: ['Term 1', 'Term 2', 'Term 3'],
     gradingBands: [
-      { min: 80, code: 'A', label: 'Excellent', remark: 'Outstanding progress across the term' },
-      { min: 65, code: 'B', label: 'Very good', remark: 'Consistent and very good progress' },
-      { min: 50, code: 'C', label: 'Satisfactory', remark: 'Satisfactory progress; keep practising' },
-      { min: 40, code: 'D', label: 'Developing', remark: 'Needs additional support at home and school' },
-      { min: 0, code: 'E', label: 'Not yet', remark: 'Requires intensive support' },
+      { min: 90, code: '1', label: 'Birahebuje', color: '#21a04a', remark: 'Yitwaye neza cyane. Akomereze aho.' },
+      { min: 80, code: '2', label: 'Nibyiza cyane', color: '#2a9fd8', remark: 'Nibyiza cyane. Akomeze gutera imbere.' },
+      { min: 70, code: '3', label: 'Nibyiza', color: '#f3c22c', remark: 'Nibyiza. Akeneye gukomeza kwitoza.' },
+      { min: 60, code: '4', label: 'Aragerageza', color: '#e2472f', remark: 'Aragerageza. Akeneye ubufasha bwihariye mu rugo no ku ishuri.' },
     ],
+    gradingVersion: 2,
     attendanceCategories: [
       { key: 'Present', label: 'Present', color: '#17744a', attended: true },
       { key: 'Late', label: 'Late', color: '#8f5606', attended: true },
@@ -638,8 +717,8 @@ function defaultSettings() {
     ],
     report: {
       promotionThreshold: 50, attendanceThreshold: 75, showPhoto: true,
-      footer: 'Please keep this report card safe and return it to the class teacher at the start of the next term.',
-      headDefault: 'Thank you for your continued partnership in your child’s learning.',
+      footer: 'Iyi ndangamanota ibikwe neza, isubizwe umwarimu mu ntangiriro z’igihembwe gikurikira.',
+      headDefault: 'Murakoze ku bufatanye mu burere bw’umwana.',
     },
   };
 }
@@ -652,6 +731,8 @@ function normalizeDb(d) {
   if (!d.schools.find(s => s.id === d.activeSchoolId)) d.activeSchoolId = d.schools[0] ? d.schools[0].id : null;
   d.schools.forEach(s => {
     const merged = Object.assign(defaultSettings(), d.settings[s.id] || {});
+    /* Move schools from the old letter grades to the 4 colour levels. */
+    if (merged.gradingVersion !== 2 || !merged.gradingBands.every(b => b.color)) { merged.gradingBands = defaultSettings().gradingBands; merged.gradingVersion = 2; }
     merged.report = Object.assign(defaultSettings().report, merged.report || {});
     d.settings[s.id] = merged;
   });
@@ -777,7 +858,6 @@ const gradeFor = (pct, bands) => {
   const sorted = bands.slice().sort((a, b) => b.min - a.min);
   return sorted.find(b => pct >= b.min) || sorted[sorted.length - 1];
 };
-const compLetter = pts => (pts >= 1.5 ? 'A' : pts >= 0.75 ? 'D' : 'N');
 
 /* Current working context: the viewed year and term (defaults to the active ones). */
 function ctx() {
@@ -1017,8 +1097,8 @@ function makeClasses(schoolId) {
   const classes = DEFAULT_CLASSES.map((c, i) => ({ id: uid('cls'), schoolId, name: c.name, code: c.code, capacity: c.capacity, order: i + 1, nextClassId: null }));
   classes.forEach((c, i) => { c.nextClassId = classes[i + 1] ? classes[i + 1].id : null; });
   const areas = [];
-  DEFAULT_CLASSES.forEach((c, i) => c.areas.forEach(([name, kind, max], j) => {
-    areas.push({ id: uid('la'), schoolId, classId: classes[i].id, name, kind, maxMarks: kind === 'numerical' ? max : 0, order: j + 1 });
+  DEFAULT_CLASSES.forEach((c, i) => c.areas.forEach(([name, kind, max, group], j) => {
+    areas.push({ id: uid('la'), schoolId, classId: classes[i].id, name, kind, maxMarks: kind === 'numerical' ? max : 0, group: group || '', order: j + 1 });
   }));
   return { classes, areas };
 }
@@ -1927,7 +2007,7 @@ function studentTabHtml(st) {
     const body = rows.map(({ r, a }) => {
       const area = byId('learningAreas', a.areaId);
       const pct = a.kind === 'numerical' && r.marks !== null ? ratio(r.marks, a.maxMarks) : null;
-      const result = a.kind === 'numerical' ? (r.marks === null ? '<span class="muted">Not entered</span>' : `${r.marks} / ${a.maxMarks}`) : (r.rating ? badge(COMP_LABEL[r.rating]) : '<span class="muted">Not rated</span>');
+      const result = a.kind === 'numerical' ? (r.marks === null ? '<span class="muted">Not entered</span>' : `${r.marks} / ${a.maxMarks}`) : (r.rating ? bandBadge(RATING_PCT[r.rating]) : '<span class="muted">Not rated</span>');
       return `<tr><td class="nowrap">${fmtDate(a.date)}</td><td><strong>${esc(a.name)}</strong><span class="sub">${esc(classNameOf(a.classId))}</span></td><td>${esc(area ? area.name : '—')}</td><td class="small">${esc(byId('terms', a.termId) ? byId('terms', a.termId).name : '—')} · ${esc(byId('academicYears', a.yearId) ? byId('academicYears', a.yearId).name : '')}</td><td class="r num">${result}</td><td class="r num">${fmtPct(pct)}</td><td class="small">${esc(r.comment || '')}</td></tr>`;
     }).join('');
     return `<div class="card"><div class="card-h"><div><h3>Assessment history</h3><p>All recorded results across academic years and terms.</p></div></div><div class="table-wrap mt"><table class="tbl"><thead><tr><th>Date</th><th>Assessment</th><th>Learning area</th><th>Term · year</th><th class="r">Result</th><th class="r">%</th><th>Teacher comment</th></tr></thead><tbody>${body || '<tr><td colspan="7" class="muted">No assessment results yet.</td></tr>'}</tbody></table></div></div>`;
@@ -2106,13 +2186,9 @@ FORMS['transition-teachers'] = fd => {
 
 /* ---------- 18. Shared scoring helpers ---------- */
 const bandsSorted = () => settingsOf().gradingBands.slice().sort((a, b) => b.min - a.min);
-function bandBadge(pct) {
-  if (pct === null || pct === undefined || Number.isNaN(pct)) return '<span class="muted">—</span>';
-  const bands = bandsSorted();
-  const idx = Math.max(0, bands.findIndex(b => pct >= b.min));
-  const tone = ['ok', 'info', 'info', 'warn', 'bad'][idx] || '';
-  return `<span class="badge ${tone}">${esc(bands[idx].code)} · ${esc(bands[idx].label)}</span>`;
-}
+const bandFor = pct => (pct === null || pct === undefined || Number.isNaN(pct) ? null : gradeFor(pct, settingsOf().gradingBands));
+const levelChip = b => (b ? `<span class="lvl" style="--c:${esc(b.color || '#8a96a8')}"><i></i>${esc(b.label)}</span>` : '<span class="muted">—</span>');
+function bandBadge(pct) { return levelChip(bandFor(pct)); }
 function currentClassFor(key) {
   const cls = classList();
   if (!cls.length) return null;
@@ -2125,9 +2201,9 @@ function areaScore(studentId, area, termId) {
     const pcts = asms.map(a => { const r = resultOf(a.id, studentId); return r && r.marks !== null ? ratio(r.marks, a.maxMarks) : null; }).filter(v => v !== null);
     return { percent: avg(pcts), count: pcts.length };
   }
-  const pts = asms.map(a => { const r = resultOf(a.id, studentId); return r && r.rating ? COMP_POINTS[r.rating] : null; }).filter(v => v !== null);
-  const p = avg(pts);
-  return { rating: p === null ? null : compLetter(p), count: pts.length };
+  const pcts = asms.map(a => { const r = resultOf(a.id, studentId); return r && r.rating && RATING_PCT[r.rating] ? RATING_PCT[r.rating] : null; }).filter(v => v !== null);
+  const p = avg(pcts);
+  return { percent: p, rating: p === null ? null : 'rated', count: pcts.length };
 }
 function assessmentsFor(classId, termId, areaId) {
   return db.assessments
@@ -2164,7 +2240,7 @@ function openAssessForm(id) {
     html: `<div class="form-grid">
       ${field('Assessment name *', inp('name', a ? a.name : '', 'required maxlength="60" placeholder="e.g. Week 8 Test"'), '', 'span2')}
       ${field('Class *', sel('classId', clsList.map(x => [x.id, x.name]), clsId, 'data-change="assess-form-class"'))}
-      ${field('Learning area *', sel('areaId', areas.map(x => [x.id, `${x.name} (${x.kind === 'numerical' ? 'numerical' : 'competency'})`]), areaId, 'id="assessAreaSel" data-change="assess-form-area"'))}
+      ${field('Learning area *', sel('areaId', areas.map(x => [x.id, `${x.name} (${x.kind === 'numerical' ? 'marks' : 'colour levels'})`]), areaId, 'id="assessAreaSel" data-change="assess-form-area"'))}
       ${field('Date *', inp('date', defDate, `type="date" min="${term.openDate}" max="${term.closeDate}" required`), `Must fall within ${term.name}`)}
       ${field('Maximum marks', inp('maxMarks', a ? a.maxMarks : area.maxMarks, `type="number" min="1" max="1000" id="assessMax" ${area.kind === 'numerical' ? '' : 'disabled'}`), 'Numerical learning areas only')}
     </div><p class="muted small mt">Term: <strong>${esc(term.name)}</strong> · ${esc(year.name)}. Competency assessments are rated Achieved, Developing or Not yet.</p>`,
@@ -2223,7 +2299,7 @@ FORMS.results = (fd, arg) => {
       }
     } else {
       rating = String(fd.get('r_' + st.id) || '');
-      if (!['', 'A', 'D', 'N'].includes(rating)) throw new AppError('Choose Achieved, Developing or Not yet.');
+      if (rating && !LEVEL_BY_KEY[rating]) throw new AppError('Choose one of the four colour levels.');
     }
     const comment = String(fd.get('c_' + st.id) || '').trim().slice(0, 160);
     const hasValue = marks !== null || rating || comment;
@@ -2260,22 +2336,22 @@ function resultsPanelHtml(asm, readOnly) {
     const pct = asm.kind === 'numerical' && hasMarks ? ratio(r.marks, asm.maxMarks) : null;
     const input = asm.kind === 'numerical'
       ? `<input class="input inp-mark" type="number" min="0" max="${asm.maxMarks}" step="1" name="m_${st.id}" value="${hasMarks ? r.marks : ''}" data-input="mark-input" data-id="${st.id}" data-max="${asm.maxMarks}" ${readOnly ? 'disabled' : ''} aria-label="Marks for ${esc(st.fullName)}">`
-      : `<select class="input sm" name="r_${st.id}" ${readOnly ? 'disabled' : ''} aria-label="Rating for ${esc(st.fullName)}">${['', 'A', 'D', 'N'].map(v => `<option value="${v}" ${r.rating === v ? 'selected' : ''}>${v ? COMP_LABEL[v] : '— Not rated —'}</option>`).join('')}</select>`;
+      : `<div class="lv-pick" role="radiogroup" aria-label="Level for ${esc(st.fullName)}">${LEVELS.map(l => `<label class="lv" style="--c:${l.color}" title="${esc(l.label)} (${esc(l.en)})"><input type="radio" name="r_${st.id}" value="${l.key}" ${r.rating === l.key || (r.rating && RATING_PCT[r.rating] === l.pct && !LEVEL_BY_KEY[r.rating]) ? 'checked' : ''} ${readOnly ? 'disabled' : ''}><span>${l.code}</span></label>`).join('')}<label class="lv none" title="Not rated"><input type="radio" name="r_${st.id}" value="" ${r.rating ? '' : 'checked'} ${readOnly ? 'disabled' : ''}><span>—</span></label></div>`;
     const scoreCells = asm.kind === 'numerical'
       ? `<td class="r num"><span id="pct_${st.id}">${fmtPct(pct)}</span></td><td><span id="gr_${st.id}">${pct === null ? '<span class="muted">—</span>' : bandBadge(pct)}</span></td>`
-      : `<td class="r"></td><td>${r.rating ? badge(COMP_LABEL[r.rating]) : '<span class="muted">—</span>'}</td>`;
+      : `<td class="r num">${r.rating ? fmtPct(RATING_PCT[r.rating]) : '—'}</td><td>${r.rating ? bandBadge(RATING_PCT[r.rating]) : '<span class="muted">—</span>'}</td>`;
     return `<tr><td class="c muted">${i + 1}</td><td>${who(st, esc(st.regNumber))}</td><td class="r">${input}</td>${scoreCells}<td><input class="input" name="c_${st.id}" value="${esc(r.comment || '')}" maxlength="160" placeholder="Optional comment" ${readOnly ? 'disabled' : ''}></td></tr>`;
   }).join('');
   const entered = students.map(st => resultOf(asm.id, st.id)).filter(r => r && (asm.kind === 'numerical' ? r.marks !== null : r.rating));
   const pcts = asm.kind === 'numerical' ? entered.map(r => ratio(r.marks, asm.maxMarks)) : [];
   const stats = asm.kind === 'numerical'
     ? `${entered.length}/${students.length} entered · average ${fmtPct(avg(pcts))} · highest ${fmtPct(pcts.length ? Math.max(...pcts) : null)} · lowest ${fmtPct(pcts.length ? Math.min(...pcts) : null)}`
-    : `${entered.length}/${students.length} rated · ${entered.filter(r => r.rating === 'A').length} achieved`;
+    : `${entered.length}/${students.length} rated · ${LEVELS.map(l => `${entered.filter(r => RATING_PCT[r.rating] === l.pct).length} ${l.label}`).join(' · ')}`;
   return `<div class="card mt" id="resultsPanel">
-    <div class="card-h"><div><h3>${esc(asm.name)} · ${esc(area ? area.name : '')}</h3><p>${fmtDate(asm.date)} · ${esc(classNameOf(asm.classId))} · ${asm.kind === 'numerical' ? `Out of ${asm.maxMarks} marks` : 'Competency-based'}</p></div>
+    <div class="card-h"><div><h3>${esc(asm.name)} · ${esc(area ? area.name : '')}</h3><p>${fmtDate(asm.date)} · ${esc(classNameOf(asm.classId))} · ${asm.kind === 'numerical' ? `Out of ${asm.maxMarks} marks` : 'Colour levels: 1 Birahebuje · 2 Nibyiza cyane · 3 Nibyiza · 4 Aragerageza'}</p></div>
       <div class="row"><button type="button" class="btn sm" data-action="assess-edit" data-id="${asm.id}">Edit assessment</button><button type="button" class="btn sm ghost" data-action="assess-close">Close</button></div></div>
     <form data-form="results" data-arg="${asm.id}">
-      <div class="table-wrap mt"><table class="tbl"><thead><tr><th class="c">#</th><th>Learner</th><th class="r">${asm.kind === 'numerical' ? 'Marks' : 'Rating'}</th><th class="r">%</th><th>Grade</th><th>Teacher comment</th></tr></thead><tbody>${rows || `<tr><td colspan="6">${emptyState('No active learners in this class', 'Register learners to this class to record results.')}</td></tr>`}</tbody></table></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th class="c">#</th><th>Learner</th><th class="r">${asm.kind === 'numerical' ? 'Marks' : 'Level (click a colour)'}</th><th class="r">%</th><th>Grade</th><th>Teacher comment</th></tr></thead><tbody>${rows || `<tr><td colspan="6">${emptyState('No active learners in this class', 'Register learners to this class to record results.')}</td></tr>`}</tbody></table></div>
       <div class="card-f"><span class="small muted grow">${stats}</span>${readOnly ? '<span class="badge">Read-only</span>' : '<button type="submit" class="btn primary">Save results</button>'}</div>
     </form></div>`;
 }
@@ -2288,16 +2364,15 @@ function termTotalsHtml(classId, term) {
   const head = numerical.map(a => `<th class="r">${esc(a.name)}</th>`).join('');
   const rows = students.map(st => {
     const scores = numerical.map(a => areaScore(st.id, a, term.id));
-    const overall = avg(scores.map(s => s.percent).filter(v => v !== null));
-    const comp = competency.map(a => areaScore(st.id, a, term.id)).filter(s => s.rating);
-    const achieved = comp.filter(s => s.rating === 'A').length;
-    return `<tr><td>${who(st, esc(st.regNumber))}</td>${scores.map(s => `<td class="r num">${fmtPct(s.percent)}</td>`).join('')}<td class="r num"><strong>${fmtPct(overall)}</strong></td><td>${bandBadge(overall)}</td><td class="small">${comp.length ? `${achieved} of ${comp.length} achieved` : '<span class="muted">Not rated</span>'}</td></tr>`;
+    const overall = overallOf(reportAreaRows(st.id, classId, term.id)).percent;
+    const comp = competency.map(a => areaScore(st.id, a, term.id)).filter(s => s.percent !== null);
+    return `<tr><td>${who(st, esc(st.regNumber))}</td>${scores.map(s => `<td class="r num">${fmtPct(s.percent)}</td>`).join('')}<td class="r num"><strong>${fmtPct(overall)}</strong></td><td>${bandBadge(overall)}</td><td class="small">${comp.length ? `${comp.length} of ${competency.length} rated` : '<span class="muted">Not rated</span>'}</td></tr>`;
   }).join('');
   const avgRow = numerical.map(a => {
     const vals = students.map(st => areaScore(st.id, a, term.id).percent).filter(v => v !== null);
     return `<td class="r num"><strong>${fmtPct(avg(vals))}</strong></td>`;
   }).join('');
-  return `<div class="table-wrap mt"><table class="tbl"><thead><tr><th>Learner</th>${head}<th class="r">Overall</th><th>Grade</th><th>Competencies</th></tr></thead>
+  return `<div class="table-wrap mt"><table class="tbl"><thead><tr><th>Learner</th>${head}<th class="r">Overall</th><th>Level</th><th>Colour-rated areas</th></tr></thead>
     <tbody>${rows}</tbody><tfoot><tr><th>Class average</th>${avgRow}<td class="r num"><strong>${fmtPct(avg(students.map(st => overallOf(reportAreaRows(st.id, classId, term.id)).percent).filter(v => v !== null)))}</strong></td><td></td><td></td></tr></tfoot></table></div>`;
 }
 VIEWS.assessments = () => {
@@ -2318,7 +2393,7 @@ VIEWS.assessments = () => {
     const pcts = a.kind === 'numerical' ? db.results.filter(r => r.assessmentId === a.id && r.marks !== null).map(r => ratio(r.marks, a.maxMarks)) : [];
     return `<tr style="${selected && selected.id === a.id ? 'background:var(--blue-soft)' : ''}">
       <td class="nowrap">${fmtDate(a.date)}</td><td><strong>${esc(a.name)}</strong></td><td>${esc(area ? area.name : '—')}</td>
-      <td>${a.kind === 'numerical' ? badge('Numerical', 'info') : badge('Competency', 'navy')}</td>
+      <td>${a.kind === 'numerical' ? badge('Marks', 'info') : badge('Colour levels', 'navy')}</td>
       <td class="r num">${a.kind === 'numerical' ? a.maxMarks : '—'}</td><td class="r num">${entered} / ${n}</td><td class="r num">${a.kind === 'numerical' ? fmtPct(avg(pcts)) : '—'}</td>
       <td class="r nowrap"><button type="button" class="btn xs ${c.readOnly ? '' : 'light'}" data-action="assess-open" data-id="${a.id}">${c.readOnly ? 'View results' : 'Enter results'}</button> ${c.readOnly ? '' : `<button type="button" class="btn xs" data-action="assess-edit" data-id="${a.id}">Edit</button> <button type="button" class="btn xs ghost" data-action="assess-delete" data-id="${a.id}">Delete</button>`}</td></tr>`;
   }).join('');
@@ -2335,7 +2410,7 @@ VIEWS.assessments = () => {
   <div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Assessment</th><th>Learning area</th><th>Type</th><th class="r">Max</th><th class="r">Entered</th><th class="r">Average</th><th class="r">Actions</th></tr></thead>
   <tbody>${rows || `<tr><td colspan="8">${emptyState('No assessments yet', c.readOnly ? 'No assessments were recorded for this term.' : 'Create an assessment for this class and learning area.')}</td></tr>`}</tbody></table></div></div>
   ${selected ? resultsPanelHtml(selected, c.readOnly) : '<div class="card mt"><div class="card-b muted">Choose “Enter results” on an assessment to record marks or ratings.</div></div>'}
-  <div class="card mt"><div class="card-h"><div><h3>Totals and averages · ${esc(classNameOf(clsId))} · ${esc(c.term.name)}</h3><p>Overall score is the average of numerical learning-area scores for the term. Grades follow Settings → Grading rules.</p></div></div>
+  <div class="card mt"><div class="card-h"><div><h3>Totals and averages · ${esc(classNameOf(clsId))} · ${esc(c.term.name)}</h3><p>Overall score is the average of all learning-area scores for the term (colour levels count as 95, 85, 75 and 65%). Levels follow Settings → Grading rules.</p></div></div>
     <div class="card-b flush">${termTotalsHtml(clsId, c.term)}</div></div>`;
 };
 CHANGES['view-term'] = el => { ui.viewTermId = el.value; clearTransient(); render(); };
@@ -2344,7 +2419,7 @@ CHANGES['assess-area'] = el => { ui.assessAreaId = el.value || null; ui.assessId
 CHANGES['assess-form-class'] = el => {
   const areas = classAreas(el.value);
   const s = $('#assessAreaSel');
-  if (s) s.innerHTML = areas.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${a.kind === 'numerical' ? 'numerical' : 'competency'})</option>`).join('');
+  if (s) s.innerHTML = areas.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${a.kind === 'numerical' ? 'marks' : 'colour levels'})</option>`).join('');
   if (areas[0]) syncAssessMax(areas[0].id);
 };
 CHANGES['assess-form-area'] = el => syncAssessMax(el.value);
@@ -2542,20 +2617,21 @@ function reportAreaRows(studentId, classId, termId) {
     const assessments = db.assessments.filter(a => a.areaId === area.id && a.termId === termId).length;
     if (area.kind === 'numerical') {
       const band = sc.percent === null ? null : gradeFor(sc.percent, bands);
-      return { id: area.id, name: area.name, kind: 'numerical', assessments, count: sc.count, percent: sc.percent, grade: band ? band.code : '—', remark: band ? band.label : 'Not assessed' };
+      return { id: area.id, name: area.name, group: area.group || '', kind: 'numerical', assessments, count: sc.count, percent: sc.percent, grade: band ? band.code : '—', remark: band ? band.label : 'Not assessed', color: band ? band.color : '' };
     }
-    return { id: area.id, name: area.name, kind: 'competency', assessments, count: sc.count, percent: null, rating: sc.rating || null, grade: sc.rating ? COMP_LABEL[sc.rating] : '—', remark: sc.rating ? 'Competency-based' : 'Not rated' };
+    const band = sc.percent === null ? null : gradeFor(sc.percent, bands);
+    return { id: area.id, name: area.name, group: area.group || '', kind: 'competency', assessments, count: sc.count, percent: sc.percent, rating: sc.rating || null, grade: band ? band.code : '—', remark: band ? band.label : 'Not rated', color: band ? band.color : '' };
   });
 }
 function overallOf(rows) {
-  const nums = rows.filter(r => r.kind === 'numerical' && r.percent !== null).map(r => r.percent);
+  const nums = rows.filter(r => r.percent !== null && r.percent !== undefined).map(r => r.percent);
   const percent = nums.length ? avg(nums) : null;
   const band = percent === null ? null : gradeFor(percent, settingsOf().gradingBands);
   return { percent, band, grade: band ? band.code : '—' };
 }
 function promotionFor(overall, attendance) {
   const rep = settingsOf().report;
-  if (overall.percent === null) return { decision: 'pending', text: 'Not yet assessed', reason: 'No numerical results are recorded for this term.' };
+  if (overall.percent === null) return { decision: 'pending', text: 'Not yet assessed', reason: 'No results are recorded for this term.' };
   const attNote = attendance.rate !== null && attendance.rate < rep.attendanceThreshold
     ? ` Attendance of ${fmtPct(attendance.rate)} is below the ${rep.attendanceThreshold}% attendance threshold.` : '';
   return overall.percent >= rep.promotionThreshold
@@ -2574,11 +2650,22 @@ function buildSnapshot(studentId, yearId, termId, opts = {}) {
   const overall = overallOf(rows);
   const attendance = opts.attendance || attendanceSummary(studentId, termId);
   const rep = settingsOf().report;
-  const comp = rows.filter(r => r.kind === 'competency' && r.rating);
+  const comp = rows.filter(r => r.kind === 'competency' && r.percent !== null);
   const first = st.fullName.split(/\s+/)[0];
+  /* Every term of the year up to this one, for the three-term progress table. */
+  const thisTerm = term ? term.order : 1;
+  const classmates = Array.from(new Set(db.enrolments.filter(e => e.yearId === yearId && e.classId === classId).map(e => e.studentId).concat(studentsIn(classId).map(x => x.id))));
+  const termsData = (yearId ? db.terms.filter(t => t.yearId === yearId).sort((x, y) => x.order - y.order) : []).map(t => {
+    if (t.order > thisTerm) return { id: t.id, name: t.name, order: t.order, pending: true, areas: {}, percent: null, position: null, classSize: classmates.length };
+    const tr = t.id === termId ? rows : reportAreaRows(studentId, classId, t.id);
+    const pct = overallOf(tr).percent;
+    const scores = classmates.map(id => overallOf(reportAreaRows(id, classId, t.id)).percent).filter(v => v !== null);
+    const position = pct === null ? null : 1 + scores.filter(v => v > pct + 1e-9).length;
+    return { id: t.id, name: t.name, order: t.order, pending: false, areas: Object.fromEntries(tr.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: pct, position, classSize: scores.length };
+  });
   const lowAtt = attendance.rate !== null && attendance.rate < rep.attendanceThreshold;
   const auto = overall.band
-    ? `${overall.band.remark}.${lowAtt ? ` Regular attendance will help ${first} make the most of every lesson.` : ''}`
+    ? `${overall.band.remark.replace(/\.\s*$/, '')}.${lowAtt ? ` Regular attendance will help ${first} make the most of every lesson.` : ''}`
     : 'Results for this term are not yet complete.';
   return {
     school: {
@@ -2594,8 +2681,10 @@ function buildSnapshot(studentId, yearId, termId, opts = {}) {
     areas: rows,
     overall: {
       percent: overall.percent, grade: overall.grade, label: overall.band ? overall.band.label : '', remark: overall.band ? overall.band.remark : '',
-      competencyAchieved: comp.filter(r => r.rating === 'A').length, competencyTotal: comp.length,
+      competencyAchieved: comp.length, competencyTotal: rows.filter(r => r.kind === 'competency').length,
     },
+    terms: termsData,
+    bands: bandsSorted().map(b => ({ min: b.min, code: b.code, label: b.label, color: b.color })),
     attendance,
     promotion: promotionFor(overall, attendance),
     teacherComment: (opts.teacherComment || '').trim() || auto,
@@ -2615,48 +2704,68 @@ function reportSheetHtml(snap, o = {}) {
   const issued = o.issuedAt || todayISO();
   const at = snap.attendance;
   const st = snap.student;
+  const bands = (snap.bands && snap.bands.length ? snap.bands : bandsSorted()).slice().sort((a, b) => b.min - a.min);
+  const terms = snap.terms && snap.terms.length ? snap.terms : [{ id: snap.termId, name: snap.termName, order: 1, areas: Object.fromEntries(snap.areas.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: snap.overall.percent, position: null, classSize: null }];
+  const cols = [0, 1, 2].map(i => terms[i] || null);
+  const ranges = bands.map((b, i) => `${b.min}-${i === 0 ? 100 : bands[i - 1].min}`);
   const commentBox = (name, value, label) => (o.editable
     ? `<textarea class="input screen-only" name="${name}" maxlength="600" aria-label="${label}">${esc(value)}</textarea><div class="print-only rs-comment">${esc(value)}</div>`
     : `<div class="rs-comment">${esc(value)}</div>`);
-  const photo = rep.showPhoto && o.photo
-    ? `<div style="width:26mm;height:32mm;flex:none;border:1px solid #d6dde8;border-radius:8px;overflow:hidden"><img src="${o.photo}" alt="" style="width:100%;height:100%;object-fit:cover"></div>` : '';
-  const infoCell = (k, v) => `<div><span>${esc(k)}</span><strong>${esc(v)}</strong></div>`;
-  const areaRows = snap.areas.map(r => `<tr><td>${esc(r.name)}</td><td class="c">${r.assessments}</td><td class="c num">${fmtPct(r.percent)}</td><td class="c"><strong>${esc(r.grade)}</strong></td><td>${esc(r.remark)}</td></tr>`).join('');
-  return `<article class="report-sheet">
-    <header class="rs-head">${logoHtml(sc, '')}
-      <div class="grow" style="min-width:0">
-        <h1>${esc(snap.school.name)}</h1>
-        <p>${snap.school.motto ? `“${esc(snap.school.motto)}” · ` : ''}Registration ${esc(snap.school.regNumber)}</p>
-        <p>${esc(snap.school.district)} District · ${esc(snap.school.sector)} Sector · ${esc(snap.school.cell)} Cell · ${esc(snap.school.village)} Village</p>
-        <p>${esc(snap.school.address)} · ${esc(snap.school.phone)} · ${esc(snap.school.email)}</p>
+  const cells = (t, areaId) => bands.map(b => {
+    const hit = t && !t.pending && t.areas[areaId] && t.areas[areaId].percent !== null && t.areas[areaId].code === b.code;
+    return `<td class="rw-c${hit ? ' on' : ''}" style="--c:${esc(b.color)}">${hit ? '✓' : ''}</td>`;
+  }).join('');
+  let lastGroup = null;
+  const body = snap.areas.map(r => {
+    let head = '';
+    if ((r.group || '') !== lastGroup) {
+      lastGroup = r.group || '';
+      if (lastGroup) head = `<tr class="rw-grp"><td colspan="13">${esc(lastGroup)}</td></tr>`;
+    }
+    return `${head}<tr><td class="rw-area">${esc(r.name)}</td>${cols.map(t => cells(t, r.id)).join('')}</tr>`;
+  }).join('');
+  const perTerm = fn => cols.map(t => `<td colspan="4" class="c">${t && !t.pending ? fn(t) : ''}</td>`).join('');
+  const legendTop = bands.map((b, i) => `<div><i style="background:${esc(b.color)}">${esc(b.code)}</i><span>${esc(b.label.toUpperCase())} ${ranges[i]}</span></div>`).join('');
+  const legendBottom = bands.map(b => `<div><span>${esc(b.label.toUpperCase())}</span><i style="background:${esc(b.color)}"></i></div>`).join('');
+  const schoolLogo = sc && sc.logo ? `<img class="rw-logo" src="${sc.logo}" alt="">` : '';
+  return `<article class="report-sheet rw">
+    <header class="rw-head">
+      <div class="rw-id">
+        <div class="rw-rep">REPUBULIKA Y’U RWANDA</div>
+        <img class="rw-arms" src="coat-of-arms.png" alt="Ikirango cya Repubulika y’u Rwanda">
+        <p>AKARERE KA ${esc((snap.school.district || '').toUpperCase())}</p>
+        <p>UMURENGE WA ${esc((snap.school.sector || '').toUpperCase())}</p>
+        <p>ISHURI: ${esc((snap.school.name || '').toUpperCase())}</p>
+        <p>UMWAKA W’AMASHURI: ${esc(snap.yearName)}</p>
+        <p>AMAZINA Y’UMWANA: <strong>${esc(st.fullName)}</strong></p>
+        <p>UMWAKA YIGAMO: <strong>${esc(snap.className)}</strong> · ${esc(snap.termName)}</p>
       </div>
+      <div class="rw-side">${schoolLogo}<div class="rw-legend">${legendTop}</div></div>
     </header>
-    <div class="rs-title">Learner progress report · ${esc(snap.termName)} · ${esc(snap.yearName)}</div>
-    <div style="display:flex;gap:12px;align-items:stretch;margin-bottom:12px">${photo}
-      <div class="rs-info" style="flex:1;margin-bottom:0">
-        ${infoCell('Learner', st.fullName)}${infoCell('Registration no.', st.regNumber)}${infoCell('Class', snap.className)}${infoCell('Gender', st.gender)}
-        ${infoCell('Age at issue', ageOn(st.dob, issued))}${infoCell('Admitted', fmtDate(st.admissionDate))}${infoCell('Class teacher', snap.teacherName)}${infoCell('Guardian', st.guardianName)}
-      </div>
+    <table class="rw-tbl">
+      <colgroup><col class="rw-col1">${'<col>'.repeat(12)}</colgroup>
+      <thead>
+        <tr><th></th><th colspan="12" class="rw-title">INDANGAMANOTA</th></tr>
+        <tr><th class="rw-subj">IBYIGWA N’IMYITWARIRE</th>${[1, 2, 3].map(n => `<th colspan="4">ITERAMBERE AGEZEHO<br>IGIHEMBWE CYA ${n}</th>`).join('')}</tr>
+      </thead>
+      <tbody>${body || '<tr><td colspan="13">Nta masomo yashyizweho kuri iri shuri.</td></tr>'}</tbody>
+      <tfoot>
+        <tr><td class="rw-area">Ijanisha (%)</td>${perTerm(t => (t.percent === null ? '—' : fmtPct(t.percent)))}</tr>
+        <tr><td class="rw-area">Umwanya umwana yabaye</td>${perTerm(t => (t.position ? `${t.position} / ${t.classSize}` : '—'))}</tr>
+        <tr><td class="rw-area">Umukono w’umwarimu</td>${perTerm(() => '')}</tr>
+      </tfoot>
+    </table>
+    <div class="rw-notes">
+      <div class="rs-box"><h4>Icyo umwarimu avuga</h4>${commentBox('teacherComment', snap.teacherComment, 'Class teacher comment')}</div>
+      <div class="rs-box"><h4>Icyo umuyobozi avuga</h4>${commentBox('headComment', snap.headComment, 'Headteacher comment')}</div>
     </div>
-    <table class="rs-tbl"><thead><tr><th>Learning area</th><th class="c">Assessments</th><th class="c">Score</th><th class="c">Grade / level</th><th>Remark</th></tr></thead>
-      <tbody>${areaRows || '<tr><td colspan="5">No learning areas are configured for this class.</td></tr>'}</tbody></table>
-    <div class="rs-two">
-      <div class="rs-box"><h4>Overall performance</h4>
-        <p>Score <strong>${fmtPct(snap.overall.percent)}</strong> · Grade <strong>${esc(snap.overall.grade)}</strong>${snap.overall.label ? ` (${esc(snap.overall.label)})` : ''}</p>
-        <p class="small">${esc(snap.overall.remark || 'Not yet assessed.')}</p>
-        <p class="small">Competencies achieved: ${snap.overall.competencyAchieved} of ${snap.overall.competencyTotal}</p></div>
-      <div class="rs-box"><h4>Attendance summary</h4>
-        <p>Days registered: <strong>${at.totalDays}</strong></p>
-        <p>Present or late: ${at.attended} · Absent: ${at.absent} · Excused: ${at.excused}</p>
-        <p>Attendance rate: <strong>${fmtPct(at.rate)}</strong></p></div>
+    <p class="rw-att">Iminsi yaje ku ishuri: <strong>${at.attended}</strong> kuri ${at.totalDays} · Ijanisha ry’ukwitabira: <strong>${fmtPct(at.rate)}</strong> · Umwarimu: ${esc(snap.teacherName)}</p>
+    <div class="rw-foot">
+      <div><h4>UBUSOBANURO BW’AMABARA YAKORESHEJWE</h4><div class="rw-legend2">${legendBottom}</div></div>
+      <div><h4>UMUKONO W’UMUBYEYI</h4><table class="rw-sign"><tr><th>Igihembwe 1</th><th>Igihembwe 2</th><th>Igihembwe 3</th></tr><tr><td></td><td></td><td></td></tr></table></div>
     </div>
-    <div class="rs-two">
-      <div class="rs-box"><h4>Promotion recommendation</h4><p class="rs-promo">${esc(snap.promotion.text)}</p><p class="small">${esc(snap.promotion.reason)}</p></div>
-      <div class="rs-box"><h4>Class teacher’s comment</h4>${commentBox('teacherComment', snap.teacherComment, 'Class teacher comment')}</div>
-    </div>
-    <div class="rs-box"><h4>Headteacher’s comment</h4>${commentBox('headComment', snap.headComment, 'Headteacher comment')}</div>
-    <div class="rs-sign"><div>${esc(snap.teacherName)}<br>Class teacher</div><div>${esc(snap.headName)}<br>Headteacher</div><div>Parent / guardian</div><div class="rs-stamp">School stamp</div></div>
-    <footer class="rs-foot">${esc(rep.footer)} · Issued ${fmtDate(issued)}</footer>
+    <div class="rw-head-sign"><div><h4>UMUKONO N’AMAZINA BY’UMUYOBOZI</h4><p>${esc(snap.headName)}</p><span></span></div><div class="rs-stamp">Kashe y’ishuri</div></div>
+    <footer class="rs-foot">${esc(rep.footer)} · Byatanzwe ${fmtDate(issued)}</footer>
   </article>`;
 }
 function reportListHtml(c) {
@@ -2851,9 +2960,9 @@ VIEWS.dashboard = () => {
   const perfCard = `<div class="card"><div class="card-h"><div><h3>Class performance</h3><p>Average overall score per class for this term</p></div></div><div class="card-b">${perfHtml || emptyState('No classes', 'Add classes to see performance.')}</div></div>`;
 
   const stackHtml = graded
-    ? `<div class="stack">${dist.filter(d => d.n).map(d => `<span style="width:${(d.n / graded) * 100}%;background:${BAND_TONES[d.i] || '#8a96a8'}" title="${esc(d.b.label)}: ${d.n}"></span>`).join('')}</div>
-       <div class="legend">${dist.map(d => `<span><i style="background:${BAND_TONES[d.i] || '#8a96a8'}"></i>${esc(d.b.code)} · ${esc(d.b.label)} (${d.n})</span>`).join('')}</div>`
-    : emptyState('No graded learners yet', 'Grades appear once numerical results are entered for this term.');
+    ? `<div class="stack">${dist.filter(d => d.n).map(d => `<span style="width:${(d.n / graded) * 100}%;background:${d.b.color || BAND_TONES[d.i] || '#8a96a8'}" title="${esc(d.b.label)}: ${d.n}"></span>`).join('')}</div>
+       <div class="legend">${dist.map(d => `<span><i style="background:${d.b.color || BAND_TONES[d.i] || '#8a96a8'}"></i>${esc(d.b.code)} · ${esc(d.b.label)} (${d.n})</span>`).join('')}</div>`
+    : emptyState('No graded learners yet', 'Levels appear once results are entered for this term.');
   const gradeCard = `<div class="card"><div class="card-h"><div><h3>Grade distribution</h3><p>Overall grade of each active learner for this term</p></div></div><div class="card-b">${stackHtml}</div></div>`;
 
   const regRows = recentStudents.map(st => `<tr><td>${who(st, esc(st.regNumber))}</td><td>${esc(classNameOf(st.classId))}</td><td class="nowrap">${fmtDate(st.admissionDate)}</td></tr>`).join('');
@@ -2915,7 +3024,7 @@ function settingsAreasHtml() {
   const areas = classAreas(clsId);
   const rows = areas.map((a, i) => {
     const used = db.assessments.filter(x => x.areaId === a.id).length;
-    return `<tr><td class="c num">${i + 1}</td><td><strong>${esc(a.name)}</strong></td><td>${a.kind === 'numerical' ? badge('Numerical', 'info') : badge('Competency', 'navy')}</td><td class="r num">${a.kind === 'numerical' ? a.maxMarks : '—'}</td><td class="r num">${used}</td>
+    return `<tr><td class="c num">${i + 1}</td><td><strong>${esc(a.name)}</strong>${a.group ? `<span class="sub">${esc(a.group)}</span>` : ''}</td><td>${a.kind === 'numerical' ? badge('Marks', 'info') : badge('Colour levels', 'navy')}</td><td class="r num">${a.kind === 'numerical' ? a.maxMarks : '—'}</td><td class="r num">${used}</td>
       <td class="r nowrap"><button type="button" class="btn xs ghost" data-action="area-move" data-id="${a.id}" data-dir="-1" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
       <button type="button" class="btn xs ghost" data-action="area-move" data-id="${a.id}" data-dir="1" ${i === areas.length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
       <button type="button" class="btn xs" data-action="area-edit" data-id="${a.id}">Edit</button>
@@ -2926,7 +3035,7 @@ function settingsAreasHtml() {
       <div class="grow"></div><button type="button" class="btn primary" data-action="area-new" data-id="${clsId}">Add learning area</button></div>
     <div class="table-wrap"><table class="tbl"><thead><tr><th class="c">#</th><th>Learning area</th><th>Type</th><th class="r">Max marks</th><th class="r">Assessments</th><th class="r">Actions</th></tr></thead>
     <tbody>${rows || `<tr><td colspan="6">${emptyState('No learning areas', 'Add the first learning area for this class.')}</td></tr>`}</tbody></table></div>
-    <div class="card-b small muted">Numerical areas are marked out of their maximum and graded with the grading rules. Competency areas are rated Achieved, Developing or Not yet. Areas that already have assessments cannot be deleted or changed to another type.</div></div>`;
+    <div class="card-b small muted">Colour-level areas are rated 1 Birahebuje, 2 Nibyiza cyane, 3 Nibyiza or 4 Aragerageza. Marks areas are scored out of their maximum and converted to a colour level. The section groups areas on the report card. Areas that already have assessments cannot be deleted or changed to another type.</div></div>`;
 }
 function openAreaForm(classId, areaId) {
   requireWritable();
@@ -2934,13 +3043,14 @@ function openAreaForm(classId, areaId) {
   const cls = byId('classes', a ? a.classId : classId);
   if (!cls) throw new AppError('Choose a class first.');
   const used = a ? db.assessments.some(x => x.areaId === a.id) : false;
-  const kind = a ? a.kind : 'numerical';
+  const kind = a ? a.kind : 'competency';
   openForm({
     title: a ? `Edit ${a.name}` : `Add learning area · ${cls.name}`,
     form: 'area', arg: a ? a.id : cls.id, submit: a ? 'Save learning area' : 'Add learning area',
     html: `<div class="form-grid">
       ${field('Learning area name *', inp('name', a ? a.name : '', 'required maxlength="60"'), '', 'span2')}
-      ${field('Assessment type *', sel('kind', [['numerical', 'Numerical (marks)'], ['competency', 'Competency (Achieved, Developing, Not yet)']], kind, `data-change="area-kind"${used ? ' disabled' : ''}`), used ? 'Locked: assessments already use this area' : 'Competency areas are rated rather than marked')}
+      ${field('Report section', `<input class="input" name="group" list="areaGroups" maxlength="60" value="${esc(a ? a.group || '' : '')}" placeholder="e.g. UBUGENI N’UMUCO"><datalist id="areaGroups">${Array.from(new Set(RW_AREAS.map(g => g[0]).concat(S('learningAreas').map(x => x.group || '')).filter(Boolean))).map(g => `<option value="${esc(g)}"></option>`).join('')}</datalist>`, 'Leave empty for the first group of subjects', 'span2')}
+      ${field('Assessment type *', sel('kind', [['competency', 'Colour levels (1 Birahebuje · 2 Nibyiza cyane · 3 Nibyiza · 4 Aragerageza)'], ['numerical', 'Marks (converted to a colour level)']], kind, `data-change="area-kind"${used ? ' disabled' : ''}`), used ? 'Locked: assessments already use this area' : 'Most nursery areas use colour levels')}
       ${field('Maximum marks', inp('maxMarks', a && a.maxMarks ? a.maxMarks : 100, `type="number" min="1" max="1000" id="areaMax"${kind === 'numerical' ? '' : ' disabled'}`), 'Applies to assessments created from now on')}
     </div>`,
   });
@@ -2969,10 +3079,10 @@ FORMS.area = (fd, arg) => {
     }
   }
   if (existing) {
-    Object.assign(existing, { name, kind, maxMarks });
+    Object.assign(existing, { name, kind, maxMarks, group: String(fd.get('group') || '').trim() });
     commit('Learning area updated', `${name} · ${cls.name}`);
   } else {
-    db.learningAreas.push({ id: uid('la'), schoolId: sid(), classId, name, kind, maxMarks, order: classAreas(classId).length + 1 });
+    db.learningAreas.push({ id: uid('la'), schoolId: sid(), classId, name, kind, maxMarks, group: String(fd.get('group') || '').trim(), order: classAreas(classId).length + 1 });
     commit('Learning area added', `${name} · ${cls.name}`);
   }
   ui.settingsClassId = classId;
@@ -3010,9 +3120,10 @@ function settingsGradingHtml() {
     <td><input class="input sm" name="b_min_${i}" type="number" min="0" max="100" step="1" value="${b.min}" required style="width:84px" aria-label="Minimum percentage, band ${i + 1}"></td>
     <td><input class="input sm" name="b_code_${i}" maxlength="2" value="${esc(b.code)}" required style="width:70px" aria-label="Code, band ${i + 1}"></td>
     <td><input class="input sm" name="b_label_${i}" maxlength="24" value="${esc(b.label)}" required aria-label="Label, band ${i + 1}"></td>
+    <td><input class="input sm" type="color" name="b_color_${i}" value="${esc(b.color || '#8a96a8')}" style="width:56px;padding:2px" aria-label="Colour, band ${i + 1}"></td>
     <td><input class="input" name="b_remark_${i}" maxlength="140" value="${esc(b.remark)}" required aria-label="Remark, band ${i + 1}"></td></tr>`).join('');
-  return `<div class="card"><div class="card-h"><div><h3>Grading rules</h3><p>Each band starts at its minimum percentage, and the lowest band must start at 0%. Grades appear on assessments, report cards and the dashboard.</p></div></div>
-    <form data-form="grading"><div class="table-wrap mt"><table class="tbl"><thead><tr><th>Minimum %</th><th>Code</th><th>Label</th><th>Teacher remark</th></tr></thead><tbody>${rows}</tbody></table></div>
+  return `<div class="card"><div class="card-h"><div><h3>Grading rules</h3><p>Nursery levels by colour. Each level starts at its minimum percentage; anything below the lowest minimum also gets the lowest level. Colours appear on assessments, report cards and the dashboard.</p></div></div>
+    <form data-form="grading"><div class="table-wrap mt"><table class="tbl"><thead><tr><th>Minimum %</th><th>No.</th><th>Level name</th><th>Colour</th><th>Teacher remark</th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="card-f"><button type="button" class="btn ghost" data-action="grading-reset">Reset to defaults</button><button type="submit" class="btn primary">Save grading rules</button></div></form></div>`;
 }
 FORMS.grading = fd => {
@@ -3024,15 +3135,16 @@ FORMS.grading = fd => {
     const code = String(fd.get(`b_code_${i}`) || '').trim().toUpperCase();
     const label = String(fd.get(`b_label_${i}`) || '').trim();
     const remark = String(fd.get(`b_remark_${i}`) || '').trim();
+    const color = /^#[0-9a-f]{6}$/i.test(String(fd.get(`b_color_${i}`) || '')) ? String(fd.get(`b_color_${i}`)) : '#8a96a8';
     if (!Number.isInteger(min) || min < 0 || min > 100) throw new AppError('Each minimum must be a whole number from 0 to 100.');
     if (!code || !label || !remark) throw new AppError('Every band needs a code, a label and a remark.');
-    bands.push({ min, code, label, remark });
+    bands.push({ min, code, label, remark, color });
   }
   const mins = bands.map(b => b.min);
   if (new Set(mins).size !== mins.length) throw new AppError('Each band needs a different minimum.');
-  if (!mins.includes(0)) throw new AppError('One band must start at 0%.');
   if (new Set(bands.map(b => b.code)).size !== bands.length) throw new AppError('Band codes must be different.');
   set.gradingBands = bands.sort((a, b) => b.min - a.min);
+  set.gradingVersion = 2;
   commit('Grading rules updated', `${set.gradingBands.length} bands`);
   return true;
 };
