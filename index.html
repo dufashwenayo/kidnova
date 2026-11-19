@@ -664,30 +664,24 @@ const TONE = {
   Achieved: 'ok', Developing: 'warn', 'Not yet': 'bad', Pending: 'muted', Female: 'info', Male: 'info',
 };
 const badge = (text, tone) => `<span class="badge ${tone || TONE[text] || ''}">${esc(text)}</span>`;
-/* Rwanda nursery curriculum (report-card sections). Each area is rated with the 4 colour levels. */
-const RW_AREAS = [
-  ['', ['Ubumenyi bw’ibidukikije', 'Imibare', 'Ikinyarwanda', 'Icyongereza']],
-  ['UBUGENI N’UMUCO', ['Gushushanya', 'Gusiga amabara', 'Gutaka/Komeka', 'Kubumba/Kubaka', 'Kuzinga/Kuboha', 'Kuririmba no kubyina']],
-  ['IBONEZA BUZIMA', ['Imyitozo y’ingingo nini n’intoya', 'Isuku y’umubiri', 'Kwiyitaho no kwita ku bintu bye', 'Gukaraba intoki mbere yo gufungura']],
-  ['IMYITWARIRE N’ITERAMBERE MU MBAMUTIMA', ['Imibanire ye n’abandi', 'Gukora icyo asabwe (kumvira)', 'Ubwitange n’amatsiko', 'Kwigirira icyizere', 'Kugaragaza no gucunga imbamutima', 'Guhugira ku mirimo no kudacika intege', 'Gusukura aho yakoreye no gushyira ibintu mu mwanya wabyo']],
-];
-const RW_AREA_LIST = RW_AREAS.flatMap(([group, names]) => names.map(name => [name, 'competency', 0, group]));
+const SECTION_SUGGESTIONS = ['CREATIVE ARTS AND CULTURE', 'HEALTH AND PHYSICAL DEVELOPMENT', 'SOCIAL AND EMOTIONAL DEVELOPMENT'];
+/* Classes are created with the school; subjects (learning areas) are registered by the school itself. */
 const DEFAULT_CLASSES = [
-  { name: 'Baby Class', code: 'BBY', capacity: 20, areas: RW_AREA_LIST },
-  { name: 'Middle Class', code: 'MID', capacity: 22, areas: RW_AREA_LIST },
-  { name: 'Top Class', code: 'TOP', capacity: 24, areas: RW_AREA_LIST },
+  { name: 'Baby Class', code: 'BBY', capacity: 20, areas: [] },
+  { name: 'Middle Class', code: 'MID', capacity: 22, areas: [] },
+  { name: 'Top Class', code: 'TOP', capacity: 24, areas: [] },
 ];
 /* Colour levels used to rate learners. Each level counts as a percentage so it can be averaged with marks. */
 const LEVELS = [
-  { key: 'G', code: '1', label: 'Birahebuje', en: 'Excellent', pct: 95, color: '#21a04a' },
-  { key: 'B', code: '2', label: 'Nibyiza cyane', en: 'Very good', pct: 85, color: '#2a9fd8' },
-  { key: 'Y', code: '3', label: 'Nibyiza', en: 'Good', pct: 75, color: '#f3c22c' },
-  { key: 'R', code: '4', label: 'Aragerageza', en: 'Trying', pct: 65, color: '#e2472f' },
+  { key: 'G', code: '1', label: 'Excellent', en: 'Excellent', pct: 95, color: '#21a04a' },
+  { key: 'B', code: '2', label: 'Very good', en: 'Very good', pct: 85, color: '#2a9fd8' },
+  { key: 'Y', code: '3', label: 'Good', en: 'Good', pct: 75, color: '#f3c22c' },
+  { key: 'R', code: '4', label: 'Fair', en: 'Fair', pct: 65, color: '#e2472f' },
 ];
 const LEVEL_BY_KEY = Object.fromEntries(LEVELS.map(l => [l.key, l]));
 /* A/D/N are ratings from the earlier three-level scale, kept readable. */
 const RATING_PCT = { G: 95, B: 85, Y: 75, R: 65, A: 95, D: 75, N: 65 };
-const COMP_LABEL = { G: 'Birahebuje', B: 'Nibyiza cyane', Y: 'Nibyiza', R: 'Aragerageza', A: 'Birahebuje', D: 'Nibyiza', N: 'Aragerageza' };
+const COMP_LABEL = { G: 'Excellent', B: 'Very good', Y: 'Good', R: 'Fair', A: 'Excellent', D: 'Good', N: 'Fair' };
 const COLLECTIONS = ['schools', 'academicYears', 'terms', 'classes', 'learningAreas', 'teachers', 'assignments', 'students', 'enrolments', 'promotions', 'assessments', 'results', 'attendance', 'reportNotes', 'reportCards', 'activity'];
 const ACTIONS = {}, FORMS = {}, CHANGES = {}, INPUTS = {}, VIEWS = {};
 
@@ -703,12 +697,12 @@ function defaultSettings() {
   return {
     termNames: ['Term 1', 'Term 2', 'Term 3'],
     gradingBands: [
-      { min: 90, code: '1', label: 'Birahebuje', color: '#21a04a', remark: 'Yitwaye neza cyane. Akomereze aho.' },
-      { min: 80, code: '2', label: 'Nibyiza cyane', color: '#2a9fd8', remark: 'Nibyiza cyane. Akomeze gutera imbere.' },
-      { min: 70, code: '3', label: 'Nibyiza', color: '#f3c22c', remark: 'Nibyiza. Akeneye gukomeza kwitoza.' },
-      { min: 60, code: '4', label: 'Aragerageza', color: '#e2472f', remark: 'Aragerageza. Akeneye ubufasha bwihariye mu rugo no ku ishuri.' },
+      { min: 90, code: '1', label: 'Excellent', color: '#21a04a', remark: 'Excellent progress this term. Keep it up.' },
+      { min: 80, code: '2', label: 'Very good', color: '#2a9fd8', remark: 'Very good progress. Keep working steadily.' },
+      { min: 70, code: '3', label: 'Good', color: '#f3c22c', remark: 'Good progress. More practice will help.' },
+      { min: 60, code: '4', label: 'Fair', color: '#e2472f', remark: 'Fair progress. Needs extra support at home and at school.' },
     ],
-    gradingVersion: 2,
+    gradingVersion: 3,
     attendanceCategories: [
       { key: 'Present', label: 'Present', color: '#17744a', attended: true },
       { key: 'Late', label: 'Late', color: '#8f5606', attended: true },
@@ -717,8 +711,8 @@ function defaultSettings() {
     ],
     report: {
       promotionThreshold: 50, attendanceThreshold: 75, showPhoto: true,
-      footer: 'Iyi ndangamanota ibikwe neza, isubizwe umwarimu mu ntangiriro z’igihembwe gikurikira.',
-      headDefault: 'Murakoze ku bufatanye mu burere bw’umwana.',
+      footer: 'Please keep this report card safe and return it to the class teacher at the start of the next term.',
+      headDefault: 'Thank you for your continued partnership in your child’s learning.',
     },
   };
 }
@@ -732,7 +726,16 @@ function normalizeDb(d) {
   d.schools.forEach(s => {
     const merged = Object.assign(defaultSettings(), d.settings[s.id] || {});
     /* Move schools from the old letter grades to the 4 colour levels. */
-    if (merged.gradingVersion !== 2 || !merged.gradingBands.every(b => b.color)) { merged.gradingBands = defaultSettings().gradingBands; merged.gradingVersion = 2; }
+    if (!merged.gradingBands.every(b => b.color)) { merged.gradingBands = defaultSettings().gradingBands; merged.gradingVersion = 3; }
+    else if (merged.gradingVersion === 2) {
+      /* Kinyarwanda default labels from version 2 become the English defaults; edited labels are kept. */
+      const RW = { Birahebuje: 0, 'Nibyiza cyane': 1, Nibyiza: 2, Aragerageza: 3 };
+      const def = defaultSettings().gradingBands;
+      merged.gradingBands = merged.gradingBands.map(b => (b.label in RW ? Object.assign({}, b, { label: def[RW[b.label]].label, remark: def[RW[b.label]].remark }) : b));
+      merged.gradingVersion = 3;
+    }
+    if (/^Iyi ndangamanota/.test(merged.report.footer || '')) merged.report.footer = defaultSettings().report.footer;
+    if (/^Murakoze ku bufatanye/.test(merged.report.headDefault || '')) merged.report.headDefault = defaultSettings().report.headDefault;
     merged.report = Object.assign(defaultSettings().report, merged.report || {});
     d.settings[s.id] = merged;
   });
@@ -864,11 +867,14 @@ function ctx() {
   const ay = activeYear();
   let year = ui.viewYearId ? byId('academicYears', ui.viewYearId) : null;
   if (!year || year.schoolId !== sid()) year = ay || yearsSorted()[0] || null;
-  const terms = year ? termsOf(year.id) : [];
+  /* School users work in the current term and may go back to earlier terms; future terms are hidden. */
+  const terms = year ? termsOf(year.id).filter(t => isSuper() || t.status !== 'Upcoming') : [];
   let term = ui.viewTermId ? terms.find(t => t.id === ui.viewTermId) || null : null;
   if (!term && year) term = terms.find(t => t.status === 'Active') || terms.find(t => t.status === 'Upcoming') || terms[terms.length - 1] || null;
   const readOnly = !year || !term || term.status === 'Completed' || year.status === 'Closed';
-  return { year, terms, term, readOnly, isCurrentYear: !!(year && ay && year.id === ay.id), isCurrentTerm: !!(term && ay && year.id === ay.id && term.status === 'Active') };
+  /* Marks of a completed term can still be corrected while its year is open. */
+  const canCorrect = !!(year && term && year.status !== 'Closed' && (term.status === 'Completed' || term.status === 'Active' || isSuper()));
+  return { year, terms, term, readOnly, canCorrect, isCurrentYear: !!(year && ay && year.id === ay.id), isCurrentTerm: !!(term && ay && year.id === ay.id && term.status === 'Active') };
 }
 
 /* ---------- 5. Guards, activity log, messages ---------- */
@@ -876,6 +882,11 @@ function requireSchool() { if (!curSchool()) throw new AppError('Set up a school
 function requireWritable() {
   requireSchool();
   if (curSchool().status !== 'Active') throw new AppError('This school is deactivated, so its records are read-only.');
+}
+function requireCorrectable(term, year) {
+  if (!term || !year) throw new AppError('Select an academic year and term first.');
+  if (year.status === 'Closed') throw new AppError(`${year.name} is closed. Its records are history and cannot be changed.`);
+  if (term.status === 'Upcoming' && !isSuper()) throw new AppError(`${term.name} has not started yet.`);
 }
 function requireOpen(term, year) {
   if (!term || !year) throw new AppError('Select an academic year and term first.');
@@ -1008,12 +1019,12 @@ function renderTopbar() {
     ? `<label class="year-pill">${icon('school')}<select data-change="ws-switch" aria-label="Open school">${ws.schoolId ? '' : '<option value="">Choose a school…</option>'}${ws.list.map(w => `<option value="${esc(w.school_id)}" ${w.school_id === ws.schoolId ? 'selected' : ''}>${esc(w.school_name)}</option>`).join('')}</select></label>`
     : '';
   const yearSel = sc && c.year
-    ? `<label class="year-pill">${icon('years')}<select data-change="view-year" aria-label="Academic year">${yearsSorted().map(y => `<option value="${esc(y.id)}" ${y.id === c.year.id ? 'selected' : ''}>${esc(y.name)}${y.status === 'Active' ? ' · current' : ''}</option>`).join('')}</select></label>`
+    ? `<label class="year-pill">${icon('years')}<select data-change="view-year" aria-label="Academic year">${yearsSorted().filter(y => isSuper() || y.status !== 'Upcoming' || y.id === c.year.id).map(y => `<option value="${esc(y.id)}" ${y.id === c.year.id ? 'selected' : ''}>${esc(y.name)}${y.status === 'Active' ? ' · current' : ''}</option>`).join('')}</select></label>`
     : '';
   const termPill = sc
     ? `<div class="term-pill ${tm ? '' : 'none'}"><span class="dot ${tm ? 'ok' : 'warn'}"></span><div><small>Current term</small><strong>${tm ? `${esc(tm.name)} · ${esc(ay.name)}` : 'Not set'}</strong></div></div>`
     : '';
-  const switchBtn = sc && ay ? `<button type="button" class="btn primary sm" data-action="open-switch-term">Switch term</button>` : '';
+  const switchBtn = sc && ay && isSuper() ? `<button type="button" class="btn primary sm" data-action="open-switch-term">Switch term</button>` : '';
   const a = currentAdmin();
   $('#topbar').innerHTML = `<button type="button" class="icon-btn menu-btn" data-action="toggle-sidebar" aria-label="Open menu">☰</button>
     <div class="top-title">${esc(PAGE_META[ui.page] || 'Dashboard')}</div>${schoolSel}
@@ -1049,11 +1060,11 @@ function renderBanners() {
     const ay = activeYear();
     const c = ctx();
     if (sc.status !== 'Active') b.push(['bad', 'This school is deactivated. Records are visible but cannot be changed until it is reactivated.']);
-    if (!ay) b.push(['warn', 'No academic year is active. Open Academic Years and activate the current year.']);
-    else if (!activeTerm()) b.push(['warn', `No term is active in ${esc(ay.name)}. Use “Switch current term” to choose the term in session.`]);
+    if (!ay) b.push(['warn', isSuper() ? 'No academic year is active. Open Academic Years and activate the current year.' : 'No academic year is active yet. The KIDNOVA Super Admin sets the current year and term.']);
+    else if (!activeTerm()) b.push(['warn', isSuper() ? `No term is active in ${esc(ay.name)}. Use “Switch current term” to choose the term in session.` : `No term is active in ${esc(ay.name)} yet. The KIDNOVA Super Admin sets the current term.`]);
     const viewingOther = c.year && c.term && ((ay && c.year.id !== ay.id) || (activeTerm() && c.term.id !== activeTerm().id));
     if (viewingOther) {
-      b.push(['info', `Viewing ${esc(c.year.name)} · ${esc(c.term.name)} (${esc(c.term.status.toLowerCase())}). Historical records are shown ${c.readOnly ? 'read-only' : 'and can be edited'}. <button type="button" class="link" data-action="return-current">Return to current term</button>`]);
+      b.push(['info', `Viewing ${esc(c.year.name)} · ${esc(c.term.name)} (${esc(c.term.status.toLowerCase())}). ${c.readOnly ? (c.canCorrect ? 'Marks can be corrected; other records are read-only.' : 'Records are read-only.') : 'Records can be edited.'} <button type="button" class="link" data-action="return-current">Return to current term</button>`]);
     }
   }
   $('#banners').innerHTML = b.map(([t, m]) => `<div class="banner ${t}">${m}</div>`).join('');
@@ -1330,8 +1341,8 @@ function yearsTableHtml() {
     const learners = db.enrolments.filter(e => e.yearId === y.id).length;
     const assessed = db.assessments.filter(a => a.yearId === y.id).length;
     const currentBtn = y.status === 'Active'
-      ? `<button type="button" class="btn xs" data-action="year-close" data-id="${y.id}">Close year</button>`
-      : `<button type="button" class="btn xs light" data-action="year-activate" data-id="${y.id}">Set as current</button>`;
+      ? (isSuper() ? `<button type="button" class="btn xs" data-action="year-close" data-id="${y.id}">Close year</button>` : '')
+      : (isSuper() ? `<button type="button" class="btn xs light" data-action="year-activate" data-id="${y.id}">Set as current</button>` : '');
     return `<tr>
       <td><strong>${esc(y.name)}</strong>${y.status === 'Active' ? ' <span class="badge ok">Current</span>' : ''}</td>
       <td>${fmtDate(y.openDate)}</td><td>${fmtDate(y.closeDate)}</td><td>${badge(y.status)}</td>
@@ -1385,6 +1396,7 @@ ACTIONS['year-open'] = el => { ui.viewYearId = el.dataset.id; ui.viewTermId = nu
 ACTIONS['year-tab'] = el => { ui.yearTab = el.dataset.tab; render(); };
 ACTIONS['year-activate'] = async el => {
   requireWritable();
+  requireSuper();
   const target = byId('academicYears', el.dataset.id);
   const current = activeYear();
   if (current && current.id === target.id) return;
@@ -1404,6 +1416,7 @@ ACTIONS['year-activate'] = async el => {
 };
 ACTIONS['year-close'] = async el => {
   requireWritable();
+  requireSuper();
   const y = byId('academicYears', el.dataset.id);
   const ok = await confirmDialog(`Close <strong>${esc(y.name)}</strong>? Its active term will be completed and no further assessments or attendance can be recorded for it. Records are preserved. Another year must be set as current afterwards.`, { title: 'Close academic year', ok: 'Close year', danger: true });
   if (!ok) return;
@@ -1487,16 +1500,18 @@ function openSwitchTermModal(preselectId) {
 }
 FORMS['switch-term'] = fd => {
   requireWritable();
+  requireSuper();
   const t = byId('terms', String(fd.get('termId') || ''));
   if (!t) throw new AppError('Choose a term to switch to.');
   setActiveTerm(t, fd.get('completePrev') === 'on');
   return true;
 };
-ACTIONS['open-switch-term'] = () => openSwitchTermModal(null);
+ACTIONS['open-switch-term'] = () => { requireSuper(); openSwitchTermModal(null); };
 ACTIONS['term-new'] = () => openTermForm(null, ctx().year && ctx().year.id);
 ACTIONS['term-edit'] = el => openTermForm(el.dataset.id, null);
 ACTIONS['term-activate'] = el => {
   requireWritable();
+  requireSuper();
   const t = byId('terms', el.dataset.id);
   const y = byId('academicYears', t.yearId);
   if (!y || y.status !== 'Active') throw new AppError(`Set ${y ? y.name : 'this year'} as the current year before activating its terms.`);
@@ -1506,6 +1521,7 @@ ACTIONS['term-activate'] = el => {
 };
 ACTIONS['term-complete'] = async el => {
   requireWritable();
+  requireSuper();
   const t = byId('terms', el.dataset.id);
   const y = byId('academicYears', t.yearId);
   const ok = await confirmDialog(`Mark <strong>${esc(t.name)}</strong> as completed? Attendance and assessments for this term become read-only. Previous results stay accessible and reports can still be generated.`, { title: 'Complete term', ok: 'Mark completed' });
@@ -1522,7 +1538,8 @@ function termCardHtml(t, yr) {
   const elapsed = Math.min(100, Math.max(0, (dayDiff(t.openDate, today) / span) * 100));
   let actions = '';
   if (yr.status !== 'Closed') {
-    if (t.status === 'Active') actions += `<button type="button" class="btn sm" data-action="term-complete" data-id="${t.id}">Mark completed</button>`;
+    if (!isSuper()) { /* only the Super Admin changes the current term */ }
+    else if (t.status === 'Active') actions += `<button type="button" class="btn sm" data-action="term-complete" data-id="${t.id}">Mark completed</button>`;
     else actions += `<button type="button" class="btn sm light" data-action="term-activate" data-id="${t.id}">${t.status === 'Completed' ? 'Reopen as current' : 'Make current'}</button>`;
     if (t.status !== 'Completed') actions += `<button type="button" class="btn sm ghost" data-action="term-edit" data-id="${t.id}">Edit dates</button>`;
   }
@@ -1541,7 +1558,7 @@ VIEWS.terms = () => {
   const yr = c.year;
   const stateTxt = yr.status === 'Closed' ? 'Closed year · read-only history' : yr.status === 'Active' ? 'Current academic year' : 'Upcoming academic year';
   return pageHead('Academic Terms', 'The active term drives assessments, attendance and reports. Only one term per academic year can be active.',
-    `${c.year.status !== 'Closed' ? '<button type="button" class="btn" data-action="term-new">Add term</button>' : ''}<button type="button" class="btn primary" data-action="open-switch-term">Switch current term</button>`) + `
+    `${c.year.status !== 'Closed' ? '<button type="button" class="btn" data-action="term-new">Add term</button>' : ''}${isSuper() ? '<button type="button" class="btn primary" data-action="open-switch-term">Switch current term</button>' : ''}`) + `
   <div class="card mb"><div class="toolbar"><div class="field"><span class="lbl">Academic year</span><select class="input" data-change="view-year" aria-label="Academic year">${yearOpts}</select></div><div class="grow"></div><div class="muted small">${stateTxt}</div></div></div>
   <div class="grid g3">${c.terms.map(t => termCardHtml(t, yr)).join('') || emptyState('No terms', 'This year has no terms.')}</div>`;
 };
@@ -2285,7 +2302,7 @@ FORMS.results = (fd, arg) => {
   requireWritable();
   const asm = byId('assessments', arg);
   if (!asm) throw new AppError('Assessment not found.');
-  requireOpen(byId('terms', asm.termId), byId('academicYears', asm.yearId));
+  requireCorrectable(byId('terms', asm.termId), byId('academicYears', asm.yearId));
   const area = byId('learningAreas', asm.areaId);
   let saved = 0;
   studentsIn(asm.classId).forEach(st => {
@@ -2348,8 +2365,8 @@ function resultsPanelHtml(asm, readOnly) {
     ? `${entered.length}/${students.length} entered · average ${fmtPct(avg(pcts))} · highest ${fmtPct(pcts.length ? Math.max(...pcts) : null)} · lowest ${fmtPct(pcts.length ? Math.min(...pcts) : null)}`
     : `${entered.length}/${students.length} rated · ${LEVELS.map(l => `${entered.filter(r => RATING_PCT[r.rating] === l.pct).length} ${l.label}`).join(' · ')}`;
   return `<div class="card mt" id="resultsPanel">
-    <div class="card-h"><div><h3>${esc(asm.name)} · ${esc(area ? area.name : '')}</h3><p>${fmtDate(asm.date)} · ${esc(classNameOf(asm.classId))} · ${asm.kind === 'numerical' ? `Out of ${asm.maxMarks} marks` : 'Colour levels: 1 Birahebuje · 2 Nibyiza cyane · 3 Nibyiza · 4 Aragerageza'}</p></div>
-      <div class="row"><button type="button" class="btn sm" data-action="assess-edit" data-id="${asm.id}">Edit assessment</button><button type="button" class="btn sm ghost" data-action="assess-close">Close</button></div></div>
+    <div class="card-h"><div><h3>${esc(asm.name)} · ${esc(area ? area.name : '')}</h3><p>${fmtDate(asm.date)} · ${esc(classNameOf(asm.classId))} · ${asm.kind === 'numerical' ? `Out of ${asm.maxMarks} marks` : 'Colour levels: 1 Excellent · 2 Very good · 3 Good · 4 Fair'}</p></div>
+      <div class="row">${(byId('terms', asm.termId) || {}).status === 'Completed' ? '<span class="badge info">Previous term · marks only</span>' : `<button type="button" class="btn sm" data-action="assess-edit" data-id="${asm.id}">Edit assessment</button>`}<button type="button" class="btn sm ghost" data-action="assess-close">Close</button></div></div>
     <form data-form="results" data-arg="${asm.id}">
       <div class="table-wrap mt"><table class="tbl"><thead><tr><th class="c">#</th><th>Learner</th><th class="r">${asm.kind === 'numerical' ? 'Marks' : 'Level (click a colour)'}</th><th class="r">%</th><th>Grade</th><th>Teacher comment</th></tr></thead><tbody>${rows || `<tr><td colspan="6">${emptyState('No active learners in this class', 'Register learners to this class to record results.')}</td></tr>`}</tbody></table></div>
       <div class="card-f"><span class="small muted grow">${stats}</span>${readOnly ? '<span class="badge">Read-only</span>' : '<button type="submit" class="btn primary">Save results</button>'}</div>
@@ -2395,12 +2412,12 @@ VIEWS.assessments = () => {
       <td class="nowrap">${fmtDate(a.date)}</td><td><strong>${esc(a.name)}</strong></td><td>${esc(area ? area.name : '—')}</td>
       <td>${a.kind === 'numerical' ? badge('Marks', 'info') : badge('Colour levels', 'navy')}</td>
       <td class="r num">${a.kind === 'numerical' ? a.maxMarks : '—'}</td><td class="r num">${entered} / ${n}</td><td class="r num">${a.kind === 'numerical' ? fmtPct(avg(pcts)) : '—'}</td>
-      <td class="r nowrap"><button type="button" class="btn xs ${c.readOnly ? '' : 'light'}" data-action="assess-open" data-id="${a.id}">${c.readOnly ? 'View results' : 'Enter results'}</button> ${c.readOnly ? '' : `<button type="button" class="btn xs" data-action="assess-edit" data-id="${a.id}">Edit</button> <button type="button" class="btn xs ghost" data-action="assess-delete" data-id="${a.id}">Delete</button>`}</td></tr>`;
+      <td class="r nowrap"><button type="button" class="btn xs ${c.canCorrect ? 'light' : ''}" data-action="assess-open" data-id="${a.id}">${c.readOnly ? (c.canCorrect ? 'Correct marks' : 'View results') : 'Enter results'}</button> ${c.readOnly ? '' : `<button type="button" class="btn xs" data-action="assess-edit" data-id="${a.id}">Edit</button> <button type="button" class="btn xs ghost" data-action="assess-delete" data-id="${a.id}">Delete</button>`}</td></tr>`;
   }).join('');
   const termOpts = c.terms.map(t => [t.id, `${t.name}${t.status === 'Active' ? ' · active' : ''}${t.status === 'Completed' ? ' · completed' : ''}`]);
   return pageHead('Assessments', 'Assessments follow the selected academic year and term. Previous terms stay accessible as read-only records.',
     c.readOnly ? '' : '<button type="button" class="btn primary" data-action="assess-new">New assessment</button>') + `
-  ${c.readOnly ? '<div class="banner warn mb">This term is completed or its year is closed. Results can be viewed but not changed.</div>' : ''}
+  ${c.readOnly ? (c.canCorrect ? '<div class="banner info mb"><span>This is a previous term. New assessments cannot be added, but you can open an assessment and <strong>correct marks</strong> if there was a marking error.</span></div>' : '<div class="banner warn mb">This year is closed. Results can be viewed but not changed.</div>') : ''}
   <div class="card mb"><div class="toolbar">
     <div class="field"><span class="lbl">Academic year</span><span class="badge navy" style="align-self:flex-start">${esc(c.year.name)}</span></div>
     <div class="field"><span class="lbl">Term</span>${sel('term', termOpts, c.term.id, 'data-change="view-term"')}</div>
@@ -2409,7 +2426,7 @@ VIEWS.assessments = () => {
   </div>
   <div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Assessment</th><th>Learning area</th><th>Type</th><th class="r">Max</th><th class="r">Entered</th><th class="r">Average</th><th class="r">Actions</th></tr></thead>
   <tbody>${rows || `<tr><td colspan="8">${emptyState('No assessments yet', c.readOnly ? 'No assessments were recorded for this term.' : 'Create an assessment for this class and learning area.')}</td></tr>`}</tbody></table></div></div>
-  ${selected ? resultsPanelHtml(selected, c.readOnly) : '<div class="card mt"><div class="card-b muted">Choose “Enter results” on an assessment to record marks or ratings.</div></div>'}
+  ${selected ? resultsPanelHtml(selected, !c.canCorrect) : '<div class="card mt"><div class="card-b muted">Choose “Enter results” on an assessment to record marks or ratings.</div></div>'}
   <div class="card mt"><div class="card-h"><div><h3>Totals and averages · ${esc(classNameOf(clsId))} · ${esc(c.term.name)}</h3><p>Overall score is the average of all learning-area scores for the term (colour levels count as 95, 85, 75 and 65%). Levels follow Settings → Grading rules.</p></div></div>
     <div class="card-b flush">${termTotalsHtml(clsId, c.term)}</div></div>`;
 };
@@ -2731,41 +2748,41 @@ function reportSheetHtml(snap, o = {}) {
   return `<article class="report-sheet rw">
     <header class="rw-head">
       <div class="rw-id">
-        <div class="rw-rep">REPUBULIKA Y’U RWANDA</div>
-        <img class="rw-arms" src="coat-of-arms.png" alt="Ikirango cya Repubulika y’u Rwanda">
-        <p>AKARERE KA ${esc((snap.school.district || '').toUpperCase())}</p>
-        <p>UMURENGE WA ${esc((snap.school.sector || '').toUpperCase())}</p>
-        <p>ISHURI: ${esc((snap.school.name || '').toUpperCase())}</p>
-        <p>UMWAKA W’AMASHURI: ${esc(snap.yearName)}</p>
-        <p>AMAZINA Y’UMWANA: <strong>${esc(st.fullName)}</strong></p>
-        <p>UMWAKA YIGAMO: <strong>${esc(snap.className)}</strong> · ${esc(snap.termName)}</p>
+        <div class="rw-rep">REPUBLIC OF RWANDA</div>
+        <img class="rw-arms" src="coat-of-arms.png" alt="Coat of arms of the Republic of Rwanda">
+        <p>DISTRICT: ${esc((snap.school.district || '').toUpperCase())}</p>
+        <p>SECTOR: ${esc((snap.school.sector || '').toUpperCase())}</p>
+        <p>SCHOOL: ${esc((snap.school.name || '').toUpperCase())}</p>
+        <p>ACADEMIC YEAR: ${esc(snap.yearName)}</p>
+        <p>LEARNER’S NAME: <strong>${esc(st.fullName)}</strong></p>
+        <p>CLASS: <strong>${esc(snap.className)}</strong> · ${esc(snap.termName)}</p>
       </div>
       <div class="rw-side">${schoolLogo}<div class="rw-legend">${legendTop}</div></div>
     </header>
     <table class="rw-tbl">
       <colgroup><col class="rw-col1">${'<col>'.repeat(12)}</colgroup>
       <thead>
-        <tr><th></th><th colspan="12" class="rw-title">INDANGAMANOTA</th></tr>
-        <tr><th class="rw-subj">IBYIGWA N’IMYITWARIRE</th>${[1, 2, 3].map(n => `<th colspan="4">ITERAMBERE AGEZEHO<br>IGIHEMBWE CYA ${n}</th>`).join('')}</tr>
+        <tr><th></th><th colspan="12" class="rw-title">REPORT CARD</th></tr>
+        <tr><th class="rw-subj">SUBJECTS AND BEHAVIOUR</th>${[1, 2, 3].map(n => `<th colspan="4">PROGRESS ACHIEVED<br>TERM ${n}</th>`).join('')}</tr>
       </thead>
-      <tbody>${body || '<tr><td colspan="13">Nta masomo yashyizweho kuri iri shuri.</td></tr>'}</tbody>
+      <tbody>${body || '<tr><td colspan="13">No subjects are registered for this class yet.</td></tr>'}</tbody>
       <tfoot>
-        <tr><td class="rw-area">Ijanisha (%)</td>${perTerm(t => (t.percent === null ? '—' : fmtPct(t.percent)))}</tr>
-        <tr><td class="rw-area">Umwanya umwana yabaye</td>${perTerm(t => (t.position ? `${t.position} / ${t.classSize}` : '—'))}</tr>
-        <tr><td class="rw-area">Umukono w’umwarimu</td>${perTerm(() => '')}</tr>
+        <tr><td class="rw-area">Percentage (%)</td>${perTerm(t => (t.percent === null ? '—' : fmtPct(t.percent)))}</tr>
+        <tr><td class="rw-area">Position in class</td>${perTerm(t => (t.position ? `${t.position} / ${t.classSize}` : '—'))}</tr>
+        <tr><td class="rw-area">Class teacher’s signature</td>${perTerm(() => '')}</tr>
       </tfoot>
     </table>
     <div class="rw-notes">
-      <div class="rs-box"><h4>Icyo umwarimu avuga</h4>${commentBox('teacherComment', snap.teacherComment, 'Class teacher comment')}</div>
-      <div class="rs-box"><h4>Icyo umuyobozi avuga</h4>${commentBox('headComment', snap.headComment, 'Headteacher comment')}</div>
+      <div class="rs-box"><h4>Class teacher’s comment</h4>${commentBox('teacherComment', snap.teacherComment, 'Class teacher comment')}</div>
+      <div class="rs-box"><h4>Head teacher’s comment</h4>${commentBox('headComment', snap.headComment, 'Headteacher comment')}</div>
     </div>
-    <p class="rw-att">Iminsi yaje ku ishuri: <strong>${at.attended}</strong> kuri ${at.totalDays} · Ijanisha ry’ukwitabira: <strong>${fmtPct(at.rate)}</strong> · Umwarimu: ${esc(snap.teacherName)}</p>
+    <p class="rw-att">Days attended: <strong>${at.attended}</strong> of ${at.totalDays} · Attendance rate: <strong>${fmtPct(at.rate)}</strong> · Class teacher: ${esc(snap.teacherName)}</p>
     <div class="rw-foot">
-      <div><h4>UBUSOBANURO BW’AMABARA YAKORESHEJWE</h4><div class="rw-legend2">${legendBottom}</div></div>
-      <div><h4>UMUKONO W’UMUBYEYI</h4><table class="rw-sign"><tr><th>Igihembwe 1</th><th>Igihembwe 2</th><th>Igihembwe 3</th></tr><tr><td></td><td></td><td></td></tr></table></div>
+      <div><h4>KEY TO THE COLOURS USED</h4><div class="rw-legend2">${legendBottom}</div></div>
+      <div><h4>PARENT’S SIGNATURE</h4><table class="rw-sign"><tr><th>Term 1</th><th>Term 2</th><th>Term 3</th></tr><tr><td></td><td></td><td></td></tr></table></div>
     </div>
-    <div class="rw-head-sign"><div><h4>UMUKONO N’AMAZINA BY’UMUYOBOZI</h4><p>${esc(snap.headName)}</p><span></span></div><div class="rs-stamp">Kashe y’ishuri</div></div>
-    <footer class="rs-foot">${esc(rep.footer)} · Byatanzwe ${fmtDate(issued)}</footer>
+    <div class="rw-head-sign"><div><h4>HEAD TEACHER’S NAME AND SIGNATURE</h4><p>${esc(snap.headName)}</p><span></span></div><div class="rs-stamp">School stamp</div></div>
+    <footer class="rs-foot">${esc(rep.footer)} · Issued ${fmtDate(issued)}</footer>
   </article>`;
 }
 function reportListHtml(c) {
@@ -3035,7 +3052,7 @@ function settingsAreasHtml() {
       <div class="grow"></div><button type="button" class="btn primary" data-action="area-new" data-id="${clsId}">Add learning area</button></div>
     <div class="table-wrap"><table class="tbl"><thead><tr><th class="c">#</th><th>Learning area</th><th>Type</th><th class="r">Max marks</th><th class="r">Assessments</th><th class="r">Actions</th></tr></thead>
     <tbody>${rows || `<tr><td colspan="6">${emptyState('No learning areas', 'Add the first learning area for this class.')}</td></tr>`}</tbody></table></div>
-    <div class="card-b small muted">Colour-level areas are rated 1 Birahebuje, 2 Nibyiza cyane, 3 Nibyiza or 4 Aragerageza. Marks areas are scored out of their maximum and converted to a colour level. The section groups areas on the report card. Areas that already have assessments cannot be deleted or changed to another type.</div></div>`;
+    <div class="card-b small muted">Colour-level areas are rated 1 Excellent, 2 Very good, 3 Good or 4 Fair. Marks areas are scored out of their maximum and converted to a colour level. The section groups areas on the report card. Areas that already have assessments cannot be deleted or changed to another type.</div></div>`;
 }
 function openAreaForm(classId, areaId) {
   requireWritable();
@@ -3049,8 +3066,8 @@ function openAreaForm(classId, areaId) {
     form: 'area', arg: a ? a.id : cls.id, submit: a ? 'Save learning area' : 'Add learning area',
     html: `<div class="form-grid">
       ${field('Learning area name *', inp('name', a ? a.name : '', 'required maxlength="60"'), '', 'span2')}
-      ${field('Report section', `<input class="input" name="group" list="areaGroups" maxlength="60" value="${esc(a ? a.group || '' : '')}" placeholder="e.g. UBUGENI N’UMUCO"><datalist id="areaGroups">${Array.from(new Set(RW_AREAS.map(g => g[0]).concat(S('learningAreas').map(x => x.group || '')).filter(Boolean))).map(g => `<option value="${esc(g)}"></option>`).join('')}</datalist>`, 'Leave empty for the first group of subjects', 'span2')}
-      ${field('Assessment type *', sel('kind', [['competency', 'Colour levels (1 Birahebuje · 2 Nibyiza cyane · 3 Nibyiza · 4 Aragerageza)'], ['numerical', 'Marks (converted to a colour level)']], kind, `data-change="area-kind"${used ? ' disabled' : ''}`), used ? 'Locked: assessments already use this area' : 'Most nursery areas use colour levels')}
+      ${field('Report section', `<input class="input" name="group" list="areaGroups" maxlength="60" value="${esc(a ? a.group || '' : '')}" placeholder="e.g. CREATIVE ARTS AND CULTURE"><datalist id="areaGroups">${Array.from(new Set(S('learningAreas').map(x => x.group || '').concat(SECTION_SUGGESTIONS).filter(Boolean))).map(g => `<option value="${esc(g)}"></option>`).join('')}</datalist>`, 'Leave empty for the first group of subjects', 'span2')}
+      ${field('Assessment type *', sel('kind', [['competency', 'Colour levels (1 Excellent · 2 Very good · 3 Good · 4 Fair)'], ['numerical', 'Marks (converted to a colour level)']], kind, `data-change="area-kind"${used ? ' disabled' : ''}`), used ? 'Locked: assessments already use this area' : 'Most nursery areas use colour levels')}
       ${field('Maximum marks', inp('maxMarks', a && a.maxMarks ? a.maxMarks : 100, `type="number" min="1" max="1000" id="areaMax"${kind === 'numerical' ? '' : ' disabled'}`), 'Applies to assessments created from now on')}
     </div>`,
   });
@@ -3144,7 +3161,7 @@ FORMS.grading = fd => {
   if (new Set(mins).size !== mins.length) throw new AppError('Each band needs a different minimum.');
   if (new Set(bands.map(b => b.code)).size !== bands.length) throw new AppError('Band codes must be different.');
   set.gradingBands = bands.sort((a, b) => b.min - a.min);
-  set.gradingVersion = 2;
+  set.gradingVersion = 3;
   commit('Grading rules updated', `${set.gradingBands.length} bands`);
   return true;
 };
