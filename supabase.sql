@@ -97,3 +97,6 @@ create policy kn_workspace_read on public.kn_workspace for select to authenticat
 
 grant select, update, delete on public.kn_members to authenticated;
 grant select on public.kn_workspace to authenticated;
+
+-- Make the API see the new functions immediately
+notify pgrst, 'reload schema';
