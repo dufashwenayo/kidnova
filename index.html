@@ -673,6 +673,31 @@ tr.is-suspended td:last-child{opacity:1}
 .rw-head-sign span{display:block;width:70mm;border-bottom:1px solid #333;height:6mm}
 .report-sheet.rw .rs-stamp{width:34mm;height:15mm}
 .report-sheet.rw .rs-foot{margin-top:6px}
+.report-sheet.rw.dense{font-size:9.5px}
+.rw.dense .rw-area{height:3.75mm;font-size:8.7px;padding:0 4px!important;line-height:1.15}
+.rw.dense .rw-grp td{font-size:8.8px;padding:1px 4px}
+.rw.dense .rw-c{font-size:9px}
+.rw.dense .rw-arms{width:15mm;margin:1px 0 2px 6mm}
+.rw.dense .rw-id{font-size:9.6px}
+.rw.dense .rw-id p{margin:0}
+.rw.dense .rw-logo{width:15mm;height:15mm}
+.rw.dense .rw-legend div{font-size:9px}
+.rw.dense .rw-tbl thead th{font-size:8.6px;padding:2px}
+.rw.dense .rw-tbl tfoot td{height:4.4mm;font-size:9px}
+.rw.dense .rw-notes{margin-top:4px;gap:6px}
+.rw.dense .rw-notes .rs-box{padding:3px 6px}
+.rw.dense .rw-notes .rs-comment{min-height:12px;font-size:9px}
+.rw.dense .rw-att{font-size:9px;margin-top:2px}
+.rw.dense .rw-foot{margin-top:3px;gap:10px}
+.rw.dense .rw-legend2{gap:2px}
+.rw.dense .rw-legend2 i{height:3.2mm}
+.rw.dense .rw-legend2 div{font-size:8.8px}
+.rw.dense .rw-sign td{height:6.5mm}
+.rw.dense .rw-head-sign{margin-top:3px}
+.rw.dense .rw-head-sign span{height:4mm}
+.rw.dense .rs-stamp{height:11mm!important}
+.rw.dense .rs-foot{margin-top:3px;font-size:9px}
+.rw.xdense .rw-area{height:3.2mm;font-size:8px}
 
 /* ---------- Print ---------- */
 @media print{
@@ -3220,7 +3245,10 @@ function reportSheetHtml(snap, o = {}) {
   const legendTop = bands.map((b, i) => `<div><i style="background:${esc(b.color)}">${esc(b.code)}</i><span>${esc(b.label.toUpperCase())} ${ranges[i]}</span></div>`).join('');
   const legendBottom = bands.map(b => `<div><span>${esc(b.label.toUpperCase())}</span><i style="background:${esc(b.color)}"></i></div>`).join('');
   const schoolLogo = sc && sc.logo ? `<img class="rw-logo" src="${sc.logo}" alt="">` : '';
-  return `<article class="report-sheet rw">
+  /* Many subjects: switch to a compact layout so the card stays on one A4 page. */
+  const rowCount = snap.areas.length + new Set(snap.areas.map(r => r.group || '')).size;
+  const density = rowCount > 40 ? ' xdense' : rowCount > 27 ? ' dense' : '';
+  return `<article class="report-sheet rw${density}">
     <header class="rw-head">
       <div class="rw-id">
         <div class="rw-rep">REPUBLIC OF RWANDA</div>
