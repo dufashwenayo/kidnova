@@ -639,6 +639,10 @@ tr.is-suspended td{opacity:.6}
 .del-grid span{font-size:11.5px;color:var(--muted)}
 .del-list{margin:0;padding-left:18px;font-size:13px;max-height:160px;overflow-y:auto}
 @media (max-width:640px){.del-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gen-card{border-color:var(--blue-line);background:linear-gradient(135deg,#f3f9ff,#fff)}
+.gen-btn{padding:12px 20px;font-size:14.5px}
+.gen-stamp{margin:0 0 14px}
+.banner.ok{background:#e4f4eb;color:#145c3a;border:1px solid #9fd3b6}
 .rev-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-bottom:12px}
 .rev-f span{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
 .rev-f .input.edited{background:#fff8e1;border-color:#f3a712}
@@ -3433,35 +3437,98 @@ function reportListHtml(c) {
   const clsId = cls.some(x => x.id === ui.reportClassId) ? ui.reportClassId : (cls[0] ? cls[0].id : null);
   ui.reportClassId = clsId;
   const tab = ui.reportTab === 'issued' ? 'issued' : 'generate';
-  const head = pageHead('Report Generation', 'A4 report cards for each learner or a whole class. Issued cards keep the results, attendance and comments as they stood on the day of issue.');
+  const head = pageHead('Report Generation', 'Generate up-to-date A4 report cards for a whole class or one learner, then print or issue them. Issued cards keep the data as it stood on the day of issue.');
   const tabs = `<div class="tabs no-print">${[['generate', 'Generate report cards'], ['issued', 'Issued report cards']].map(([k, l]) => `<button type="button" class="tab ${tab === k ? 'on' : ''}" data-action="report-tab" data-tab="${k}">${l}</button>`).join('')}</div>`;
   if (tab === 'issued') return head + tabs + issuedCardsHtml();
   if (!clsId) return head + tabs + emptyState('No classes', 'Add classes before generating report cards.');
   const term = c.term, year = c.year;
   const learners = studentsIn(clsId);
   const issuedCount = learners.filter(st => db.reportCards.some(x => x.studentId === st.id && x.termId === term.id)).length;
+  const pick = ui.reportStudentId && ui.reportStudentId !== 'all' && learners.some(st => st.id === ui.reportStudentId) ? ui.reportStudentId : 'all';
+  ui.reportStudentId = pick;
   const rows = learners.map(st => {
-    const areaRows = reportAreaRows(st.id, clsId, term.id);
-    const ov = overallOf(areaRows);
-    const entered = areaRows.filter(r => r.count > 0).length;
-    const att = attendanceSummary(st.id, term.id);
     const card = db.reportCards.find(x => x.studentId === st.id && x.termId === term.id);
-    return `<tr><td>${who(st, esc(st.regNumber))}</td><td class="r num">${entered} / ${areaRows.length}</td><td class="r num">${fmtPct(ov.percent)}</td><td>${ov.percent === null ? '<span class="muted">—</span>' : `<span class="badge">${esc(ov.grade)}</span>`}</td><td class="r rate-cell">${fmtPct(att.rate)}</td><td>${card ? `${badge('Issued', 'ok')}<span class="sub">${fmtDate(card.issuedAt.slice(0, 10))}</span>` : badge('Not issued')}</td><td class="r nowrap"><button type="button" class="btn xs light" data-action="report-preview" data-id="${st.id}">${myRole === 'teacher' ? 'View' : card ? 'Re-issue' : 'Preview &amp; issue'}</button>${card ? ` <button type="button" class="btn xs" data-action="open-saved-report" data-id="${card.id}">View</button>` : ''}</td></tr>`;
+    return `<tr><td>${who(st, esc(st.regNumber))}</td><td>${card ? `${badge('Issued', 'ok')}<span class="sub">${fmtStamp(card.issuedAt)}</span>` : badge('Not issued')}</td>
+      <td class="r nowrap"><button type="button" class="btn xs primary" data-action="report-generate" data-student="${esc(st.id)}">Generate</button>${card ? ` <button type="button" class="btn xs" data-action="open-saved-report" data-id="${card.id}">View issued</button>` : ''}</td></tr>`;
   }).join('');
   const closed = year.status === 'Closed';
   return head + tabs + `
-  <div class="card mb"><div class="toolbar">
-    <div class="field"><span class="lbl">Academic year</span><span class="badge navy" style="align-self:flex-start">${esc(year.name)}</span></div>
-    <div class="field"><span class="lbl">Term</span>${sel('term', c.terms.map(t => [t.id, `${t.name}${t.status === 'Active' ? ' · current' : ''}`]), term.id, 'data-change="view-term"')}</div>
-    <div class="field"><span class="lbl">Class</span>${sel('class', cls.map(x => [x.id, x.name]), clsId, 'data-change="report-class"')}</div>
-    <div class="grow"></div>
-    <a class="btn light" href="#reports/batch/${esc(clsId)}">Print class cards</a>
-    ${myRole === 'teacher' ? '' : `<button type="button" class="btn primary" data-action="report-issue-class" data-id="${esc(clsId)}" ${closed || !learners.length ? 'disabled' : ''}>Issue all for class</button>`}
-  </div>
-  <div class="card-b small muted" style="padding-top:12px">${closed ? `${esc(year.name)} is closed. Report cards can be viewed and printed but not reissued.` : `${issuedCount} of ${learners.length} report cards issued for ${esc(classNameOf(clsId))} · ${esc(term.name)}.`}</div>
-  <div class="table-wrap"><table class="tbl"><thead><tr><th>Learner</th><th class="r">Areas with results</th><th class="r">Overall</th><th>Grade</th><th class="r">Attendance</th><th>Report card</th><th class="r">Actions</th></tr></thead>
-  <tbody>${rows || `<tr><td colspan="7">${emptyState('No active learners in this class', 'Register learners to this class to generate report cards.')}</td></tr>`}</tbody></table></div></div>`;
+  <div class="card mb gen-card"><div class="card-h"><div><h3>Generate report cards</h3><p>Choose the term, class and learner, then press <strong>Generate</strong>. KIDNOVA first fetches the latest saved results, attendance and discipline records, so the report is accurate at that moment.</p></div></div>
+    <div class="toolbar">
+      <div class="field"><span class="lbl">Academic year</span><span class="badge navy" style="align-self:flex-start">${esc(year.name)}</span></div>
+      <div class="field"><span class="lbl">Term</span>${sel('term', c.terms.map(t => [t.id, `${t.name}${t.status === 'Active' ? ' · current' : ''}`]), term.id, 'data-change="view-term"')}</div>
+      <div class="field"><span class="lbl">Class</span>${sel('class', cls.map(x => [x.id, x.name]), clsId, 'data-change="report-class"')}</div>
+      <div class="field"><span class="lbl">Learner</span><select class="input" data-change="report-student" aria-label="Learner"><option value="all">Whole class · ${learners.length} learners</option>${learners.map(st => `<option value="${esc(st.id)}" ${st.id === pick ? 'selected' : ''}>${esc(st.fullName)}</option>`).join('')}</select></div>
+      <div class="grow"></div>
+      <button type="button" class="btn primary gen-btn" data-action="report-generate" ${learners.length ? '' : 'disabled'}>${pick === 'all' ? '⚙ Generate class report' : '⚙ Generate student report'}</button>
+    </div></div>
+  <div class="card"><div class="card-h"><div><h3>${esc(classNameOf(clsId))} · ${esc(term.name)}</h3><p>${closed ? `${esc(year.name)} is closed. Report cards can be generated and printed but not reissued.` : `${issuedCount} of ${learners.length} report cards issued. Generate a single learner from the list, or the whole class above.`}</p></div>
+    <a class="btn sm" href="#reports/batch/${esc(clsId)}">Print issued cards</a></div>
+  <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Learner</th><th>Report card</th><th class="r">Actions</th></tr></thead>
+  <tbody>${rows || `<tr><td colspan="3">${emptyState('No active learners in this class', 'Register learners to this class to generate report cards.')}</td></tr>`}</tbody></table></div></div>`;
 }
+/* Generate: refresh from the server, then build fresh report snapshots for the class or one learner. */
+ACTIONS['report-generate'] = async el => {
+  requireFeature('reports');
+  const studentPick = el && el.dataset && el.dataset.student ? el.dataset.student : (ui.reportStudentId || 'all');
+  const btn = el && el.tagName === 'BUTTON' ? el : null;
+  if (btn) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = 'Fetching latest records…'; }
+  try {
+    if (save.state !== 'saved') await confirmSaved('Your changes');
+    let refreshed = false;
+    if (ws.schoolId) {
+      const row = await fetchWorkspace(ws.schoolId);
+      if (row && Number(row.rev) !== ws.rev) { await reloadLatest(); refreshed = true; }
+    }
+    const c = ctx();
+    if (!c.year || !c.term) throw new AppError('Select an academic year and term first.');
+    const clsId = ui.reportClassId;
+    const learners = studentPick === 'all' ? studentsIn(clsId) : [byId('students', studentPick)].filter(Boolean);
+    if (!learners.length) throw new AppError('There are no learners to generate.');
+    const items = learners.map(st => ({ studentId: st.id, snap: buildSnapshot(st.id, c.year.id, c.term.id) }));
+    ui.genReport = { classId: clsId, yearId: c.year.id, termId: c.term.id, scope: studentPick, at: nowISO(), rev: ws.rev, refreshed, items };
+    ui.reportStudentId = studentPick;
+    go('reports/generated');
+    window.scrollTo(0, 0);
+  } finally {
+    if (btn && btn.isConnected) { btn.disabled = false; btn.textContent = btn.dataset.label; }
+  }
+};
+ACTIONS['report-generate-again'] = () => ACTIONS['report-generate']({ dataset: { student: (ui.genReport || {}).scope || 'all' } });
+CHANGES['report-student'] = el => { ui.reportStudentId = el.value; render(); };
+function reportGeneratedHtml() {
+  const g = ui.genReport;
+  const back = '<a class="btn" href="#reports">Back</a>';
+  if (!g || !g.items.length) return `<div class="page-head no-print"><div><h2>Generated report</h2><p>Nothing generated yet.</p></div><div class="actions">${back}</div></div>` + emptyState('Press Generate on Report Generation', 'Choose a class or learner, then press Generate.');
+  const term = byId('terms', g.termId), year = byId('academicYears', g.yearId);
+  const one = g.items.length === 1;
+  const at = new Date(g.at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const canIssue = myRole !== 'teacher' && year && year.status !== 'Closed' && curSchool() && curSchool().status === 'Active';
+  const summary = one ? '' : `<div class="card mb no-print"><div class="card-h"><div><h3>Class summary</h3><p>From the records fetched at ${esc(at)}</p></div></div><div class="table-wrap mt"><table class="tbl"><thead><tr><th>Learner</th><th>Subjects rated</th><th>Overall</th><th>Attendance</th><th>Conduct</th></tr></thead><tbody>
+    ${g.items.map(({ snap }) => { const rated = snap.areas.filter(r => r.percent !== null).length; return `<tr><td><strong>${esc(snap.student.fullName)}</strong><span class="sub">${esc(snap.student.regNumber)}</span></td><td>${rated} / ${snap.areas.length}</td><td>${bandBadge(snap.overall.percent)} <span class="small muted">${fmtPct(snap.overall.percent)}</span></td><td>${fmtPct(snap.attendance.rate)}</td><td>${snap.discipline ? levelChip({ label: snap.discipline.label, color: snap.discipline.color }) : '—'}</td></tr>`; }).join('')}
+    </tbody></table></div></div>`;
+  return `<div class="page-head no-print"><div><h2>${one ? `Student report · ${esc(g.items[0].snap.student.fullName)}` : `Class report · ${esc(classNameOf(g.classId))}`}</h2>
+      <p>${esc(term ? term.name : '')} · ${esc(year ? year.name : '')} · ${g.items.length} report card${one ? '' : 's'}</p></div>
+    <div class="actions">${back}<button type="button" class="btn" data-action="report-generate-again">↻ Generate again</button>${one && canIssue ? `<a class="btn" href="#reports/preview/${esc(g.items[0].studentId)}">Edit comments</a>` : ''}<button type="button" class="btn" data-action="print-page">Print</button>${canIssue ? `<button type="button" class="btn primary" data-action="report-issue-generated">Issue ${one ? 'report card' : `${g.items.length} report cards`}</button>` : ''}</div></div>
+    <div class="banner ok no-print gen-stamp"><span>✓ <strong>Generated at ${esc(at)}</strong> from the latest saved records${g.refreshed ? ' (new changes were fetched from the server first)' : ''}. Press “Generate again” after new marks are recorded.</span></div>
+    ${summary}
+    <div class="print-root">${g.items.map(({ studentId, snap }) => reportSheetHtml(snap, { editable: false, school: curSchool(), issuedAt: todayISO(), photo: photoOf(studentId) })).join('')}</div>`;
+}
+ACTIONS['report-issue-generated'] = async () => {
+  requireWritable();
+  requireFeature('reports');
+  if (myRole === 'teacher') throw new AppError('Teachers can view and print report cards. The school issues them.');
+  const g = ui.genReport; if (!g) return;
+  const replacing = g.items.filter(it => db.reportCards.some(x => x.studentId === it.studentId && x.termId === g.termId)).length;
+  const ok = await confirmDialog(`Issue ${g.items.length} report card${g.items.length === 1 ? '' : 's'} exactly as generated?${replacing ? ` ${replacing} existing card(s) will be replaced.` : ''}`, { title: 'Issue report cards', ok: 'Issue' });
+  if (!ok) return;
+  g.items.forEach(({ studentId, snap }) => {
+    db.reportCards = db.reportCards.filter(x => !(x.studentId === studentId && x.termId === g.termId));
+    db.reportCards.push({ id: uid('rc'), schoolId: sid(), studentId, yearId: g.yearId, termId: g.termId, classId: snap.classId, issuedAt: nowISO(), snapshot: snap });
+  });
+  commit('Report cards issued', `${classNameOf(g.classId)} · ${g.items.length} learner(s)`);
+  await confirmSaved(`${g.items.length} report card${g.items.length === 1 ? '' : 's'} issued`);
+};
 function issuedCardsHtml() {
   const cards = db.reportCards.filter(x => x.schoolId === sid()).sort((a, b) => (a.issuedAt < b.issuedAt ? 1 : -1));
   const rows = cards.map(card => {
@@ -3520,6 +3587,7 @@ VIEWS.reports = () => {
   const c = ctx();
   if (!c.year || !c.term) return pageHead('Report Generation', '', '') + emptyState('No academic term is available', 'Create an academic year and its terms first.', '<a class="btn primary" href="#terms">Go to Academic Terms</a>');
   if (mode === 'preview') return reportPreviewHtml(ui.reportRef, c);
+  if (mode === 'generated') return reportGeneratedHtml();
   return reportListHtml(c);
 };
 FORMS['report-issue'] = (fd, arg) => {
