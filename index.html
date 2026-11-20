@@ -708,6 +708,18 @@ tr.is-suspended td{opacity:.6}
 .th-app.upd .th-app-a .btn{background:#fff;color:#0f5a39;font-weight:700}
 .th-app-steps{margin:12px 0 0;padding:12px 12px 12px 30px;border-radius:12px;background:rgba(255,255,255,.12);font-size:13px;line-height:1.5;position:relative;z-index:1}
 .th-app-steps li+li{margin-top:6px}
+.th-rem .th-card-h{align-items:center}
+.th-rem-p{margin:4px 0 10px;font-size:13px;color:var(--muted)}
+.th-rem-warn{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:12.5px}
+.th-rem-t{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.th-rem-t label{font-size:12px;color:var(--muted);display:grid;gap:4px}
+.th-rem-t input{font:inherit;font-size:15px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+.th-switch{position:relative;width:46px;height:26px;flex:none}
+.th-switch input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer;z-index:1}
+.th-switch i{position:absolute;inset:0;border-radius:999px;background:#c9d3df;transition:.2s}
+.th-switch i::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
+.th-switch input:checked+i{background:#21a04a}
+.th-switch input:checked+i::after{left:23px}
 .th-app-link{text-align:center;margin:14px 0 4px;font-size:13px}
 .th-app-link a{color:#0b6cb5;font-weight:600;text-decoration:none}
 .app-share{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;background:linear-gradient(135deg,#eaf3fc,#fff);border-color:var(--blue-line)}
@@ -1341,7 +1353,7 @@ const PROFILE_NAME = { super_admin: 'Global Super Admin', director: 'School Dire
 /* Quick support line shown on every dashboard, the login page and the homepage. */
 const SUPPORT = { tel: '+250783568044', show: '+250 783 568 044', wa: 'https://wa.me/250783568044' };
 /* KIDNOVA Android app (android/ folder, served as /kidnova.apk) */
-const APP = { version: '1.0', url: 'https://kidnova.site/kidnova.apk', path: '/kidnova.apk', size: '92 KB' };
+const APP = { version: '1.1', url: 'https://kidnova.site/kidnova.apk', path: '/kidnova.apk', size: '96 KB' };
 const IN_APP = /KidnovaApp\//.test(navigator.userAgent) || !!window.KidnovaApp;
 const IS_ANDROID = /Android/i.test(navigator.userAgent);
 const IS_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -1373,6 +1385,52 @@ function appShareCard() {
   return `<div class="card app-share mt"><div class="app-share-in"><span class="app-share-ic">📱</span><div><h3>KIDNOVA app for teachers</h3><p>Ask every teacher to install the Android app. They log in with the same email and password. <span class="faint">Version ${esc(APP.version)} · ${APP.size}</span></p><code>${esc(APP.url)}</code></div></div>
     <div class="row"><a class="btn sm primary" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">Share on WhatsApp</a><button type="button" class="btn sm" data-action="app-copy">Copy link</button>${IN_APP ? '' : `<a class="btn sm" href="${APP.path}" download="kidnova.apk">⬇ Download</a>`}</div></div>`;
 }
+/* ---------- Attendance reminders in the Android app ----------
+   The page tells the app which registers are still missing today; the phone then
+   reminds the teacher at the chosen times, even when the app is closed. */
+const appCanRemind = () => !!(window.KidnovaApp && window.KidnovaApp.setAttendance && window.KidnovaApp.getReminders);
+let appLastState = '';
+function appSync() {
+  if (!appCanRemind()) return;
+  let st = { teacher: false };
+  try {
+    if (myRole === 'teacher' && db && curSchool() && can('attendance')) {
+      const cls = visibleClasses().filter(cl => studentsIn(cl.id).length);
+      const tm = activeTerm();
+      const today = todayISO();
+      st = {
+        teacher: true, attendance: true, school: curSchool().name, date: today,
+        termOpen: tm ? tm.openDate : '', termClose: tm ? tm.closeDate : '',
+        classes: cls.map(cl => cl.name),
+        missing: cls.filter(cl => !db.attendance.some(a => a.classId === cl.id && a.date === today)).map(cl => cl.name),
+      };
+    }
+  } catch (e) { return; }
+  const j = JSON.stringify(st);
+  if (j === appLastState) return;
+  appLastState = j;
+  try { window.KidnovaApp.setAttendance(j); } catch (e) { /* older app */ }
+}
+function appReminders() { try { return JSON.parse(window.KidnovaApp.getReminders()); } catch (e) { return null; } }
+window.onKidnovaReminders = () => { if (ui.page === 'thome' && $('#view')) render(); };
+function appReminderCard() {
+  if (!IN_APP || !can('attendance')) return '';
+  if (!appCanRemind()) return '';
+  const r = appReminders(); if (!r) return '';
+  return `<section class="th-card th-rem"><div class="th-card-h"><h3>🔔 Attendance reminders</h3><label class="th-switch"><input type="checkbox" data-change="rem-on" ${r.on ? 'checked' : ''}><i></i></label></div>
+    ${r.on ? `<p class="th-rem-p">Your phone reminds you only when a register is <b>not saved yet</b> on a school day.</p>
+    ${r.allowed ? '' : `<div class="th-rem-warn">Notifications are turned off for KIDNOVA. Open phone <b>Settings › Apps › KIDNOVA › Notifications</b> and allow them.</div>`}
+    <div class="th-rem-t"><label>First reminder<input type="time" value="${esc(r.morning || '08:30')}" data-change="rem-time" data-k="morning"></label><label>Second reminder<input type="time" value="${esc(r.followup || '')}" data-change="rem-time" data-k="followup"></label></div>
+    <button type="button" class="btn sm" data-action="rem-test">Send a test reminder</button>` : '<p class="th-rem-p">Reminders are off. Turn them on to be reminded when a register is not saved yet.</p>'}</section>`;
+}
+function appSaveReminders(patch) {
+  const r = Object.assign(appReminders() || {}, patch);
+  window.KidnovaApp.setReminders(!!r.on, r.morning || '08:30', r.followup || '');
+}
+CHANGES['rem-on'] = el => { appSaveReminders({ on: el.checked }); toast(el.checked ? 'Attendance reminders are on.' : 'Attendance reminders are off.', 'ok'); setTimeout(render, 150); };
+CHANGES['rem-time'] = el => { appSaveReminders({ [el.dataset.k]: el.value }); toast(el.value ? `Reminder set for ${el.value} on school days.` : 'Second reminder removed.', 'ok'); };
+ACTIONS['rem-test'] = () => { window.KidnovaApp.testReminder(); toast('Test reminder sent. Check your notifications.', 'ok'); };
+
 ACTIONS['app-later'] = () => { try { localStorage.setItem('knAppLater', String(Date.now() + 7 * 864e5)); } catch (e) { /* private mode */ } ui.appSteps = false; render(); };
 ACTIONS['app-steps'] = () => { ui.appSteps = !ui.appSteps; render(); };
 ACTIONS['app-dl'] = () => { const a = document.createElement('a'); a.href = APP.path; a.download = 'kidnova.apk'; document.body.appendChild(a); a.click(); a.remove(); ui.appSteps = true; setTimeout(render, 400); toast('Downloading kidnova.apk… then open it to install.', 'info', 6000); };
@@ -1825,6 +1883,7 @@ function render() {
   }
   $('#view').innerHTML = html;
   document.title = `${PAGE_META[page] || 'Dashboard'} · ${curSchool() ? curSchool().name + ' · KIDNOVA' : 'KIDNOVA'}`;
+  if (IN_APP) appSync();
 }
 const ui = {
   page: 'dashboard', studentId: null, sidebarOpen: false, viewYearId: null, viewTermId: null,
@@ -4060,6 +4119,7 @@ VIEWS.thome = () => {
   return hero + appInstallCard() + todayCard
     + (qa ? `<div class="th-qas">${qa}</div>` : '')
     + `<div class="th-sec"><h3>My classes</h3><span>${cls.length}</span></div><div class="th-classes">${classCards}</div>`
+    + appReminderCard()
     + (recent ? `<section class="th-card"><div class="th-card-h"><h3>My recent work</h3></div><ul class="th-recent">${recent}</ul></section>` : '')
     + `<div class="th-help"><div><strong>Need help?</strong><span>Quick support ${SUPPORT.show}</span></div><div class="row">${supportLinks('btn sm')}</div></div>`
     + (IN_APP || IS_IOS ? '' : `<p class="th-app-link"><a href="${APP.path}" download="kidnova.apk">📱 Download the KIDNOVA Android app</a></p>`);
@@ -5248,6 +5308,7 @@ VIEWS.settings = () => {
 /* ---------- 24. Authentication & startup ---------- */
 ACTIONS['sign-out'] = async () => {
   if (save.state !== 'saved') await flushSave();
+  try { if (appCanRemind()) window.KidnovaApp.setAttendance('{"teacher":false}'); } catch (e) { /* ignore */ }
   await sb.auth.signOut();
   location.replace(location.pathname + '#login');
   location.reload();

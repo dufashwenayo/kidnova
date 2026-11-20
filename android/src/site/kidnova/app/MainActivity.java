@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
     private static final String HOST = "kidnova.site";
     private static final int REQ_FILE = 41;
     private static final int REQ_STORAGE = 42;
+    private static final int REQ_NOTIFY = 43;
 
     private WebView web;
     private ProgressBar bar;
@@ -80,6 +81,8 @@ public class MainActivity extends Activity {
 
         setContentView(root);
         setupWebView();
+        Reminders.ensureChannel(this);
+        Reminders.schedule(this);
 
         if (state != null && web.restoreState(state) != null) return;
         Uri data = getIntent() != null ? getIntent().getData() : null;
@@ -288,6 +291,78 @@ public class MainActivity extends Activity {
         public String version() {
             return BuildInfo.VERSION;
         }
+
+        /** The page reports today's attendance state for this teacher (JSON). */
+        @JavascriptInterface
+        public void setAttendance(String json) {
+            new Handler(Looper.getMainLooper()).post(() -> act.onAttendanceState(json));
+        }
+
+        @JavascriptInterface
+        public String getReminders() {
+            try {
+                org.json.JSONObject o = new org.json.JSONObject();
+                o.put("on", Reminders.enabled(act));
+                o.put("morning", Reminders.morning(act));
+                o.put("followup", Reminders.followUp(act));
+                o.put("allowed", act.notificationsAllowed());
+                return o.toString();
+            } catch (Exception e) { return "{}"; }
+        }
+
+        @JavascriptInterface
+        public void setReminders(boolean on, String morning, String followUp) {
+            new Handler(Looper.getMainLooper()).post(() -> act.onReminderSettings(on, morning, followUp));
+        }
+
+        @JavascriptInterface
+        public void testReminder() {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                act.askNotificationPermission();
+                Reminders.notify(act, "KIDNOVA reminders are on", "You will be reminded at " + Reminders.morning(act) + " when a register is not saved yet.");
+            });
+        }
+    }
+
+    void onAttendanceState(String json) {
+        try {
+            org.json.JSONObject o = new org.json.JSONObject(json);
+            boolean teacher = o.optBoolean("teacher", false);
+            android.content.SharedPreferences.Editor e = Reminders.prefs(this).edit().putBoolean("teacher", teacher);
+            if (teacher) e.putString("state", json); else e.remove("state");
+            e.apply();
+            if (teacher) {
+                org.json.JSONArray m = o.optJSONArray("missing");
+                if (Reminders.today().equals(o.optString("date")) && (m == null || m.length() == 0)) Reminders.clear(this);
+                if (Reminders.enabled(this) && !Reminders.prefs(this).getBoolean("asked", false)) {
+                    Reminders.prefs(this).edit().putBoolean("asked", true).apply();
+                    askNotificationPermission();
+                }
+            } else {
+                Reminders.clear(this);
+            }
+            Reminders.schedule(this);
+        } catch (Exception ignored) { }
+    }
+
+    void onReminderSettings(boolean on, String morning, String followUp) {
+        Reminders.prefs(this).edit().putBoolean("on", on)
+                .putString("morning", morning == null || morning.isEmpty() ? "08:30" : morning)
+                .putString("followup", followUp == null ? "" : followUp).apply();
+        if (on) askNotificationPermission(); else Reminders.clear(this);
+        Reminders.schedule(this);
+    }
+
+    boolean notificationsAllowed() {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return false;
+        android.app.NotificationManager nm = (android.app.NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        return nm == null || nm.areNotificationsEnabled();
+    }
+
+    void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIFY);
+        }
     }
 
     private void saveDownload(String base64, String mime, String name) {
@@ -333,6 +408,10 @@ public class MainActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int code, String[] perms, int[] res) {
+        if (code == REQ_NOTIFY) {
+            web.evaluateJavascript("window.onKidnovaReminders&&window.onKidnovaReminders()", null);
+            return;
+        }
         if (code == REQ_STORAGE && pendingB64 != null) {
             String b = pendingB64, m = pendingMime, n = pendingName;
             pendingB64 = null;
@@ -369,6 +448,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         web.onResume();
+        web.evaluateJavascript("window.onKidnovaReminders&&window.onKidnovaReminders()", null);
         if (offline.getVisibility() == View.VISIBLE && isOnline()) { showOffline(false); web.reload(); }
     }
 
