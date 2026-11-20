@@ -546,6 +546,13 @@ textarea.input{min-height:76px;resize:vertical}
 .t-filter{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:8px;margin-bottom:10px}
 .t-filter .input{height:44px}
 .t-asm-main{min-width:0}
+.t-reg-cls{display:flex!important;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0}
+.t-reg-cls small{color:var(--muted);font-size:12px}
+.t-reg-counts{display:flex!important;flex-wrap:wrap;gap:6px}
+.t-reg-counts .t-count{padding:3px 9px;font-size:12px}
+.t-reg-abs{display:block;margin-top:6px;font-size:12.5px!important;color:#9a3412!important;background:#fff4f2;border-radius:8px;padding:5px 8px}
+.t-reg-abs em{font-style:normal;color:var(--ink)}
+.t-filter.one{grid-template-columns:minmax(0,1fr)}
 .t-asm-main strong{font-size:15px}
 .t-asm-date{font-size:12px!important;font-weight:700;color:var(--navy)!important}
 .t-asm-main>span:last-child{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px}
@@ -1463,7 +1470,7 @@ function renderTabbar() {
   if (!tb) return;
   if (myRole !== 'teacher') { tb.innerHTML = ''; return; }
   const tabs = [['thome', 'Home', 'dashboard'], ['tattend', 'Attendance', 'attendance'], ['tmarks', 'Marks', 'assessments']].filter(([k]) => pageAllowed(k));
-  tb.innerHTML = tabs.map(([k, l, i]) => `<a href="#${k}" class="${ui.page === k ? 'on' : ''}">${icon(i)}<span>${l}</span></a>`).join('');
+  tb.innerHTML = tabs.map(([k, l, i]) => `<a href="#${k}" class="${ui.page === k ? 'on' : ''}" ${k === 'tattend' ? 'data-action="t-att-tab"' : k === 'tmarks' ? 'data-action="t-marks-tab"' : ''}>${icon(i)}<span>${l}</span></a>`).join('');
 }
 function renderChrome() {
   document.body.classList.toggle('teacher-mode', myRole === 'teacher');
@@ -3076,6 +3083,8 @@ FORMS.attendance = async () => {
     upsertAttendance(stId, classId, date, d.status, d.status === 'Present' ? '' : (d.reason || '').trim(), c.term, c.year);
     n += 1;
   });
+  const by = currentAdmin().name, savedAt = nowISO();
+  db.attendance.forEach(a => { if (a.classId === classId && a.date === date) { a.by = by; a.savedAt = savedAt; } });
   commit('Attendance saved', `${classNameOf(classId)} · ${fmtDate(date)} · ${n} learners`);
   const at = await confirmSaved(`Register saved: ${classNameOf(classId)}, ${fmtDate(date)}`);
   ui.tSaved = { kind: 'att', key: `${classId}|${date}`, at, n };
@@ -3583,9 +3592,10 @@ function registersMissingToday(classes) {
 VIEWS.tattend = () => {
   const cls = visibleClasses();
   if (!cls.length) return tNoClass();
+  if (!ui.tAttOpen) return tAttListHtml(cls);
   const clsId = tClassId();
   const cl = byId('classes', clsId);
-  const head = `<div class="t-head"><h2>Attendance</h2><p>Choose the class and the date, tick every learner, then save.</p></div>`;
+  const head = `<div class="t-asm-head"><button type="button" class="btn sm" data-action="t-att-list">← All registers</button><div><strong>Take attendance</strong><span>Choose the class and the date, tick every learner, then save.</span></div></div>`;
   const ay = activeYear(), tm = activeTerm();
   if (!tm || !ay) return head + '<div class="banner warn mt"><span>There is no current term yet, so registers cannot be taken. The KIDNOVA Super Admin sets the current term.</span></div>';
   const maxDay = todayISO() < tm.closeDate ? todayISO() : tm.closeDate;
@@ -3631,6 +3641,46 @@ VIEWS.tattend = () => {
     <form data-form="attendance"><div class="t-list">${rows || emptyState('No learners in this class', 'The school registers learners; they appear here automatically.')}</div>
     ${rows ? `<div class="t-save"><button type="submit" class="btn primary" id="tAttSave" ${ticked < learners.length ? 'disabled' : ''}>${ticked < learners.length ? `Tick all learners · ${ticked} of ${learners.length}` : `Save register · ${learners.length} learners`}</button></div>` : ''}</form>`;
 };
+/* Saved registers, listed like assessments, so earlier ones are easy to find and check. */
+function tAttListHtml(cls) {
+  const tm = activeTerm(), ay = activeYear();
+  const head = `<div class="t-head"><h2>Attendance</h2><p>Your saved registers. Open one to check or correct it, or take a new one.</p></div>`;
+  if (!tm || !ay) return head + '<div class="banner warn mt"><span>There is no current term yet, so registers cannot be taken. The KIDNOVA Super Admin sets the current term.</span></div>';
+  const myIds = cls.map(c => c.id);
+  const cats = settingsOf().attendanceCategories;
+  const recs = db.attendance.filter(a => myIds.includes(a.classId) && a.date >= tm.openDate && a.date <= tm.closeDate);
+  const groups = new Map();
+  recs.forEach(a => { const k = `${a.classId}|${a.date}`; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(a); });
+  const filterCls = ui.tAClass && myIds.includes(ui.tAClass) ? ui.tAClass : '';
+  const registers = Array.from(groups.entries()).map(([k, list]) => { const [classId, date] = k.split('|'); return { classId, date, list }; })
+    .sort((x, y) => (x.date === y.date ? classNameOf(x.classId).localeCompare(classNameOf(y.classId)) : x.date < y.date ? 1 : -1));
+  const shown = registers.filter(r => !filterCls || r.classId === filterCls);
+  const termRate = rateFromRecords(recs).rate;
+  const missing = registersMissingToday(cls);
+  const absentToday = recs.filter(a => a.date === todayISO() && a.status === 'Absent').length;
+  const stats = `<div class="t-stats">
+    <div class="card stat accent"><span class="lbl">Registers this term</span><span class="val">${registers.length}</span><span class="sub">${esc(tm.name)}</span></div>
+    <div class="card stat ok"><span class="lbl">Attendance rate</span><span class="val">${fmtPct(termRate)}</span><span class="sub">all your classes</span></div>
+    <div class="card stat warn"><span class="lbl">Not taken today</span><span class="val">${missing.length}</span><span class="sub">${missing.length ? missing.map(c => esc(c.name)).join(', ') : 'all done'}</span></div>
+    <div class="card stat info"><span class="lbl">Absent today</span><span class="val">${absentToday}</span><span class="sub">learners</span></div></div>`;
+  const items = shown.map(r => {
+    const cl = byId('classes', r.classId);
+    const counts = cats.map(cat => { const n = r.list.filter(a => a.status === cat.key).length; return n ? `<span class="t-count" style="--c:${esc(cat.color)}"><i></i>${esc(cat.label.charAt(0))} <strong>${n}</strong></span>` : ''; }).join('');
+    const rate = rateFromRecords(r.list).rate;
+    const absent = r.list.filter(a => a.status !== 'Present' && a.status !== 'Late');
+    const by = r.list.find(a => a.by);
+    return `<button type="button" class="t-asm t-reg" data-action="t-att-open" data-class="${r.classId}" data-date="${r.date}">
+      <div class="t-asm-main"><span class="t-asm-date">${esc(longDate(r.date))}</span><span class="t-reg-cls">${classChip(cl)}<small>${r.list.length} learners${by ? ` · by ${esc(by.by.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' '))}` : ''}</small></span>
+        <span class="t-reg-counts">${counts}</span>
+        ${absent.length ? `<span class="t-reg-abs">${absent.map(a => `${esc((byId('students', a.studentId) || {}).fullName || '—')}${a.reason ? `: <em>${esc(a.reason)}</em>` : ''}`).join(' · ')}</span>` : ''}</div>
+      <div class="t-asm-side"><span class="badge ${rate === null ? '' : rate >= settingsOf().report.attendanceThreshold ? 'ok' : 'warn'}">${fmtPct(rate)}</span><span class="t-asm-go">View ›</span></div></button>`;
+  }).join('');
+  const reminder = missing.length ? `<div class="t-remind"><div><strong>⏰ Attendance not taken today</strong><span>${missing.map(c => classChip(c)).join(' ')}</span></div><button type="button" class="btn" data-action="t-att-new" data-id="${missing[0].id}">Take attendance</button></div>` : '';
+  return head + reminder + stats + `
+    <div class="t-tools"><div class="t-tools-l"><h3>All registers <span class="t-badge">${shown.length}</span></h3></div><button type="button" class="btn primary" data-action="t-att-new">+ Take attendance</button></div>
+    <div class="t-filter one"><select class="input" data-change="t-aclass" aria-label="Filter by class"><option value="">All my classes</option>${cls.map(c => `<option value="${c.id}" ${c.id === filterCls ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>
+    <div class="t-asms">${items || '<div class="t-empty"><h3>No registers yet this term</h3><p>Tap “+ Take attendance” to record today’s register.</p></div>'}</div>`;
+}
 function tEntryHtml(asm, c) {
   const area = byId('learningAreas', asm.areaId) || { name: '—' };
   const clsId = asm.classId;
@@ -3732,7 +3782,17 @@ CHANGES['t-search'] = el => { ui.tq = el.value; render(); };
 CHANGES['t-att-class'] = el => { ui.tClass = el.value; ui.attDraft = null; ui.tSaved = null; render(); };
 ACTIONS['t-day'] = el => { ui.tDate = el.dataset.date; ui.attDraft = null; ui.tSaved = null; render(); };
 INPUTS['t-reason'] = el => { const d = ui.attDraft && ui.attDraft[el.dataset.id]; if (d) d.reason = el.value; el.classList.remove('need'); };
-ACTIONS['t-go'] = el => { ui.tClass = el.dataset.id; ui.assessId = null; go(el.dataset.page); };
+ACTIONS['t-go'] = el => {
+  ui.tClass = el.dataset.id; ui.assessId = null;
+  if (el.dataset.page === 'tattend') { ui.tAttOpen = true; ui.tDate = null; ui.attDraft = null; ui.tSaved = null; }
+  go(el.dataset.page);
+};
+ACTIONS['t-att-tab'] = () => { ui.tAttOpen = false; ui.attDraft = null; go('tattend'); };
+ACTIONS['t-marks-tab'] = () => { ui.assessId = null; go('tmarks'); };
+ACTIONS['t-att-list'] = () => { ui.tAttOpen = false; ui.attDraft = null; render(); window.scrollTo(0, 0); };
+ACTIONS['t-att-new'] = el => { if (el.dataset.id) ui.tClass = el.dataset.id; ui.tAttOpen = true; ui.tDate = null; ui.attDraft = null; ui.tSaved = null; render(); window.scrollTo(0, 0); };
+ACTIONS['t-att-open'] = el => { ui.tClass = el.dataset.class; ui.tDate = el.dataset.date; ui.tAttOpen = true; ui.attDraft = null; ui.tSaved = null; render(); window.scrollTo(0, 0); };
+CHANGES['t-aclass'] = el => { ui.tAClass = el.value; render(); };
 ACTIONS['t-class'] = el => { ui.tClass = el.dataset.id; ui.tArea = null; ui.assessId = null; ui.attDraft = null; ui.tSaved = null; render(); };
 ACTIONS['t-term'] = el => { ui.viewTermId = el.dataset.id; ui.assessId = null; render(); };
 ACTIONS['t-asm'] = el => { ui.assessId = el.dataset.id; ui.tSaved = null; render(); window.scrollTo(0, 0); };
