@@ -1457,6 +1457,8 @@ const IS_ANDROID = /Android/i.test(navigator.userAgent);
 const IS_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const appVersionInstalled = () => { try { return window.KidnovaApp && window.KidnovaApp.version ? String(window.KidnovaApp.version()) : (/KidnovaApp\/([\d.]+)/.exec(navigator.userAgent) || [])[1] || ''; } catch (e) { return ''; } };
 const verLess = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < Math.max(x.length, y.length); i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) < (y[i] || 0); } return false; };
+/* Once a teacher has downloaded the app on this device, stop suggesting it (the install steps stay until they leave Home). */
+function appDownloaded() { try { return !!localStorage.getItem('knAppDl'); } catch (e) { return false; } }
 function appLater() { try { return Number(localStorage.getItem('knAppLater') || 0) > Date.now(); } catch (e) { return false; } }
 const APP_STEPS = ['Tap <b>Download the app</b> and wait for <b>kidnova.apk</b> to finish downloading.', 'Open the downloaded file (from the notification or the <b>Downloads</b> folder).', 'If the phone asks, tap <b>Settings</b> and turn on <b>Allow from this source</b>, then go back.', 'Tap <b>Install</b>, then <b>Open</b>. Log in with your same KIDNOVA email and password.'];
 /* Teacher Home: recommend the Android app (hidden inside the app). */
@@ -1465,7 +1467,7 @@ function appInstallCard() {
     const have = appVersionInstalled();
     return have && verLess(have, APP.version) ? `<section class="th-app upd"><div class="th-app-top"><span class="th-app-ic">⬆</span><div><strong>A new KIDNOVA app is ready</strong><span>Version ${esc(APP.version)} · you have ${esc(have)}</span></div></div><div class="th-app-a"><a class="btn" href="${APP.path}" download>Update the app</a></div></section>` : '';
   }
-  if (appLater()) return '';
+  if (appLater() || (appDownloaded() && !ui.appJustDl)) return '';
   const mark = $('.brand .kn-mark') ? $('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgF') : '';
   if (IS_IOS) {
     return `<section class="th-app"><div class="th-app-top"><span class="kn-mark">${mark}</span><div><strong>Put KIDNOVA on your home screen</strong><span>The KIDNOVA app is for Android phones. On iPhone, tap <b>Share ⬆</b> in Safari, then <b>Add to Home Screen</b>.</span></div></div>
@@ -1476,12 +1478,6 @@ function appInstallCard() {
     ${IS_ANDROID ? '' : `<p class="th-app-note">Open <b>kidnova.site</b> on your Android phone to download it, or send yourself the link.</p>`}
     <div class="th-app-a"><a class="btn primary" href="${APP.path}" download="kidnova.apk" data-action="app-dl">⬇ Download the app</a><button type="button" class="btn ghost" data-action="app-steps">${ui.appSteps ? 'Hide steps' : 'How to install'}</button><button type="button" class="btn ghost" data-action="app-later">Later</button></div>
     ${ui.appSteps ? `<ol class="th-app-steps">${APP_STEPS.map(x => `<li>${x}</li>`).join('')}</ol>` : ''}</section>`;
-}
-/* Admin dashboard: share the teacher app link. */
-function appShareCard() {
-  const msg = `Hello teachers, please install the KIDNOVA app on your Android phone to take attendance and record assessments: ${APP.url} Open the file, allow the install, then log in with your KIDNOVA email and password.`;
-  return `<div class="card app-share mt"><div class="app-share-in"><span class="app-share-ic">📱</span><div><h3>KIDNOVA app for teachers</h3><p>Ask every teacher to install the Android app. They log in with the same email and password. <span class="faint">Version ${esc(APP.version)} · ${APP.size}</span></p><code>${esc(APP.url)}</code></div></div>
-    <div class="row"><a class="btn sm primary" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}">Share on WhatsApp</a><button type="button" class="btn sm" data-action="app-copy">Copy link</button>${IN_APP ? '' : `<a class="btn sm" href="${APP.path}" download="kidnova.apk">⬇ Download</a>`}</div></div>`;
 }
 /* ---------- Attendance reminders in the Android app ----------
    The page tells the app which registers are still missing today; the phone then
@@ -1531,7 +1527,7 @@ ACTIONS['rem-test'] = () => { window.KidnovaApp.testReminder(); toast('Test remi
 
 ACTIONS['app-later'] = () => { try { localStorage.setItem('knAppLater', String(Date.now() + 7 * 864e5)); } catch (e) { /* private mode */ } ui.appSteps = false; render(); };
 ACTIONS['app-steps'] = () => { ui.appSteps = !ui.appSteps; render(); };
-ACTIONS['app-dl'] = () => { const a = document.createElement('a'); a.href = APP.path; a.download = 'kidnova.apk'; document.body.appendChild(a); a.click(); a.remove(); ui.appSteps = true; setTimeout(render, 400); toast('Downloading kidnova.apk… then open it to install.', 'info', 6000); };
+ACTIONS['app-dl'] = () => { try { localStorage.setItem('knAppDl', new Date().toISOString()); } catch (e) { /* private mode */ } ui.appJustDl = true; const a = document.createElement('a'); a.href = APP.path; a.download = 'kidnova.apk'; document.body.appendChild(a); a.click(); a.remove(); ui.appSteps = true; setTimeout(render, 400); toast('Downloading kidnova.apk… then open it to install.', 'info', 6000); };
 ACTIONS['app-copy'] = async () => { try { await navigator.clipboard.writeText(APP.url); } catch (e) { const t = document.createElement('textarea'); t.value = APP.url; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } finally { t.remove(); } } toast('App link copied. Send it to your teachers.', 'ok', 4000); };
 const supportLinks = (cls = 'btn sm') => `<a class="${cls}" href="tel:${SUPPORT.tel}">Call ${SUPPORT.show}</a><a class="${cls}" target="_blank" rel="noopener" href="${SUPPORT.wa}?text=${encodeURIComponent('Hello KIDNOVA support, I need help.')}">WhatsApp</a>`;
 /* Features a teacher login can be given. Directors, administrators and the Super Admin have all of them. */
@@ -1873,6 +1869,7 @@ function applyRoute() {
   if (ui.page === 'student') ui.studentId = decodeURIComponent(parts[1] || '');
   ui.reportMode = ui.page === 'reports' ? (parts[1] || 'list') : null;
   ui.reportRef = ui.page === 'reports' ? decodeURIComponent(parts[2] || '') : '';
+  if (ui.page !== 'thome') ui.appJustDl = false;
   ui.sidebarOpen = false;
   document.body.classList.remove('nav-open');
 }
@@ -4103,7 +4100,7 @@ VIEWS.dashboard = () => {
     <div class="table-wrap mt"><table class="tbl"><thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead><tbody>${actRows || `<tr><td colspan="3">${emptyState('No activity yet', '')}</td></tr>`}</tbody></table></div></div>`;
 
   const remindAdmin = notTaken.length ? `<div class="t-remind mt"><div><strong>⏰ Attendance not taken today</strong><span>${notTaken.map(cl => `${classChip(cl)} ${teacherOfClass(cl.id) ? `<small>${esc(teacherOfClass(cl.id).fullName)}</small>` : ''}`).join(' ')}</span></div><a class="btn" href="#attendance">Open attendance</a></div>` : '';
-  return welcome + remindAdmin + (myRole === 'teacher' ? '' : appShareCard()) + overview + (myRole === 'teacher' ? '' : finDashCard())
+  return welcome + remindAdmin + overview + (myRole === 'teacher' ? '' : finDashCard())
     + `<div class="grid g-side mt">${levelCard}${incCard}</div>` + teamCard
     + `<h3 class="sec-title">Academic performance${term ? ` · ${esc(term.name)}` : ''}</h3>`
     + `<div class="grid g3">${perfCard}${gradeCard}${catCard}</div>`
@@ -4226,7 +4223,7 @@ VIEWS.thome = () => {
     + appReminderCard()
     + (recent ? `<section class="th-card"><div class="th-card-h"><h3>My recent work</h3></div><ul class="th-recent">${recent}</ul></section>` : '')
     + `<div class="th-help"><div><strong>Need help?</strong><span>Quick support ${SUPPORT.show}</span></div><div class="row">${supportLinks('btn sm')}</div></div>`
-    + (IN_APP || IS_IOS ? '' : `<p class="th-app-link"><a href="${APP.path}" download="kidnova.apk">📱 Download the KIDNOVA Android app</a></p>`);
+    + (IN_APP || IS_IOS || appDownloaded() ? '' : `<p class="th-app-link"><a href="${APP.path}" download="kidnova.apk">📱 Download the KIDNOVA Android app</a></p>`);
 };
 ACTIONS['t-open-asm'] = el => { ui.assessId = el.dataset.id; ui.tSaved = null; go('tmarks'); window.scrollTo(0, 0); };
 ACTIONS['t-quick-asm'] = () => { ui.assessId = null; go('tmarks'); setTimeout(() => run(() => ACTIONS['t-asm-new']()), 60); };
@@ -6045,7 +6042,7 @@ function authHtml(mode, msg) {
         <p class="small muted auth-switch">${first ? `${signup ? 'Already have an account?' : 'Setting up KIDNOVA for the first time?'} <button type="button" class="link" data-mode="${signup ? 'signin' : 'signup'}">${signup ? 'Login' : 'Create the Super Admin account'}</button>` : 'Accounts are created by the Super Admin.'}</p>
       </div>
       <p class="auth-foot small faint"><a href="#home">← Back to homepage</a> · Support ${SUPPORT.show} · © ${new Date().getFullYear()} KIDNOVA</p>
-      ${IN_APP || IS_IOS ? '' : `<p class="auth-foot small"><a href="${APP.path}" download="kidnova.apk">📱 Teachers: get the Android app</a></p>`}
+
     </section>
   </div>`;
 }
