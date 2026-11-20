@@ -435,6 +435,9 @@ textarea.input{min-height:76px;resize:vertical}
 @media (min-width:961px) and (max-width:1180px){.hp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* ---------- Class colours ---------- */
+.cls-chip,.t-asm .cls-chip,.t-asm-head .cls-chip,.disc-h .cls-chip{color:#fff!important}
+.lv-spread{display:inline-flex;gap:3px}
+.lv-spread span{min-width:24px;height:22px;padding:0 6px;border-radius:6px;background:var(--c);color:#fff;font-weight:800;font-size:12px;display:inline-grid;place-items:center}
 .cls-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:700;color:#fff;background:var(--c);white-space:nowrap}
 .cls-chips{display:flex;flex-wrap:wrap;gap:4px}
 .cls-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:8px}
@@ -1151,9 +1154,25 @@ function defaultSettings() {
     },
   };
 }
+/* All nursery assessment is by colour level. Older marks subjects/assessments become colour levels:
+   saved marks turn into the matching level (90%+ Excellent, 80%+ Very good, 70%+ Good, below Fair). */
+function marksToLevels(d) {
+  const levelOf = pct => (pct >= 90 ? 'G' : pct >= 80 ? 'B' : pct >= 70 ? 'Y' : 'R');
+  const numAsm = new Map();
+  (d.assessments || []).forEach(a => { if (a.kind === 'numerical') { numAsm.set(a.id, a.maxMarks || 0); a.kind = 'competency'; a.maxMarks = 0; } });
+  (d.results || []).forEach(r => {
+    if (!numAsm.has(r.assessmentId)) return;
+    const max = numAsm.get(r.assessmentId);
+    if (r.marks !== null && r.marks !== undefined && max > 0 && !r.rating) r.rating = levelOf((r.marks / max) * 100);
+    r.marks = null;
+  });
+  (d.learningAreas || []).forEach(a => { if (a.kind === 'numerical') { a.kind = 'competency'; a.maxMarks = 0; } });
+  return numAsm.size;
+}
 function normalizeDb(d) {
   const base = emptyDb();
   COLLECTIONS.forEach(k => { d[k] = Array.isArray(d[k]) ? d[k] : []; });
+  marksToLevels(d);
   d.settings = d.settings && typeof d.settings === 'object' ? d.settings : {};
   d.admin = currentAdmin();
   d.version = 1;
@@ -1609,7 +1628,7 @@ function renderTabbar() {
   const tb = $('#tabbar');
   if (!tb) return;
   if (myRole !== 'teacher') { tb.innerHTML = ''; return; }
-  const tabs = [['thome', 'Home', 'dashboard'], ['tattend', 'Attendance', 'attendance'], ['tmarks', 'Marks', 'assessments'], ['tdisc', 'Conduct', 'discipline']].filter(([k]) => pageAllowed(k));
+  const tabs = [['thome', 'Home', 'dashboard'], ['tattend', 'Attendance', 'attendance'], ['tmarks', 'Assess', 'assessments'], ['tdisc', 'Conduct', 'discipline']].filter(([k]) => pageAllowed(k));
   tb.innerHTML = tabs.map(([k, l, i]) => `<a href="#${k}" class="${ui.page === k ? 'on' : ''}" ${k === 'tattend' ? 'data-action="t-att-tab"' : k === 'tmarks' ? 'data-action="t-marks-tab"' : ''}>${icon(i)}<span>${l}</span></a>`).join('');
 }
 function renderChrome() {
@@ -2613,7 +2632,7 @@ function studentTabHtml(st) {
     const body = rows.map(({ r, a }) => {
       const area = byId('learningAreas', a.areaId);
       const pct = a.kind === 'numerical' && r.marks !== null ? ratio(r.marks, a.maxMarks) : null;
-      const result = a.kind === 'numerical' ? (r.marks === null ? '<span class="muted">Not entered</span>' : `${r.marks} / ${a.maxMarks}`) : (r.rating ? bandBadge(RATING_PCT[r.rating]) : '<span class="muted">Not rated</span>');
+      const result = r.rating ? bandBadge(RATING_PCT[r.rating]) : '<span class="muted">Not rated</span>';
       return `<tr><td class="nowrap">${fmtDate(a.date)}</td><td><strong>${esc(a.name)}</strong><span class="sub">${esc(classNameOf(a.classId))}</span></td><td>${esc(area ? area.name : '—')}</td><td class="small">${esc(byId('terms', a.termId) ? byId('terms', a.termId).name : '—')} · ${esc(byId('academicYears', a.yearId) ? byId('academicYears', a.yearId).name : '')}</td><td class="r num">${result}</td><td class="r num">${fmtPct(pct)}</td><td class="small">${esc(r.comment || '')}</td></tr>`;
     }).join('');
     return `<div class="card"><div class="card-h"><div><h3>Assessment history</h3><p>All recorded results across academic years and terms.</p></div></div><div class="table-wrap mt"><table class="tbl"><thead><tr><th>Date</th><th>Assessment</th><th>Learning area</th><th>Term · year</th><th class="r">Result</th><th class="r">%</th><th>Teacher comment</th></tr></thead><tbody>${body || '<tr><td colspan="7" class="muted">No assessment results yet.</td></tr>'}</tbody></table></div></div>`;
@@ -2847,10 +2866,9 @@ function openAssessForm(id) {
     html: `<div class="form-grid">
       ${field('Assessment name *', inp('name', a ? a.name : '', 'required maxlength="60" placeholder="e.g. Week 8 Test"'), '', 'span2')}
       ${field('Class *', sel('classId', clsList.map(x => [x.id, x.name]), clsId, 'data-change="assess-form-class"'))}
-      ${field('Learning area *', sel('areaId', areas.map(x => [x.id, `${x.name} (${x.kind === 'numerical' ? 'marks' : 'colour levels'})`]), areaId, 'id="assessAreaSel" data-change="assess-form-area"'))}
+      ${field('Subject *', sel('areaId', areas.map(x => [x.id, x.name]), areaId, 'id="assessAreaSel" data-change="assess-form-area"'))}
       ${field('Date *', inp('date', defDate, `type="date" min="${term.openDate}" max="${term.closeDate}" required`), `Must fall within ${term.name}`)}
-      ${field('Maximum marks', inp('maxMarks', a ? a.maxMarks : area.maxMarks, `type="number" min="1" max="1000" id="assessMax" ${area.kind === 'numerical' ? '' : 'disabled'}`), 'Numerical learning areas only')}
-    </div><p class="muted small mt">Term: <strong>${esc(term.name)}</strong> · ${esc(year.name)}. Competency assessments are rated Achieved, Developing or Not yet.</p>`,
+    </div><p class="muted small mt">Term: <strong>${esc(term.name)}</strong> · ${esc(year.name)}. Learners are rated with colour levels: 1 Excellent · 2 Very good · 3 Good · 4 Fair.</p>`,
   });
 }
 FORMS.assess = async (fd, arg) => {
@@ -2956,7 +2974,7 @@ function resultsPanelHtml(asm, readOnly) {
       : `<div class="lv-pick" role="radiogroup" aria-label="Level for ${esc(st.fullName)}">${LEVELS.map(l => `<label class="lv" style="--c:${l.color}" title="${esc(l.label)} (${esc(l.en)})"><input type="radio" name="r_${st.id}" value="${l.key}" ${r.rating === l.key || (r.rating && RATING_PCT[r.rating] === l.pct && !LEVEL_BY_KEY[r.rating]) ? 'checked' : ''} ${readOnly ? 'disabled' : ''}><span>${l.code}</span></label>`).join('')}<label class="lv none" title="Not rated"><input type="radio" name="r_${st.id}" value="" ${r.rating ? '' : 'checked'} ${readOnly ? 'disabled' : ''}><span>—</span></label></div>`;
     const scoreCells = asm.kind === 'numerical'
       ? `<td class="r num"><span id="pct_${st.id}">${fmtPct(pct)}</span></td><td><span id="gr_${st.id}">${pct === null ? '<span class="muted">—</span>' : bandBadge(pct)}</span></td>`
-      : `<td class="r num">${r.rating ? fmtPct(RATING_PCT[r.rating]) : '—'}</td><td>${r.rating ? bandBadge(RATING_PCT[r.rating]) : '<span class="muted">—</span>'}</td>`;
+      : `<td>${r.rating ? bandBadge(RATING_PCT[r.rating]) : '<span class="muted">—</span>'}</td>`;
     return `<tr><td class="c muted">${i + 1}</td><td>${who(st, esc(st.regNumber))}</td><td class="r">${input}</td>${scoreCells}<td><input class="input" name="c_${st.id}" value="${esc(r.comment || '')}" maxlength="160" placeholder="Optional comment" ${readOnly ? 'disabled' : ''}></td></tr>`;
   }).join('');
   const entered = students.map(st => resultOf(asm.id, st.id)).filter(r => r && (asm.kind === 'numerical' ? r.marks !== null : r.rating));
@@ -2968,9 +2986,15 @@ function resultsPanelHtml(asm, readOnly) {
     <div class="card-h"><div><h3>${esc(asm.name)} · ${esc(area ? area.name : '')}</h3><p>${fmtDate(asm.date)} · ${esc(classNameOf(asm.classId))} · ${asm.kind === 'numerical' ? `Out of ${asm.maxMarks} marks` : 'Colour levels: 1 Excellent · 2 Very good · 3 Good · 4 Fair'}</p></div>
       <div class="row">${(byId('terms', asm.termId) || {}).status === 'Completed' ? '<span class="badge info">Previous term · marks only</span>' : `<button type="button" class="btn sm" data-action="assess-edit" data-id="${asm.id}">Edit assessment</button>`}<button type="button" class="btn sm ghost" data-action="assess-close">Close</button></div></div>
     <form data-form="results" data-arg="${asm.id}">
-      <div class="table-wrap mt"><table class="tbl"><thead><tr><th class="c">#</th><th>Learner</th><th class="r">${asm.kind === 'numerical' ? 'Marks' : 'Level (click a colour)'}</th><th class="r">%</th><th>Grade</th><th>Teacher comment</th></tr></thead><tbody>${rows || `<tr><td colspan="6">${emptyState('No active learners in this class', 'Register learners to this class to record results.')}</td></tr>`}</tbody></table></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th class="c">#</th><th>Learner</th><th class="r">Level (click a colour)</th><th>Result</th><th>Teacher comment</th></tr></thead><tbody>${rows || `<tr><td colspan="6">${emptyState('No active learners in this class', 'Register learners to this class to record results.')}</td></tr>`}</tbody></table></div>
       <div class="card-f"><span class="small muted grow">${stats}</span>${readOnly ? '<span class="badge">Read-only</span>' : '<button type="submit" class="btn primary">Save results</button>'}</div>
     </form></div>`;
+}
+/* Small colour bar: how many learners got each level in one assessment. */
+function levelSpread(asmId) {
+  const rs = db.results.filter(r => r.assessmentId === asmId && r.rating);
+  if (!rs.length) return '<span class="muted small">Not rated yet</span>';
+  return `<span class="lv-spread">${LEVELS.map(l => { const n = rs.filter(r => RATING_PCT[r.rating] === l.pct).length; return n ? `<span style="--c:${l.color}" title="${esc(l.label)}">${n}</span>` : ''; }).join('')}</span>`;
 }
 function termTotalsHtml(classId, term) {
   const areas = classAreas(classId);
@@ -2983,14 +3007,14 @@ function termTotalsHtml(classId, term) {
     const scores = numerical.map(a => areaScore(st.id, a, term.id));
     const overall = overallOf(reportAreaRows(st.id, classId, term.id)).percent;
     const comp = competency.map(a => areaScore(st.id, a, term.id)).filter(s => s.percent !== null);
-    return `<tr><td>${who(st, esc(st.regNumber))}</td>${scores.map(s => `<td class="r num">${fmtPct(s.percent)}</td>`).join('')}<td class="r num"><strong>${fmtPct(overall)}</strong></td><td>${bandBadge(overall)}</td><td class="small">${comp.length ? `${comp.length} of ${competency.length} rated` : '<span class="muted">Not rated</span>'}</td></tr>`;
+    return `<tr><td>${who(st, esc(st.regNumber))}</td>${scores.map(s => `<td>${bandBadge(s.percent)}</td>`).join('')}<td>${bandBadge(overall)}</td><td class="small">${comp.length ? `${comp.length} of ${competency.length} rated` : '<span class="muted">Not rated</span>'}</td></tr>`;
   }).join('');
   const avgRow = numerical.map(a => {
     const vals = students.map(st => areaScore(st.id, a, term.id).percent).filter(v => v !== null);
     return `<td class="r num"><strong>${fmtPct(avg(vals))}</strong></td>`;
   }).join('');
-  return `<div class="table-wrap mt"><table class="tbl"><thead><tr><th>Learner</th>${head}<th class="r">Overall</th><th>Level</th><th>Colour-rated areas</th></tr></thead>
-    <tbody>${rows}</tbody><tfoot><tr><th>Class average</th>${avgRow}<td class="r num"><strong>${fmtPct(avg(students.map(st => overallOf(reportAreaRows(st.id, classId, term.id)).percent).filter(v => v !== null)))}</strong></td><td></td><td></td></tr></tfoot></table></div>`;
+  return `<div class="table-wrap mt"><table class="tbl"><thead><tr><th>Learner</th>${head}<th>Overall level</th><th>Subjects rated</th></tr></thead>
+    <tbody>${rows}</tbody><tfoot><tr><th>Class</th>${avgRow}<td>${bandBadge(avg(students.map(st => overallOf(reportAreaRows(st.id, classId, term.id)).percent).filter(v => v !== null)))}</td><td></td></tr></tfoot></table></div>`;
 }
 VIEWS.assessments = () => {
   const c = ctx();
@@ -3010,8 +3034,7 @@ VIEWS.assessments = () => {
     const pcts = a.kind === 'numerical' ? db.results.filter(r => r.assessmentId === a.id && r.marks !== null).map(r => ratio(r.marks, a.maxMarks)) : [];
     return `<tr style="${selected && selected.id === a.id ? 'background:var(--blue-soft)' : ''}">
       <td class="nowrap">${fmtDate(a.date)}</td><td><strong>${esc(a.name)}</strong>${a.createdBy ? `<span class="sub">by ${esc(a.createdBy.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' '))}</span>` : ''}</td><td>${esc(area ? area.name : '—')}</td>
-      <td>${a.kind === 'numerical' ? badge('Marks', 'info') : badge('Colour levels', 'navy')}</td>
-      <td class="r num">${a.kind === 'numerical' ? a.maxMarks : '—'}</td><td class="r num">${entered} / ${n}</td><td class="r num">${a.kind === 'numerical' ? fmtPct(avg(pcts)) : '—'}</td>
+      <td class="r num">${entered} / ${n}</td><td>${levelSpread(a.id)}</td>
       <td class="r nowrap"><button type="button" class="btn xs ${c.canCorrect ? 'light' : ''}" data-action="assess-open" data-id="${a.id}">${c.readOnly ? (c.canCorrect ? 'Correct marks' : 'View results') : 'Enter results'}</button> ${c.readOnly ? '' : `<button type="button" class="btn xs" data-action="assess-edit" data-id="${a.id}">Edit</button> <button type="button" class="btn xs ghost" data-action="assess-delete" data-id="${a.id}">Delete</button>`}</td></tr>`;
   }).join('');
   const termOpts = c.terms.map(t => [t.id, `${t.name}${t.status === 'Active' ? ' · active' : ''}${t.status === 'Completed' ? ' · completed' : ''}`]);
@@ -3024,8 +3047,8 @@ VIEWS.assessments = () => {
     <div class="field"><span class="lbl">Class</span>${sel('class', classList().map(x => [x.id, x.name]), clsId, 'data-change="assess-class"')}</div>
     <div class="field"><span class="lbl">Learning area</span>${sel('area', [['', 'All learning areas']].concat(areas.map(a => [a.id, a.name])), ui.assessAreaId || '', 'data-change="assess-area"')}</div>
   </div>
-  <div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Assessment</th><th>Learning area</th><th>Type</th><th class="r">Max</th><th class="r">Entered</th><th class="r">Average</th><th class="r">Actions</th></tr></thead>
-  <tbody>${rows || `<tr><td colspan="8">${emptyState('No assessments yet', c.readOnly ? 'No assessments were recorded for this term.' : 'Create an assessment for this class and learning area.')}</td></tr>`}</tbody></table></div></div>
+  <div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Assessment</th><th>Subject</th><th class="r">Rated</th><th>Levels given</th><th class="r">Actions</th></tr></thead>
+  <tbody>${rows || `<tr><td colspan="6">${emptyState('No assessments yet', c.readOnly ? 'No assessments were recorded for this term.' : 'Create an assessment for this class and learning area.')}</td></tr>`}</tbody></table></div></div>
   ${selected ? resultsPanelHtml(selected, !c.canCorrect) : '<div class="card mt"><div class="card-b muted">Choose “Enter results” on an assessment to record marks or ratings.</div></div>'}
   <div class="card mt"><div class="card-h"><div><h3>Totals and averages · ${esc(classNameOf(clsId))} · ${esc(c.term.name)}</h3><p>Overall score is the average of all learning-area scores for the term (colour levels count as 95, 85, 75 and 65%). Levels follow Settings → Grading rules.</p></div></div>
     <div class="card-b flush">${termTotalsHtml(clsId, c.term)}</div></div>`;
@@ -3036,7 +3059,7 @@ CHANGES['assess-area'] = el => { ui.assessAreaId = el.value || null; ui.assessId
 CHANGES['assess-form-class'] = el => {
   const areas = classAreas(el.value);
   const s = $('#assessAreaSel');
-  if (s) s.innerHTML = areas.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${a.kind === 'numerical' ? 'marks' : 'colour levels'})</option>`).join('');
+  if (s) s.innerHTML = areas.map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
   if (areas[0]) syncAssessMax(areas[0].id);
 };
 CHANGES['assess-form-area'] = el => syncAssessMax(el.value);
@@ -3926,7 +3949,7 @@ VIEWS.tmarks = () => {
     const area = byId('learningAreas', a.areaId) || { name: '—' };
     return `<button type="button" class="t-asm" data-action="t-asm" data-id="${a.id}">
       <div class="t-asm-main"><span class="t-asm-date">${fmtDate(a.date)}</span><strong>${esc(area.name)}</strong><span>${esc(a.name)} · ${classChip(byId('classes', a.classId))}</span></div>
-      <div class="t-asm-side"><span class="t-asm-max">${a.kind === 'numerical' ? `Max ${a.maxMarks}` : 'Colours'}</span><span class="badge ${got >= n && n ? 'ok' : got ? 'warn' : 'bad'}">${got} / ${n}</span><span class="t-asm-go">${got >= n && n ? 'Edit' : 'Record'} ›</span></div></button>`;
+      <div class="t-asm-side"><span class="badge ${got >= n && n ? 'ok' : got ? 'warn' : 'bad'}">${got} / ${n}</span><span class="t-asm-go">${got >= n && n ? 'Edit' : 'Record'} ›</span></div></button>`;
   }).join('');
   return head + termChips + stats + `
     <div class="t-tools"><div class="t-tools-l"><h3>All assessments <span class="t-badge">${list.length}</span></h3></div>
@@ -3939,7 +3962,7 @@ VIEWS.tmarks = () => {
 /* Add assessment (teacher): class drop-down, then that class's subjects */
 function tAreaOptions(classId, selected) {
   const list = classAreas(classId);
-  return list.length ? list.map(a => `<option value="${a.id}" data-kind="${a.kind}" data-max="${a.maxMarks || 20}" ${a.id === selected ? 'selected' : ''}>${esc(a.name)}${a.kind === 'numerical' ? ` (marks /${a.maxMarks})` : ' (colour levels)'}</option>`).join('') : '<option value="">No subjects yet — ask the school</option>';
+  return list.length ? list.map(a => `<option value="${a.id}" data-kind="${a.kind}" data-max="${a.maxMarks || 20}" ${a.id === selected ? 'selected' : ''}>${esc(a.name)}</option>`).join('') : '<option value="">No subjects yet — ask the school</option>';
 }
 ACTIONS['t-asm-new'] = () => {
   requireFeature('marks');
@@ -4203,7 +4226,7 @@ function settingsAreasHtml() {
       <div class="grow"></div><button type="button" class="btn primary" data-action="area-new" data-id="${clsId}">Register subject</button></div>
     <div class="table-wrap"><table class="tbl"><thead><tr><th>Subject</th><th>Assessment type</th><th class="r">Assessments</th><th class="r">Actions</th></tr></thead>
     <tbody>${body || `<tr><td colspan="4">${emptyState('No subjects registered', 'Register this class’s subjects by category. Each category becomes a heading on the report card.', `<button type="button" class="btn primary" data-action="area-new" data-id="${clsId}">Register first subject</button>`)}</td></tr>`}</tbody></table></div>
-    <div class="card-b small muted">Choose a category, then name the subject. Colour-level subjects are rated 1 Excellent, 2 Very good, 3 Good or 4 Fair; marks subjects are scored out of a maximum and converted to a colour. Subjects that already have assessments cannot be deleted.</div></div>`;
+    <div class="card-b small muted">Choose a category, then name the subject. Every subject is rated with colour levels: 1 Excellent, 2 Very good, 3 Good or 4 Fair. Subjects that already have assessments cannot be deleted.</div></div>`;
 }
 function openAreaForm(classId, areaId, presetCat) {
   requireWritable();
@@ -4218,8 +4241,7 @@ function openAreaForm(classId, areaId, presetCat) {
     html: `<div class="form-grid">
       ${field('Category *', `<select class="input" name="groupSel" data-change="area-cat"><option value="">General (no heading)</option>${categoryList().map(g => `<option value="${esc(g)}" ${(a ? a.group || '' : presetCat || '') === g ? 'selected' : ''}>${esc(g)}</option>`).join('')}<option value="__new">+ New category…</option></select><input class="input mt" name="groupNew" id="areaCatNew" maxlength="60" placeholder="New category name" hidden>`, 'Shown as a heading on the report card', 'span2')}
       ${field('Subject name *', inp('name', a ? a.name : '', 'required maxlength="60"'), '', 'span2')}
-      ${field('Assessment type *', sel('kind', [['competency', 'Colour levels (1 Excellent · 2 Very good · 3 Good · 4 Fair)'], ['numerical', 'Marks (converted to a colour level)']], kind, `data-change="area-kind"${used ? ' disabled' : ''}`), used ? 'Locked: assessments already use this area' : 'Most nursery areas use colour levels')}
-      ${field('Maximum marks', inp('maxMarks', a && a.maxMarks ? a.maxMarks : 100, `type="number" min="1" max="1000" id="areaMax"${kind === 'numerical' ? '' : ' disabled'}`), 'Applies to assessments created from now on')}
+      <p class="small muted span2" style="margin:0">Rated with colour levels: 1 Excellent · 2 Very good · 3 Good · 4 Fair.</p>
       ${a ? '' : `<label class="check span2"><input type="checkbox" name="allClasses" value="1"> Also register this subject in every other class</label>`}
     </div>`,
   });
@@ -4240,7 +4262,7 @@ FORMS.area = (fd, arg) => {
   if (groupSel === '__new' && !group) throw new AppError('Type the name of the new category.');
   if (classAreas(classId).some(x => (!existing || x.id !== existing.id) && x.name.toLowerCase() === name.toLowerCase())) throw new AppError(`${cls.name} already has a learning area called ${name}.`);
   const used = existing ? db.assessments.some(x => x.areaId === existing.id) : false;
-  const kind = used ? existing.kind : String(fd.get('kind') || '');
+  const kind = 'competency';
   if (!['numerical', 'competency'].includes(kind)) throw new AppError('Choose an assessment type.');
   let maxMarks = 0;
   if (kind === 'numerical') {
