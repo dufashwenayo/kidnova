@@ -201,3 +201,63 @@ grant select, delete on public.kn_workspace to authenticated;
 grant select, delete on public.kn_invites to authenticated;
 
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v3: teacher logins with feature permissions. Safe to re-run.
+--   teacher : school level; can only use the features listed in
+--             kn_members.features (students, attendance, marks, reports).
+-- ===================================================================
+alter table public.kn_members add column if not exists features text[] not null default '{}';
+alter table public.kn_members add column if not exists teacher_id text;
+alter table public.kn_members drop constraint if exists kn_members_role_check;
+alter table public.kn_members add constraint kn_members_role_check check (role in ('super_admin', 'director', 'admin', 'teacher'));
+
+drop function if exists public.kn_add_member(text, text, text, text);
+drop function if exists public.kn_add_member(text, text, text, text, text[], text);
+create or replace function public.kn_add_member(p_email text, p_name text, p_role text, p_school text,
+                                                p_features text[] default '{}', p_teacher_id text default null) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare uid uuid; me text := public.kn_my_role(); my_school text := public.kn_my_school();
+begin
+  if p_role not in ('director', 'admin', 'teacher') then raise exception 'Invalid role'; end if;
+  if me = 'super_admin' then
+    if not exists (select 1 from public.kn_workspace where school_id = p_school) then raise exception 'Unknown school'; end if;
+  elsif me = 'director' then
+    if p_school is distinct from my_school or p_role not in ('admin', 'teacher') then raise exception 'Directors can only add staff to their own school'; end if;
+  elsif me = 'admin' then
+    if p_school is distinct from my_school or p_role <> 'teacher' then raise exception 'Administrators can only add teachers to their own school'; end if;
+  else raise exception 'Not allowed'; end if;
+  select id into uid from auth.users where lower(email) = lower(trim(p_email));
+  if uid is null then raise exception 'No account exists for %', p_email; end if;
+  if exists (select 1 from public.kn_members where user_id = uid and (role = 'super_admin' or school_id <> p_school)) then
+    raise exception '% already has access to another school', p_email;
+  end if;
+  insert into public.kn_members (user_id, email, full_name, role, school_id, features, teacher_id)
+  values (uid, lower(trim(p_email)), coalesce(p_name, ''), p_role, p_school, coalesce(p_features, '{}'), p_teacher_id)
+  on conflict (user_id) do update set role = excluded.role, features = excluded.features,
+    teacher_id = coalesce(excluded.teacher_id, kn_members.teacher_id),
+    full_name = coalesce(nullif(excluded.full_name, ''), kn_members.full_name);
+  return uid;
+end $$;
+
+-- Change what a teacher may use (Super Admin, or director/admin of the same school).
+create or replace function public.kn_set_features(p_user uuid, p_features text[]) returns void
+language plpgsql security definer set search_path = public as $$
+declare m record; me text := public.kn_my_role(); my_school text := public.kn_my_school();
+begin
+  select * into m from public.kn_members where user_id = p_user;
+  if m is null or m.role <> 'teacher' then raise exception 'Only teacher accounts have feature permissions'; end if;
+  if not (me = 'super_admin' or (me in ('director', 'admin') and m.school_id = my_school)) then raise exception 'Not allowed'; end if;
+  update public.kn_members set features = coalesce(p_features, '{}') where user_id = p_user;
+end $$;
+
+revoke all on function public.kn_add_member(text, text, text, text, text[], text), public.kn_set_features(uuid, text[]) from public, anon;
+grant execute on function public.kn_add_member(text, text, text, text, text[], text), public.kn_set_features(uuid, text[]) to authenticated;
+
+drop policy if exists kn_members_delete on public.kn_members;
+create policy kn_members_delete on public.kn_members for delete to authenticated
+  using (user_id <> auth.uid() and role <> 'super_admin' and (public.kn_my_role() = 'super_admin'
+         or (public.kn_my_role() = 'director' and role in ('admin', 'teacher') and school_id = public.kn_my_school())
+         or (public.kn_my_role() = 'admin' and role = 'teacher' and school_id = public.kn_my_school())));
+
+notify pgrst, 'reload schema';

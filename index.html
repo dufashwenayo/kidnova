@@ -295,6 +295,145 @@ textarea.input{min-height:76px;resize:vertical}
 .print-only{display:none}
 .report-sheet textarea.input{font-size:12px;min-height:58px}
 
+/* ---------- Support, permissions, chooser ---------- */
+.support-card{margin:12px 12px 0;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,#eaf3fc,#f4f9ff);border:1px solid var(--blue-line);font-size:12px;color:var(--muted)}
+.support-card>a{display:block;color:var(--navy);font-size:15px;margin:2px 0 6px;text-decoration:none}
+.support-card div{display:flex;gap:10px}
+.support-card div a{font-weight:650;color:var(--navy)}
+.feat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.feat{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#fff}
+.feat:has(input:checked){border-color:var(--navy);background:var(--blue-soft)}
+.feat input{margin-top:2px;accent-color:var(--navy);width:16px;height:16px}
+.feat strong{display:block;font-size:13px;color:var(--navy-deep)}
+.feat small{color:var(--muted);font-size:11.5px}
+.cat-row td{background:#f3f7fc;font-weight:700;color:var(--navy-deep);font-size:12.5px;letter-spacing:.02em}
+.auth-forgot{text-align:right;margin:-8px 0 14px;font-size:12.5px}
+.auth-forgot .link{text-decoration:none}
+.forgot-box{margin-top:16px;padding:14px;border-radius:12px;background:#fff8e6;border:1px solid #f2d9a8}
+.forgot-box p{margin:4px 0 10px;color:var(--muted);font-size:13px}
+.auth-foot a{color:var(--navy)}
+.auth-side .auth-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.auth-side .auth-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,40,72,0) 40%,rgba(7,40,72,.82))}
+.ch-list{display:flex;flex-direction:column;gap:10px}
+.ch-scroll{max-height:46vh;overflow-y:auto;padding:2px}
+.ch-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;cursor:pointer}
+.ch-card svg{width:46px;height:46px;flex:none}
+.ch-card .ch-ico{width:46px;height:46px;display:grid;place-items:center;border-radius:12px;background:var(--blue-soft)}
+.ch-card .ch-ico svg{width:24px;height:24px}
+.ch-card span:not(.ch-tick):not(.ch-ico){flex:1;min-width:0}
+.ch-card strong{display:block;font-size:15px;color:var(--navy-deep)}
+.ch-card small{color:var(--muted)}
+.ch-tick{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;background:transparent;border:1.5px solid var(--line);flex:none;font-size:13px}
+.ch-card.on{border-color:var(--navy);background:var(--blue-soft)}
+.ch-card.on .ch-tick{background:var(--navy);border-color:var(--navy)}
+.ch-help{text-align:right;margin:8px 0 18px;color:var(--muted)}
+.ch-help a{color:var(--navy);font-weight:650}
+.ch-count{display:inline-grid;place-items:center;min-width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;vertical-align:middle;margin-left:6px}
+/* ---------- Dashboard (reference layout) ---------- */
+.welcome-card{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 22px;border-radius:var(--radius);background:linear-gradient(120deg,#0b6cb5,#1588d6);color:#dbeafa}
+.welcome-card h2{color:#fff;font-size:22px}
+.welcome-card p{margin-top:4px;font-size:13.5px}
+.welcome-card p strong{color:#fff}
+.welcome-support{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:10px 14px;font-size:12px}
+.welcome-support strong{display:block;color:#fff;font-size:16px;margin:2px 0 6px}
+.welcome-support .btn{background:#fff;border-color:#fff}
+.ref-row{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:16px;align-items:stretch}
+.ref-card{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.ref-h{font-size:12.5px;font-weight:700;color:var(--muted);align-self:center}
+.donut{width:150px;height:150px;border-radius:50%;background:conic-gradient(var(--a) calc(var(--p) * 1%),var(--b) 0);display:grid;place-items:center}
+.donut>div{width:104px;height:104px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut strong{color:var(--navy-deep);font-size:15px}
+.donut span{font-size:13px;color:var(--muted)}
+.ref-legend{display:flex;gap:18px;font-size:12.5px;color:var(--muted)}
+.ref-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.ref-legend strong{color:var(--navy-deep);font-size:16px;margin-right:3px}
+.ref-mid{display:flex;flex-direction:column;gap:14px}
+.ref-enrol{background:#2f8ac4;color:#fff;border-radius:var(--radius);padding:18px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.ref-enrol span{font-size:17px;font-weight:700}
+.ref-enrol strong{font-size:46px;font-weight:600;line-height:1.1}
+.ref-enrol small{opacity:.85}
+.ref-logo{flex:1;display:flex;align-items:center;justify-content:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.ref-logo strong{display:block;color:var(--navy-deep)}
+.ref-logo span{font-size:12px;color:var(--muted)}
+.ref-tbl td.cf{background:#fbe9f2}
+.ref-tbl td.cm{background:#e6f2fb}
+.ref-tbl td.ct{background:#e4f4eb}
+.inc-list{list-style:none;margin:0;padding:0}
+.inc-list li{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.inc-list li:last-child{border-bottom:0}
+.inc-list a{color:var(--ink)}
+.sec-title{margin:26px 0 12px;font-size:16px}
+/* ---------- Homepage ---------- */
+.home-root{background:#fff;min-height:var(--vh100)}
+.hp-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;padding:14px max(16px,calc((100% - 1180px)/2));background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hp-brand{display:flex;align-items:center;gap:10px;color:var(--navy);text-decoration:none}
+.hp-brand strong{font-weight:800;letter-spacing:.06em;font-size:17px}
+.hp-nav nav{display:flex;gap:22px;margin-left:auto}
+.hp-nav nav a{color:var(--ink);font-weight:500;font-size:14px}
+.btn.lg{padding:13px 22px;font-size:15px;border-radius:12px}
+.hp-hero{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center;padding:56px max(16px,calc((100% - 1180px)/2)) 64px}
+.hp-eyebrow{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);background:var(--blue-soft);padding:6px 12px;border-radius:99px}
+.hp-eyebrow.light{background:rgba(255,255,255,.15);color:#fff}
+.hp-hero h1{font-size:clamp(34px,4.4vw,54px);line-height:1.08;margin:18px 0 16px;color:var(--navy-deep);letter-spacing:-.02em}
+.hp-hero p{font-size:17px;color:var(--muted);max-width:540px}
+.hp-cta{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 20px}
+.hp-ticks{list-style:none;padding:0;margin:0;display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:13.5px}
+.hp-ticks li::before{content:"✓";color:#21a04a;font-weight:800;margin-right:6px}
+.hp-visual{position:relative}
+.hp-visual img{width:100%;aspect-ratio:4/3.2;object-fit:cover;border-radius:24px;box-shadow:0 30px 60px rgba(11,40,80,.18)}
+.hp-float{position:absolute;background:#fff;border-radius:14px;padding:12px 16px;box-shadow:0 12px 30px rgba(11,40,80,.16);font-size:12px;color:var(--muted)}
+.hp-float strong{display:block;color:var(--navy-deep);font-size:14px}
+.hp-float.a{left:-18px;bottom:28px}
+.hp-float.b{right:-14px;top:24px}
+.hp-dots{display:flex;gap:5px;margin-top:5px}
+.hp-dots i{width:18px;height:18px;border-radius:5px}
+.hp-sec{padding:72px max(16px,calc((100% - 1180px)/2))}
+.hp-alt{background:var(--bg)}
+.hp-head{text-align:center;max-width:680px;margin:0 auto 36px}
+.hp-head.left{text-align:left;margin:0}
+.hp-head h2{font-size:clamp(26px,3vw,36px);margin:14px 0 10px;color:var(--navy-deep)}
+.hp-head p{color:var(--muted);font-size:15.5px}
+.hp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.hp-feat{border:1px solid var(--line);border-radius:18px;padding:22px;background:#fff}
+.hp-ico{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--blue-soft);color:var(--navy);margin-bottom:14px}
+.hp-ico svg{width:22px;height:22px}
+.hp-feat h3{font-size:16px;margin-bottom:6px}
+.hp-feat p{color:var(--muted);font-size:14px}
+.hp-two{display:grid;grid-template-columns:1fr 1.1fr;gap:48px;align-items:center}
+.hp-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.hp-steps li{display:flex;gap:16px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.hp-steps li>span{flex:none;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700}
+.hp-steps h3{font-size:15.5px;margin-bottom:3px}
+.hp-steps p{color:var(--muted);font-size:14px}
+.hp-key{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;font-size:13.5px;font-weight:600}
+.hp-key i{display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}
+.hp-card{border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 20px 50px rgba(11,40,80,.10);background:#fff}
+.hp-card-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;color:var(--navy-deep)}
+.hp-card-h span{font-size:12px;color:var(--muted)}
+.hp-grid-tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.hp-grid-tbl td{border:1px solid #c9d2de;height:28px;font-size:12.5px}
+.hp-grid-tbl td:first-child{width:34%;padding:0 8px}
+.hp-c{background:color-mix(in srgb,var(--c) 22%,#fff)}
+.hp-c.on{background:var(--c);box-shadow:inset 0 0 0 1.5px #111}
+.hp-support{display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap;margin:0 max(16px,calc((100% - 1180px)/2)) 56px;padding:36px;border-radius:24px;background:linear-gradient(120deg,#0b6cb5,#073f6d);color:#dbeafa}
+.hp-support h2{color:#fff;font-size:clamp(24px,2.6vw,32px);margin:12px 0 8px}
+.hp-support-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:20px}
+.hp-support-box strong{display:block;color:#fff;font-size:26px;margin-bottom:12px}
+.hp-support-box .btn{background:#fff;color:var(--navy);border-color:#fff}
+.hp-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px max(16px,calc((100% - 1180px)/2));border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+@media (max-width:960px){
+  .hp-nav nav{display:none}
+  .hp-nav .btn{margin-left:auto}
+  .hp-hero,.hp-two{grid-template-columns:minmax(0,1fr);gap:32px}
+  .hp-grid{grid-template-columns:minmax(0,1fr)}
+  .hp-float.a{left:10px}
+  .hp-float.b{right:10px}
+  .ref-row{grid-template-columns:minmax(0,1fr)}
+  .feat-grid{grid-template-columns:minmax(0,1fr)}
+  .hp-sec{padding-top:52px;padding-bottom:52px}
+}
+@media (min-width:961px) and (max-width:1180px){.hp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 /* ---------- Colour levels ---------- */
 .lvl{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:650;color:var(--ink);white-space:nowrap}
 .lvl i{width:14px;height:14px;border-radius:4px;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
@@ -537,6 +676,7 @@ h2{font-size:22px;font-weight:700}
 </style>
 </head>
 <body>
+<div class="home-root" id="homeRoot" hidden></div>
 <div class="auth-root" id="authRoot" hidden></div>
 <div class="app" id="app" hidden>
   <aside class="sidebar" id="sidebar" aria-label="Main navigation">
@@ -547,6 +687,7 @@ h2{font-size:22px;font-weight:700}
     <div id="sideSchool"></div>
     <div id="miniCal" class="mini-cal"></div>
     <nav class="nav" id="nav"></nav>
+    <div class="support-card no-print"><span>Need help? Quick support</span><a href="tel:+250783568044"><strong>+250 783 568 044</strong></a><div><a href="tel:+250783568044">Call</a><a href="https://wa.me/250783568044" target="_blank" rel="noopener">WhatsApp</a></div></div>
     <div class="admin-card" id="adminCard"></div>
   </aside>
   <div class="scrim" data-action="close-sidebar"></div>
@@ -664,7 +805,9 @@ const TONE = {
   Achieved: 'ok', Developing: 'warn', 'Not yet': 'bad', Pending: 'muted', Female: 'info', Male: 'info',
 };
 const badge = (text, tone) => `<span class="badge ${tone || TONE[text] || ''}">${esc(text)}</span>`;
-const SECTION_SUGGESTIONS = ['CREATIVE ARTS AND CULTURE', 'HEALTH AND PHYSICAL DEVELOPMENT', 'SOCIAL AND EMOTIONAL DEVELOPMENT'];
+/* Subject categories offered when a school registers its subjects (shown as headings on the report card). */
+const SECTION_SUGGESTIONS = ['LITERACY AND NUMERACY', 'CREATIVE ARTS AND CULTURE', 'HEALTH AND PHYSICAL DEVELOPMENT', 'SOCIAL AND EMOTIONAL DEVELOPMENT'];
+const categoryList = () => Array.from(new Set(SECTION_SUGGESTIONS.concat(S('learningAreas').map(x => x.group || '').filter(Boolean))));
 /* Classes are created with the school; subjects (learning areas) are registered by the school itself. */
 const DEFAULT_CLASSES = [
   { name: 'Baby Class', code: 'BBY', capacity: 20, areas: [] },
@@ -748,8 +891,35 @@ const sb = CONFIGURED ? window.supabase.createClient(CFG.supabaseUrl, CFG.supaba
 let authUser = null, myRole = null, mySchool = null;
 const ws = { rev: 0, schoolId: null, list: [] };
 const save = { timer: null, inFlight: null, dirty: false, state: 'saved' };
-const ROLE_LABEL = { super_admin: 'GLOBAL SUPER ADMIN', director: 'SCHOOL DIRECTOR', admin: 'SCHOOL ADMINISTRATOR' };
-const ROLE_NAME = { super_admin: 'Super Admin', director: 'Director', admin: 'Administrator' };
+const ROLE_LABEL = { super_admin: 'GLOBAL SUPER ADMIN', director: 'SCHOOL DIRECTOR', admin: 'SCHOOL ADMINISTRATOR', teacher: 'TEACHER' };
+const ROLE_NAME = { super_admin: 'Super Admin', director: 'Director', admin: 'Administrator', teacher: 'Teacher' };
+const PROFILE_NAME = { super_admin: 'Global Super Admin', director: 'School Director', admin: 'School Administrator', teacher: 'Teacher' };
+/* Quick support line shown on every dashboard, the login page and the homepage. */
+const SUPPORT = { tel: '+250783568044', show: '+250 783 568 044', wa: 'https://wa.me/250783568044' };
+const supportLinks = (cls = 'btn sm') => `<a class="${cls}" href="tel:${SUPPORT.tel}">Call ${SUPPORT.show}</a><a class="${cls}" target="_blank" rel="noopener" href="${SUPPORT.wa}?text=${encodeURIComponent('Hello KIDNOVA support, I need help.')}">WhatsApp</a>`;
+/* Features a teacher login can be given. Directors, administrators and the Super Admin have all of them. */
+const FEATURES = [
+  ['students', 'Students', 'Register and update learners'],
+  ['attendance', 'Attendance', 'Take daily class registers'],
+  ['marks', 'Assessments & marks', 'Create assessments and enter results'],
+  ['reports', 'Report cards', 'Preview, issue and print report cards'],
+];
+const FEATURE_NAME = Object.fromEntries(FEATURES.map(f => [f[0], f[1]]));
+const PAGE_FEATURE = { students: 'students', student: 'students', attendance: 'attendance', assessments: 'marks', reports: 'reports' };
+let myFeatures = [];
+const can = f => (myRole === 'teacher' ? myFeatures.includes(f) : !!myRole);
+function requireFeature(f) { if (!can(f)) throw new AppError(`Your account does not have access to ${FEATURE_NAME[f] || f}. Ask your school director.`); }
+/* Which pages each role sees. School staff never see academic calendar tools; teachers only see their features. */
+function pageAllowed(page) {
+  if (!myRole || isSuper()) return true;
+  if (page === 'schools') return false;
+  if (myRole === 'teacher') {
+    if (['school', 'classes', 'teachers', 'years', 'terms', 'settings'].includes(page)) return false;
+    return PAGE_FEATURE[page] ? can(PAGE_FEATURE[page]) : true;
+  }
+  return !['years', 'terms'].includes(page);
+}
+const featureChecks = (selected, name = 'feat') => `<div class="feat-grid">${FEATURES.map(([k, l, d]) => `<label class="feat"><input type="checkbox" name="${name}" value="${k}" ${selected.includes(k) ? 'checked' : ''}><span><strong>${esc(l)}</strong><small>${esc(d)}</small></span></label>`).join('')}</div>`;
 const isSuper = () => myRole === 'super_admin';
 const isDirector = () => myRole === 'director';
 function currentAdmin() {
@@ -996,6 +1166,7 @@ function applyRoute() {
   const parts = location.hash.replace(/^#\/?/, '').split('/');
   const page = parts[0] || 'dashboard';
   ui.page = (VIEWS[page] || page === 'student') ? page : 'dashboard';
+  if (myRole && !pageAllowed(ui.page)) ui.page = 'dashboard';
   if (ui.page === 'student') ui.studentId = decodeURIComponent(parts[1] || '');
   ui.reportMode = ui.page === 'reports' ? (parts[1] || 'list') : null;
   ui.reportRef = ui.page === 'reports' ? decodeURIComponent(parts[2] || '') : '';
@@ -1005,8 +1176,9 @@ function applyRoute() {
 function renderNav() {
   const groups = ['Overview', 'People', 'Academic', 'Administration'];
   $('#nav').innerHTML = groups.map(g => {
-    const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()));
+    const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()) && pageAllowed(n.key));
     const current = ui.page === 'student' ? 'students' : ui.page;
+    if (!items.length) return '';
     return `<div class="nav-label">${g}</div>` + items.map(n => `<a href="#${n.key}" class="${current === n.key ? 'on' : ''}">${icon(n.key)}<span>${esc(n.label)}</span></a>`).join('');
   }).join('');
 }
@@ -1756,13 +1928,20 @@ function openTeacherForm(id) {
       ${field('Full name *', inp('fullName', t ? t.fullName : '', 'required'), '', 'span2')}
       ${field('Phone number *', inp('phone', t ? t.phone : '', 'required'))}
       ${field('Email address *', inp('email', t ? t.email : '', 'type="email" required'))}
-      ${field('Username *', inp('username', t ? t.username : '', 'required pattern="[a-z0-9._-]{3,30}"'), 'Lowercase letters, numbers, dots or dashes')}
+      ${field('Username *', inp('username', t ? t.username : '', 'required pattern="[a-z0-9._\\-]{3,30}"'), 'Lowercase letters, numbers, dots or dashes')}
       ${field('Employment status *', sel('employmentStatus', TEACHER_STATUSES, t ? t.employmentStatus : 'Active'))}
       ${field('Current class', `<input class="input" disabled value="${esc(cur ? classNameOf(cur.classId) : 'Unassigned')}">`, 'Change class assignments from Classes or Teachers')}
+      <fieldset class="fieldset span2"><legend>KIDNOVA login and features</legend>${(() => {
+        const m = t ? memberForTeacher(t) : null;
+        if (m) return `<p class="small muted" style="margin-bottom:10px">Logs in with <strong>${esc(m.email)}</strong>. Choose what this teacher can use:</p>${featureChecks(m.features || [])}<input type="hidden" name="memberId" value="${esc(m.user_id)}">`;
+        return `<label class="check" style="margin-bottom:10px"><input type="checkbox" name="createLogin" value="1" ${t ? '' : 'checked'}> Create a login for this teacher (uses the email above)</label>
+          ${field('Temporary password', '<input class="input" name="loginPassword" minlength="6" autocomplete="new-password" placeholder="At least 6 characters">', 'Share it privately with the teacher.')}
+          <p class="small muted" style="margin:12px 0 8px">Features this teacher can use:</p>${featureChecks(['attendance', 'marks'])}`;
+      })()}</fieldset>
     </div>`,
   });
 }
-FORMS.teacher = (fd, arg) => {
+FORMS.teacher = async (fd, arg) => {
   requireWritable();
   const data = {
     fullName: String(fd.get('fullName') || '').trim(), phone: String(fd.get('phone') || '').trim(),
@@ -1785,11 +1964,36 @@ FORMS.teacher = (fd, arg) => {
     Object.assign(t, data);
     commit('Teacher updated', data.fullName);
   } else {
-    db.teachers.push({ id: uid('tch'), schoolId: sid(), ...data, createdAt: nowISO() });
+    const tid = uid('tch');
+    db.teachers.push({ id: tid, schoolId: sid(), ...data, createdAt: nowISO() });
     commit('Teacher registered', data.fullName);
+    arg = tid;
   }
+  await saveTeacherLogin(byId('teachers', arg), fd);
   return true;
 };
+/* Create or update the teacher's own login and feature permissions. */
+async function saveTeacherLogin(t, fd) {
+  const feats = fd.getAll('feat').map(String).filter(f => FEATURE_NAME[f]);
+  const memberId = String(fd.get('memberId') || '');
+  if (memberId) {
+    const { error } = await sb.rpc('kn_set_features', { p_user: memberId, p_features: feats });
+    if (error) throw new AppError('Teacher saved, but features could not be updated: ' + error.message);
+    ui.members = null; render();
+    return;
+  }
+  if (fd.get('createLogin') !== '1') return;
+  const password = String(fd.get('loginPassword') || '');
+  if (password.length < 6) throw new AppError('Teacher saved. To create the login, enter a temporary password of at least 6 characters (Edit the teacher).');
+  const email = String(t.email || '').trim().toLowerCase();
+  const tmp = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: false, autoRefreshToken: false, storageKey: 'kn-tmp-' + Date.now() } });
+  const res = await tmp.auth.signUp({ email, password, options: { data: { full_name: t.fullName } } });
+  if (res.error && !/already/i.test(res.error.message)) throw new AppError('Teacher saved, but the login could not be created: ' + res.error.message);
+  const { error } = await sb.rpc('kn_add_member', { p_email: email, p_name: t.fullName, p_role: 'teacher', p_school: ws.schoolId, p_features: feats, p_teacher_id: t.id });
+  if (error) throw new AppError('Teacher saved, but the login could not be linked: ' + error.message);
+  toast(res.error ? `${email} already had an account; it can now log in as a teacher.` : `Login created. ${t.fullName} can log in with ${email}.`, 'ok', 6500);
+  ui.members = null; render();
+}
 ACTIONS['teacher-new'] = () => openTeacherForm(null);
 ACTIONS['teacher-edit'] = el => openTeacherForm(el.dataset.id);
 ACTIONS['teacher-assign'] = el => openAssignForm({ teacherId: el.dataset.id });
@@ -1812,14 +2016,17 @@ ACTIONS['teacher-delete'] = async el => {
   commit('Teacher deleted', t.fullName);
 };
 INPUTS['teacher-search'] = el => { ui.teacherQuery = el.value; const b = $('#teacherBody'); if (b) b.innerHTML = teacherRows(); };
+const memberForTeacher = t => (ui.members && ui.members.list ? ui.members.list.find(m => m.role === 'teacher' && (m.teacher_id === t.id || m.email === String(t.email || '').toLowerCase())) || null : null);
 function teacherRows() {
   const q = (ui.teacherQuery || '').trim().toLowerCase();
   const rows = S('teachers').filter(t => !q || [t.fullName, t.username, t.email].some(v => String(v).toLowerCase().includes(q))).sort((a, b) => byName(a.fullName, b.fullName));
-  if (!rows.length) return `<tr><td colspan="6">${emptyState('No teachers match', 'Try another search, or register a teacher.')}</td></tr>`;
+  if (!rows.length) return `<tr><td colspan="7">${emptyState('No teachers match', 'Try another search, or register a teacher.')}</td></tr>`;
   return rows.map(t => {
     const a = teacherAssignment(t.id);
     const cur = a ? `<strong>${esc(classNameOf(a.classId))}</strong><span class="sub">since ${fmtDate(a.startDate)}</span>` : '<span class="muted">Unassigned</span>';
-    return `<tr><td>${who(t, esc(t.username))}</td><td>${esc(t.phone)}<span class="sub">${esc(t.email)}</span></td><td>${badge(t.employmentStatus)}</td><td>${cur}</td>
+    const m = memberForTeacher(t);
+    const login = !ui.members ? '<span class="muted small">…</span>' : m ? `${m.features && m.features.length ? m.features.map(f => `<span class="badge info">${esc(FEATURE_NAME[f] || f)}</span>`).join(' ') : '<span class="badge warn">No features</span>'}<span class="sub">${esc(m.email)}</span>` : '<span class="muted">No login</span>';
+    return `<tr><td>${who(t, esc(t.username))}</td><td>${esc(t.phone)}<span class="sub">${esc(t.email)}</span></td><td>${badge(t.employmentStatus)}</td><td>${cur}</td><td>${login}</td>
       <td class="r nowrap"><button type="button" class="btn xs" data-action="teacher-assign" data-id="${t.id}">${a ? 'Reassign' : 'Assign class'}</button> <button type="button" class="btn xs" data-action="teacher-history" data-id="${t.id}">History</button> <button type="button" class="btn xs" data-action="teacher-edit" data-id="${t.id}">Edit</button> <button type="button" class="btn xs ghost" data-action="teacher-delete" data-id="${t.id}">Delete</button></td></tr>`;
   }).join('');
 }
@@ -1828,7 +2035,8 @@ VIEWS.teachers = () => {
   const assignedCount = S('assignments').filter(a => a.status === 'Active').length;
   const unassigned = list.filter(t => t.employmentStatus === 'Active' && !teacherAssignment(t.id)).length;
   const total = classList().length;
-  return pageHead('Teachers', 'Teacher records are managed by the school administrator. Teachers have no separate login.',
+  if (!ui.members) loadMembers();
+  return pageHead('Teachers', 'Register teachers, assign their class, and give each one a KIDNOVA login with only the features they need.',
     '<button type="button" class="btn primary" data-action="teacher-new">Register teacher</button>') + `
   <div class="grid g4 mb">
     <div class="card stat accent"><span class="lbl">Teacher accounts</span><span class="val">${list.length}</span><span class="sub">registered in this school</span></div>
@@ -1837,7 +2045,7 @@ VIEWS.teachers = () => {
     <div class="card stat warn"><span class="lbl">Active, unassigned</span><span class="val">${unassigned}</span><span class="sub">can be assigned now</span></div>
   </div>
   <div class="card"><div class="toolbar"><div class="field search"><span class="lbl">Search</span><input class="input" data-input="teacher-search" placeholder="Name, username or email" value="${esc(ui.teacherQuery || '')}"></div></div>
-    <div class="table-wrap"><table class="tbl"><thead><tr><th>Teacher</th><th>Contact</th><th>Employment</th><th>Current class</th><th class="r">Actions</th></tr></thead><tbody id="teacherBody">${teacherRows()}</tbody></table></div></div>`;
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Teacher</th><th>Contact</th><th>Employment</th><th>Current class</th><th>KIDNOVA login</th><th class="r">Actions</th></tr></thead><tbody id="teacherBody">${teacherRows()}</tbody></table></div></div>`;
 };
 
 /* ---------- 16. Learners (students) ---------- */
@@ -1933,6 +2141,7 @@ function openStudentForm(id) {
 }
 FORMS.student = (fd, arg) => {
   requireWritable();
+  requireFeature('students');
   const get = k => String(fd.get(k) || '').trim();
   const data = {
     regNumber: get('regNumber').toUpperCase(), fullName: get('fullName'), dob: get('dob'), gender: get('gender'),
@@ -1978,6 +2187,7 @@ ACTIONS['student-edit'] = el => openStudentForm(el.dataset.id);
 ACTIONS['student-open'] = el => { go('student/' + el.dataset.id); };
 ACTIONS['student-delete'] = async el => {
   requireWritable();
+  requireFeature('students');
   const st = byId('students', el.dataset.id);
   const nRes = db.results.filter(r => r.studentId === st.id).length;
   const nAtt = db.attendance.filter(a => a.studentId === st.id).length;
@@ -2238,6 +2448,7 @@ function syncAssessMax(areaId) {
 /* ---------- 19. Assessments and results ---------- */
 function openAssessForm(id) {
   requireWritable();
+  requireFeature('marks');
   const c = ctx();
   const a = id ? byId('assessments', id) : null;
   const term = a ? byId('terms', a.termId) : c.term;
@@ -2264,6 +2475,7 @@ function openAssessForm(id) {
   });
 }
 FORMS.assess = (fd, arg) => {
+  requireFeature('marks');
   requireWritable();
   const a = arg ? byId('assessments', arg) : null;
   const term = a ? byId('terms', a.termId) : ctx().term;
@@ -2300,6 +2512,7 @@ FORMS.assess = (fd, arg) => {
 };
 FORMS.results = (fd, arg) => {
   requireWritable();
+  requireFeature('marks');
   const asm = byId('assessments', arg);
   if (!asm) throw new AppError('Assessment not found.');
   requireCorrectable(byId('terms', asm.termId), byId('academicYears', asm.yearId));
@@ -2446,6 +2659,7 @@ ACTIONS['assess-open'] = el => { ui.assessId = el.dataset.id; render(); const p 
 ACTIONS['assess-close'] = () => { ui.assessId = null; render(); };
 ACTIONS['assess-delete'] = async el => {
   requireWritable();
+  requireFeature('marks');
   const a = byId('assessments', el.dataset.id);
   requireOpen(byId('terms', a.termId), byId('academicYears', a.yearId));
   const n = db.results.filter(r => r.assessmentId === a.id).length;
@@ -2596,6 +2810,7 @@ CHANGES['att-class'] = el => { ui.attClassId = el.value; ui.attDraft = null; ren
 CHANGES['att-date'] = el => { ui.attDate = el.value || defaultAttDate(); ui.attDraft = null; render(); };
 FORMS.attendance = () => {
   requireWritable();
+  requireFeature('attendance');
   const c = ctx();
   const classId = ui.attClassId, date = ui.attDate;
   requireOpen(c.term, c.year);
@@ -2876,6 +3091,7 @@ VIEWS.reports = () => {
 };
 FORMS['report-issue'] = (fd, arg) => {
   requireWritable();
+  requireFeature('reports');
   const [studentId, termId] = String(arg).split('|');
   const term = byId('terms', termId);
   const year = term ? byId('academicYears', term.yearId) : null;
@@ -2892,6 +3108,7 @@ FORMS['report-issue'] = (fd, arg) => {
 };
 ACTIONS['report-issue-class'] = async el => {
   requireWritable();
+  requireFeature('reports');
   const c = ctx();
   if (!c.term || !c.year) throw new AppError('Select an academic year and term first.');
   if (c.year.status === 'Closed') throw new AppError(`${c.year.name} is closed. Its report cards cannot be reissued.`);
@@ -2950,6 +3167,47 @@ VIEWS.dashboard = () => {
   const recentAsms = S('assessments').slice().sort((a, b) => ((b.createdAt || '') < (a.createdAt || '') ? -1 : 1)).slice(0, 5);
   const activity = db.activity.filter(a => a.schoolId === sid()).slice(0, 8);
 
+  /* Reference-style overview: gender, enrolment with logo, attendance */
+  const female = learners.filter(s => s.gender === 'Female').length, male = learners.filter(s => s.gender === 'Male').length;
+  const fPct = learners.length ? (female / learners.length) * 100 : 0;
+  const lastRate = lastDate ? rateFromRecords(regs.filter(a => a.date === lastDate)).rate : null;
+  const donut = (pct, a, b, label, value) => `<div class="donut" style="--p:${Math.max(0, Math.min(100, pct || 0))};--a:${a};--b:${b}"><div><strong>${esc(label)}</strong><span>${esc(value)}</span></div></div>`;
+  const firstName = (() => { const n = currentAdmin().name.split(' ')[0] || ''; return n.charAt(0) + n.slice(1).toLowerCase(); })();
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const welcome = `<div class="welcome-card"><div><h2>${greet}, ${esc(firstName)} 👋</h2><p>${ui.welcome ? 'Welcome back to KIDNOVA. ' : ''}You are signed in as <strong>${esc(PROFILE_NAME[myRole] || myRole)}</strong> at <strong>${esc(sc.name)}</strong> · ${c.year ? esc(c.year.name) : 'No academic year'}${term ? ` · ${esc(term.name)}` : ''}</p></div>
+    <div class="welcome-support"><span>Quick support</span><strong>${SUPPORT.show}</strong><div class="row">${supportLinks('btn xs')}</div></div></div>`;
+  const overview = `<div class="ref-row mt">
+    <div class="card ref-card"><div class="ref-h">Gender</div>${donut(fPct, '#e46ca3', '#2a9fd8', female >= male ? 'Female' : 'Male', learners.length ? fmtPct(female >= male ? fPct : 100 - fPct) : '—')}
+      <div class="ref-legend"><span><i style="background:#e46ca3"></i><strong>${female}</strong> Female</span><span><i style="background:#2a9fd8"></i><strong>${male}</strong> Male</span></div></div>
+    <div class="ref-mid"><div class="ref-enrol"><span>Enrolled learners</span><strong>${learners.length}</strong><small>${capacity ? `${capacity - learners.length} places free · ${classes.length} classes` : 'No classes yet'}</small></div>
+      <div class="ref-logo">${logoHtml(sc, 'lg')}<div><strong>${esc(sc.name)}</strong><span>${esc(sc.regNumber || '')}</span></div></div></div>
+    <div class="card ref-card"><div class="ref-h">Attendance${lastDate ? ` · ${esc(fmtDate(lastDate))}` : ''}</div>${donut(lastRate, '#21a04a', '#e7ecf3', 'Present', fmtPct(lastRate))}
+      <div class="ref-legend"><span>Term rate <strong>${fmtPct(termRate)}</strong></span><span>${lastDate ? 'Last register' : 'No registers yet'}</span></div></div>
+  </div>`;
+  /* Class breakdown by gender and incomplete information */
+  const clsRows = classes.map(cl => { const l = studentsIn(cl.id); const f = l.filter(s => s.gender === 'Female').length; return `<tr><td>${esc(cl.name)}</td><td class="c num cf">${f}</td><td class="c num cm">${l.length - f}</td><td class="c num ct"><strong>${l.length}</strong></td><td class="c num">${cl.capacity}</td><td>${teacherOfClass(cl.id) ? esc(teacherOfClass(cl.id).fullName) : '<span class="muted">No teacher</span>'}</td></tr>`; }).join('');
+  const levelCard = `<div class="card"><div class="card-h"><div><h3>Learners by class</h3><p>Active learners this year</p></div></div><div class="table-wrap mt"><table class="tbl ref-tbl"><thead><tr><th>Class</th><th class="c">Female</th><th class="c">Male</th><th class="c">Total</th><th class="c">Places</th><th>Class teacher</th></tr></thead>
+    <tbody>${clsRows || `<tr><td colspan="6">${emptyState('No classes', '')}</td></tr>`}</tbody><tfoot><tr><th>Total</th><th class="c">${female}</th><th class="c">${male}</th><th class="c">${learners.length}</th><th class="c">${capacity}</th><th></th></tr></tfoot></table></div></div>`;
+  const missing = [
+    ['Guardian phone number', learners.filter(s => !s.guardianPhone).length, '#students'],
+    ['Guardian email', learners.filter(s => !s.guardianEmail).length, '#students'],
+    ['Learner photo', learners.filter(s => !s.photo).length, '#students'],
+    ['Classes without a class teacher', classes.length - assigned, '#teachers'],
+    ['Classes without subjects', classes.filter(cl => !classAreas(cl.id).length).length, '#settings'],
+  ];
+  const incCard = `<div class="card"><div class="card-h"><div><h3>Incomplete information</h3><p>Records to complete for accurate reports</p></div></div><div class="card-b"><ul class="inc-list">${missing.map(([l, n, h]) => `<li><a href="${pageAllowed(h.slice(1)) ? h : '#dashboard'}">${esc(l)}</a><span class="badge ${n ? 'warn' : 'ok'}">${n}</span></li>`).join('')}</ul></div></div>`;
+  /* Academic performance by subject category */
+  const catMap = new Map();
+  if (term) classes.forEach(cl => classAreas(cl.id).forEach(area => studentsIn(cl.id).forEach(st => {
+    const p = areaScore(st.id, area, term.id).percent;
+    if (p === null || p === undefined) return;
+    const k = area.group || 'GENERAL';
+    if (!catMap.has(k)) catMap.set(k, []);
+    catMap.get(k).push(p);
+  })));
+  const catHtml = Array.from(catMap.entries()).map(([k, v]) => { const a = avg(v); const b = bandFor(a); return `<div class="hbar"><div class="t" title="${esc(k)}">${esc(k.charAt(0) + k.slice(1).toLowerCase())}</div><div class="track"><i style="width:${Math.min(100, a)}%;background:${esc(b ? b.color : '#8a96a8')}"></i></div><div class="v">${fmtPct(a)}</div></div>`; }).join('');
+  const catCard = `<div class="card"><div class="card-h"><div><h3>Performance by subject category</h3><p>Average level across all learners this term</p></div></div><div class="card-b">${catHtml || emptyState('No results yet', 'Category averages appear once results are entered for this term.')}</div></div>`;
   const hero = `<div class="hero">${logoHtml(sc, 'lg')}<div><h2>${esc(sc.name)}</h2><p>${sc.motto ? `“${esc(sc.motto)}” · ` : ''}${c.year ? esc(c.year.name) : 'No academic year'}${term ? ` · ${esc(term.name)}` : ''}</p></div>
     <div class="pills"><div class="pill"><strong>${learners.length}</strong>Active learners</div><div class="pill"><strong>${fmtPct(termRate)}</strong>Attendance this term</div><div class="pill"><strong>${esc(sc.status)}</strong>School status</div></div></div>`;
 
@@ -2975,7 +3233,7 @@ VIEWS.dashboard = () => {
     ? `<div class="stack">${dist.filter(d => d.n).map(d => `<span style="width:${(d.n / graded) * 100}%;background:${d.b.color || BAND_TONES[d.i] || '#8a96a8'}" title="${esc(d.b.label)}: ${d.n}"></span>`).join('')}</div>
        <div class="legend">${dist.map(d => `<span><i style="background:${d.b.color || BAND_TONES[d.i] || '#8a96a8'}"></i>${esc(d.b.code)} · ${esc(d.b.label)} (${d.n})</span>`).join('')}</div>`
     : emptyState('No graded learners yet', 'Levels appear once results are entered for this term.');
-  const gradeCard = `<div class="card"><div class="card-h"><div><h3>Grade distribution</h3><p>Overall grade of each active learner for this term</p></div></div><div class="card-b">${stackHtml}</div></div>`;
+  const gradeCard = `<div class="card"><div class="card-h"><div><h3>Level distribution</h3><p>Overall colour level of each learner this term</p></div></div><div class="card-b">${stackHtml}</div></div>`;
 
   const regRows = recentStudents.map(st => `<tr><td>${who(st, esc(st.regNumber))}</td><td>${esc(classNameOf(st.classId))}</td><td class="nowrap">${fmtDate(st.admissionDate)}</td></tr>`).join('');
   const regCard = `<div class="card"><div class="card-h"><div><h3>Recent registrations</h3><p>Latest learners added to the register</p></div><a class="btn sm" href="#students">All learners</a></div>
@@ -2994,15 +3252,17 @@ VIEWS.dashboard = () => {
   const actCard = `<div class="card"><div class="card-h"><div><h3>Recent activity</h3><p>Latest changes for this school</p></div><a class="btn sm" href="#settings">Full log</a></div>
     <div class="table-wrap mt"><table class="tbl"><thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead><tbody>${actRows || `<tr><td colspan="3">${emptyState('No activity yet', '')}</td></tr>`}</tbody></table></div></div>`;
 
-  return hero + stats
-    + `<div class="grid g2 mt">${attCard}${perfCard}</div>`
-    + `<div class="grid g2 mt">${gradeCard}${regCard}</div>`
-    + `<div class="grid g2 mt">${asmCard}${actCard}</div>`;
+  return welcome + overview
+    + `<div class="grid g-side mt">${levelCard}${incCard}</div>`
+    + `<h3 class="sec-title">Academic performance${term ? ` · ${esc(term.name)}` : ''}</h3>`
+    + `<div class="grid g3">${perfCard}${gradeCard}${catCard}</div>`
+    + `<div class="grid g2 mt">${attCard}${regCard}</div>`
+    + `<div class="grid g2 mt">${asmCard}${myRole === 'teacher' ? '' : actCard}</div>`;
 };
 
 /* ---------- 23. Settings ---------- */
 const SETTINGS_SECTIONS = [
-  ['school', 'School & logo'], ['calendar', 'Academic calendar'], ['classes', 'Classes'], ['areas', 'Learning areas'],
+  ['school', 'School & logo'], ['calendar', 'Academic calendar'], ['classes', 'Classes'], ['areas', 'Subjects'],
   ['grading', 'Grading rules'], ['attendance', 'Attendance categories'], ['report', 'Report card'], ['data', 'Data & backup'], ['users', 'Users & access'], ['activity', 'Activity log'],
 ];
 function settingsSchoolHtml() {
@@ -3031,25 +3291,33 @@ function settingsClassesHtml() {
 }
 function settingsAreasHtml() {
   const cls = classList();
-  if (!cls.length) return emptyState('No classes', 'Add a class before configuring its learning areas.', '<a class="btn primary" href="#classes">Go to Classes</a>');
+  if (!cls.length) return emptyState('No classes', 'Add a class before registering its subjects.', '<a class="btn primary" href="#classes">Go to Classes</a>');
   const clsId = cls.some(c => c.id === ui.settingsClassId) ? ui.settingsClassId : cls[0].id;
   const areas = classAreas(clsId);
-  const rows = areas.map((a, i) => {
-    const used = db.assessments.filter(x => x.areaId === a.id).length;
-    return `<tr><td class="c num">${i + 1}</td><td><strong>${esc(a.name)}</strong>${a.group ? `<span class="sub">${esc(a.group)}</span>` : ''}</td><td>${a.kind === 'numerical' ? badge('Marks', 'info') : badge('Colour levels', 'navy')}</td><td class="r num">${a.kind === 'numerical' ? a.maxMarks : '—'}</td><td class="r num">${used}</td>
+  /* Group subjects by category in the order the categories first appear. */
+  const order = [];
+  areas.forEach(a => { const g = a.group || ''; if (!order.includes(g)) order.push(g); });
+  const body = order.map(g => {
+    const list = areas.filter(a => (a.group || '') === g);
+    const rows = list.map(a => {
+      const i = areas.indexOf(a);
+      const used = db.assessments.filter(x => x.areaId === a.id).length;
+      return `<tr><td><strong>${esc(a.name)}</strong></td><td>${a.kind === 'numerical' ? badge(`Marks /${a.maxMarks}`, 'info') : badge('Colour levels', 'navy')}</td><td class="r num">${used}</td>
       <td class="r nowrap"><button type="button" class="btn xs ghost" data-action="area-move" data-id="${a.id}" data-dir="-1" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
       <button type="button" class="btn xs ghost" data-action="area-move" data-id="${a.id}" data-dir="1" ${i === areas.length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
       <button type="button" class="btn xs" data-action="area-edit" data-id="${a.id}">Edit</button>
       <button type="button" class="btn xs ghost" data-action="area-delete" data-id="${a.id}" ${used ? 'disabled title="Used by assessments"' : ''}>Delete</button></td></tr>`;
+    }).join('');
+    return `<tr class="cat-row"><td colspan="3">${esc(g || 'General (no heading)')} <span class="small muted">· ${list.length} subject${list.length === 1 ? '' : 's'}</span></td><td class="r"><button type="button" class="btn xs light" data-action="area-new" data-id="${clsId}" data-cat="${esc(g)}">+ Add subject here</button></td></tr>${rows}`;
   }).join('');
   return `<div class="card"><div class="toolbar">
       <div class="field"><span class="lbl">Class</span>${sel('settingsClass', cls.map(c => [c.id, c.name]), clsId, 'data-change="settings-class"')}</div>
-      <div class="grow"></div><button type="button" class="btn primary" data-action="area-new" data-id="${clsId}">Add learning area</button></div>
-    <div class="table-wrap"><table class="tbl"><thead><tr><th class="c">#</th><th>Learning area</th><th>Type</th><th class="r">Max marks</th><th class="r">Assessments</th><th class="r">Actions</th></tr></thead>
-    <tbody>${rows || `<tr><td colspan="6">${emptyState('No learning areas', 'Add the first learning area for this class.')}</td></tr>`}</tbody></table></div>
-    <div class="card-b small muted">Colour-level areas are rated 1 Excellent, 2 Very good, 3 Good or 4 Fair. Marks areas are scored out of their maximum and converted to a colour level. The section groups areas on the report card. Areas that already have assessments cannot be deleted or changed to another type.</div></div>`;
+      <div class="grow"></div><button type="button" class="btn primary" data-action="area-new" data-id="${clsId}">Register subject</button></div>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Subject</th><th>Assessment type</th><th class="r">Assessments</th><th class="r">Actions</th></tr></thead>
+    <tbody>${body || `<tr><td colspan="4">${emptyState('No subjects registered', 'Register this class’s subjects by category. Each category becomes a heading on the report card.', `<button type="button" class="btn primary" data-action="area-new" data-id="${clsId}">Register first subject</button>`)}</td></tr>`}</tbody></table></div>
+    <div class="card-b small muted">Choose a category, then name the subject. Colour-level subjects are rated 1 Excellent, 2 Very good, 3 Good or 4 Fair; marks subjects are scored out of a maximum and converted to a colour. Subjects that already have assessments cannot be deleted.</div></div>`;
 }
-function openAreaForm(classId, areaId) {
+function openAreaForm(classId, areaId, presetCat) {
   requireWritable();
   const a = areaId ? byId('learningAreas', areaId) : null;
   const cls = byId('classes', a ? a.classId : classId);
@@ -3057,16 +3325,18 @@ function openAreaForm(classId, areaId) {
   const used = a ? db.assessments.some(x => x.areaId === a.id) : false;
   const kind = a ? a.kind : 'competency';
   openForm({
-    title: a ? `Edit ${a.name}` : `Add learning area · ${cls.name}`,
-    form: 'area', arg: a ? a.id : cls.id, submit: a ? 'Save learning area' : 'Add learning area',
+    title: a ? `Edit ${a.name}` : `Register subject · ${cls.name}`,
+    form: 'area', arg: a ? a.id : cls.id, submit: a ? 'Save subject' : 'Register subject',
     html: `<div class="form-grid">
-      ${field('Learning area name *', inp('name', a ? a.name : '', 'required maxlength="60"'), '', 'span2')}
-      ${field('Report section', `<input class="input" name="group" list="areaGroups" maxlength="60" value="${esc(a ? a.group || '' : '')}" placeholder="e.g. CREATIVE ARTS AND CULTURE"><datalist id="areaGroups">${Array.from(new Set(S('learningAreas').map(x => x.group || '').concat(SECTION_SUGGESTIONS).filter(Boolean))).map(g => `<option value="${esc(g)}"></option>`).join('')}</datalist>`, 'Leave empty for the first group of subjects', 'span2')}
+      ${field('Category *', `<select class="input" name="groupSel" data-change="area-cat"><option value="">General (no heading)</option>${categoryList().map(g => `<option value="${esc(g)}" ${(a ? a.group || '' : presetCat || '') === g ? 'selected' : ''}>${esc(g)}</option>`).join('')}<option value="__new">+ New category…</option></select><input class="input mt" name="groupNew" id="areaCatNew" maxlength="60" placeholder="New category name" hidden>`, 'Shown as a heading on the report card', 'span2')}
+      ${field('Subject name *', inp('name', a ? a.name : '', 'required maxlength="60"'), '', 'span2')}
       ${field('Assessment type *', sel('kind', [['competency', 'Colour levels (1 Excellent · 2 Very good · 3 Good · 4 Fair)'], ['numerical', 'Marks (converted to a colour level)']], kind, `data-change="area-kind"${used ? ' disabled' : ''}`), used ? 'Locked: assessments already use this area' : 'Most nursery areas use colour levels')}
       ${field('Maximum marks', inp('maxMarks', a && a.maxMarks ? a.maxMarks : 100, `type="number" min="1" max="1000" id="areaMax"${kind === 'numerical' ? '' : ' disabled'}`), 'Applies to assessments created from now on')}
+      ${a ? '' : `<label class="check span2"><input type="checkbox" name="allClasses" value="1"> Also register this subject in every other class</label>`}
     </div>`,
   });
 }
+CHANGES['area-cat'] = el => { const n = $('#areaCatNew'); if (n) { n.hidden = el.value !== '__new'; if (!n.hidden) n.focus(); } };
 CHANGES['area-kind'] = el => { const m = $('#areaMax'); if (m) m.disabled = el.value !== 'numerical'; };
 CHANGES['settings-class'] = el => { ui.settingsClassId = el.value; render(); };
 FORMS.area = (fd, arg) => {
@@ -3076,7 +3346,10 @@ FORMS.area = (fd, arg) => {
   const cls = byId('classes', classId);
   if (!cls) throw new AppError('Class not found.');
   const name = String(fd.get('name') || '').trim();
-  if (!name) throw new AppError('Enter a name for the learning area.');
+  if (!name) throw new AppError('Enter the subject name.');
+  const groupSel = String(fd.get('groupSel') || '');
+  const group = groupSel === '__new' ? String(fd.get('groupNew') || '').trim().toUpperCase() : groupSel;
+  if (groupSel === '__new' && !group) throw new AppError('Type the name of the new category.');
   if (classAreas(classId).some(x => (!existing || x.id !== existing.id) && x.name.toLowerCase() === name.toLowerCase())) throw new AppError(`${cls.name} already has a learning area called ${name}.`);
   const used = existing ? db.assessments.some(x => x.areaId === existing.id) : false;
   const kind = used ? existing.kind : String(fd.get('kind') || '');
@@ -3091,16 +3364,28 @@ FORMS.area = (fd, arg) => {
     }
   }
   if (existing) {
-    Object.assign(existing, { name, kind, maxMarks, group: String(fd.get('group') || '').trim() });
-    commit('Learning area updated', `${name} · ${cls.name}`);
+    Object.assign(existing, { name, kind, maxMarks, group });
+    commit('Subject updated', `${name} · ${cls.name}`);
   } else {
-    db.learningAreas.push({ id: uid('la'), schoolId: sid(), classId, name, kind, maxMarks, group: String(fd.get('group') || '').trim(), order: classAreas(classId).length + 1 });
-    commit('Learning area added', `${name} · ${cls.name}`);
+    /* New subjects go to the end of their category so report headings stay together. */
+    const place = cid => {
+      const list = classAreas(cid);
+      if (list.some(x => x.name.toLowerCase() === name.toLowerCase())) return false;
+      const lastInCat = list.filter(x => (x.group || '') === group).pop();
+      const at = lastInCat ? lastInCat.order + 0.5 : list.length + 1;
+      db.learningAreas.push({ id: uid('la'), schoolId: sid(), classId: cid, name, kind, maxMarks, group, order: at });
+      classAreas(cid).forEach((x, i) => { x.order = i + 1; });
+      return true;
+    };
+    place(classId);
+    let extra = 0;
+    if (fd.get('allClasses') === '1') classList().forEach(c => { if (c.id !== classId && place(c.id)) extra += 1; });
+    commit('Subject registered', `${name} · ${group || 'General'} · ${cls.name}${extra ? ` + ${extra} other class(es)` : ''}`);
   }
   ui.settingsClassId = classId;
   return true;
 };
-ACTIONS['area-new'] = el => openAreaForm(el.dataset.id, null);
+ACTIONS['area-new'] = el => openAreaForm(el.dataset.id, null, el.dataset.cat || '');
 ACTIONS['area-edit'] = el => openAreaForm(null, el.dataset.id);
 ACTIONS['area-delete'] = async el => {
   requireWritable();
@@ -3307,38 +3592,40 @@ ACTIONS['data-clear-all'] = async () => {
 /* ---------- Users & access ---------- */
 const schoolNameOf = id => (ws.list.find(w => w.school_id === id) || {}).school_name || (curSchool() && ws.schoolId === id ? curSchool().name : '—');
 async function loadMembers() {
-  const { data, error } = await sb.from('kn_members').select('user_id, email, full_name, role, school_id, created_at').order('created_at');
+  const { data, error } = await sb.from('kn_members').select('user_id, email, full_name, role, school_id, features, teacher_id, created_at').order('created_at');
   ui.members = error ? { error: error.message } : { list: data };
-  if (ui.page === 'settings' && ui.settingsSection === 'users') render();
+  if ((ui.page === 'settings' && ui.settingsSection === 'users') || ui.page === 'teachers') render();
 }
 function settingsUsersHtml() {
   if (!ui.members) { loadMembers(); return '<div class="card"><div class="card-b muted">Loading users…</div></div>'; }
   if (ui.members.error) return `<div class="banner bad">${esc(ui.members.error)}</div>`;
   const me = authUser.id;
-  const canManage = m => m.user_id !== me && m.role !== 'super_admin' && (isSuper() || (isDirector() && m.role === 'admin' && m.school_id === mySchool));
+  const canManage = m => m.user_id !== me && m.role !== 'super_admin' && (isSuper() || (m.school_id === mySchool && ((isDirector() && ['admin', 'teacher'].includes(m.role)) || (myRole === 'admin' && m.role === 'teacher'))));
   const rows = ui.members.list.map(m => `<tr><td><div class="who"><span class="avatar ph">${esc(initials(m.full_name || m.email))}</span><div><strong>${esc(m.full_name || '—')}</strong><span>${esc(m.email)}</span></div></div></td>
-    <td>${badge(ROLE_NAME[m.role] || m.role, m.role === 'super_admin' ? 'navy' : m.role === 'director' ? 'ok' : 'info')}</td>
+    <td>${badge(ROLE_NAME[m.role] || m.role, m.role === 'super_admin' ? 'navy' : m.role === 'director' ? 'ok' : 'info')}${m.role === 'teacher' ? `<span class="sub">${(m.features || []).map(f => esc(FEATURE_NAME[f] || f)).join(', ') || 'No features'}</span>` : ''}</td>
     <td>${m.school_id ? esc(schoolNameOf(m.school_id)) : '<span class="muted">All schools</span>'}</td><td class="nowrap">${fmtStamp(m.created_at)}</td>
-    <td class="r nowrap">${canManage(m) ? `${isSuper() ? `<button type="button" class="btn xs" data-action="member-role" data-id="${esc(m.user_id)}">${m.role === 'director' ? 'Make Administrator' : 'Make Director'}</button> ` : ''}<button type="button" class="btn xs danger" data-action="member-remove" data-id="${esc(m.user_id)}">Remove</button>` : (m.user_id === me ? '<span class="small muted">You</span>' : '')}</td></tr>`).join('');
+    <td class="r nowrap">${canManage(m) ? `${m.role === 'teacher' ? `<button type="button" class="btn xs" data-action="member-features" data-id="${esc(m.user_id)}">Features</button> ` : ''}${isSuper() && m.role !== 'teacher' ? `<button type="button" class="btn xs" data-action="member-role" data-id="${esc(m.user_id)}">${m.role === 'director' ? 'Make Administrator' : 'Make Director'}</button> ` : ''}<button type="button" class="btn xs danger" data-action="member-remove" data-id="${esc(m.user_id)}">Remove</button>` : (m.user_id === me ? '<span class="small muted">You</span>' : '')}</td></tr>`).join('');
   const intro = isSuper()
     ? 'Everyone who can sign in to KIDNOVA. Directors and administrators only see their own school. New schools join through registration links on the Schools page.'
-    : 'People with access to your school. Directors can add administrators for their school.';
+    : 'People with access to your school. Directors add administrators and teachers; administrators add teachers. Teachers only see the features you give them.';
   return `<div class="card"><div class="card-h"><div><h3>Users &amp; access</h3><p>${intro}</p></div>
-    ${isSuper() || isDirector() ? '<button type="button" class="btn primary sm" data-action="member-add">Add user</button>' : ''}</div>
+    ${isSuper() || isDirector() || myRole === 'admin' ? '<button type="button" class="btn primary sm" data-action="member-add">Add user</button>' : ''}</div>
     <div class="table-wrap mt"><table class="tbl"><thead><tr><th>User</th><th>Role</th><th>School</th><th>Added</th><th class="r">Actions</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 ACTIONS['member-add'] = () => {
-  if (!isSuper() && !isDirector()) throw new AppError('Only the Super Admin or the school director can add users.');
+  if (!isSuper() && !isDirector() && myRole !== 'admin') throw new AppError('Only the Super Admin, the director or an administrator can add users.');
   if (isSuper() && !ws.list.length) throw new AppError('No school has registered yet. Create a registration link on the Schools page first.');
   const schoolPick = isSuper()
     ? field('School *', `<select class="input" name="school">${ws.list.map(w => `<option value="${esc(w.school_id)}" ${w.school_id === ws.schoolId ? 'selected' : ''}>${esc(w.school_name)}</option>`).join('')}</select>`)
-      + field('Role *', '<select class="input" name="role"><option value="admin">Administrator — school records</option><option value="director">Director — school records and staff</option></select>')
-    : `<input type="hidden" name="school" value="${esc(mySchool)}"><input type="hidden" name="role" value="admin">`;
+      + field('Role *', '<select class="input" name="role"><option value="admin">Administrator — school records</option><option value="director">Director — school records and staff</option><option value="teacher">Teacher — only the features below</option></select>')
+    : `<input type="hidden" name="school" value="${esc(mySchool)}">` + field('Role *', `<select class="input" name="role">${isDirector() ? '<option value="admin">Administrator — school records</option>' : ''}<option value="teacher">Teacher — only the features below</option></select>`);
+  const featBox = `<fieldset class="fieldset span2"><legend>Teacher features (used when the role is Teacher)</legend>${featureChecks(['attendance', 'marks'])}</fieldset>`;
   openForm({ title: 'Add user', form: 'member-add', submit: 'Create user', html: `<div class="form-grid">
     ${field('Full name *', '<input class="input" name="name" required autocomplete="off">', '', 'span2')}
     ${field('Email *', '<input class="input" type="email" name="email" required autocomplete="off">')}
     ${field('Temporary password *', '<input class="input" name="password" minlength="6" required autocomplete="new-password">', 'At least 6 characters. Share it with the user privately.')}
     ${schoolPick}
+    ${featBox}
   </div>` });
 };
 FORMS['member-add'] = async fd => {
@@ -3351,12 +3638,24 @@ FORMS['member-add'] = async fd => {
   const tmp = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: false, autoRefreshToken: false, storageKey: 'kn-tmp-' + Date.now() } });
   const res = await tmp.auth.signUp({ email, password, options: { data: { full_name: name } } });
   if (res.error && !/already/i.test(res.error.message)) throw new AppError('Could not create the login: ' + res.error.message);
-  const { error } = await sb.rpc('kn_add_member', { p_email: email, p_name: name, p_role: role, p_school: school });
+  const feats = role === 'teacher' ? fd.getAll('feat').map(String).filter(f => FEATURE_NAME[f]) : [];
+  const { error } = await sb.rpc('kn_add_member', { p_email: email, p_name: name, p_role: role, p_school: school, p_features: feats });
   if (error) throw new AppError(error.message);
   if (ws.schoolId === school) { logActivity('User added', `${name} · ${ROLE_NAME[role]}`); persist(); }
   toast(res.error ? `${email} already had an account; access granted with their existing password.` : `User created. They can log in now with ${email}.`, 'ok', 6000);
   ui.members = null;
   render();
+  return true;
+};
+ACTIONS['member-features'] = el => {
+  const m = ui.members.list.find(x => x.user_id === el.dataset.id); if (!m) return;
+  openForm({ title: `Features · ${m.full_name || m.email}`, form: 'member-features', arg: m.user_id, submit: 'Save features', html: `<p class="muted" style="margin-bottom:12px">Choose what this teacher can use in KIDNOVA.</p>${featureChecks(m.features || [])}` });
+};
+FORMS['member-features'] = async (fd, arg) => {
+  const { error } = await sb.rpc('kn_set_features', { p_user: arg, p_features: fd.getAll('feat').map(String).filter(f => FEATURE_NAME[f]) });
+  if (error) throw new AppError(error.message);
+  toast('Features saved. The teacher sees the change the next time they log in.');
+  ui.members = null; render();
   return true;
 };
 ACTIONS['member-role'] = async el => {
@@ -3490,7 +3789,9 @@ function settingsActivityHtml() {
 }
 VIEWS.settings = () => {
   const noSchool = !curSchool();
-  const sections = noSchool ? SETTINGS_SECTIONS.filter(([k]) => k === 'users') : SETTINGS_SECTIONS;
+  /* School staff get the essentials only; calendar, grading, report layout and backups are Super Admin tools. */
+  const base = isSuper() ? SETTINGS_SECTIONS : SETTINGS_SECTIONS.filter(([k]) => ['areas', 'classes', 'users', 'activity'].includes(k));
+  const sections = noSchool ? base.filter(([k]) => k === 'users') : base;
   const cur = sections.some(([k]) => k === ui.settingsSection) ? ui.settingsSection : sections[0][0];
   const bodies = {
     school: settingsSchoolHtml, calendar: settingsCalendarHtml, classes: settingsClassesHtml, areas: settingsAreasHtml,
@@ -3505,6 +3806,7 @@ VIEWS.settings = () => {
 ACTIONS['sign-out'] = async () => {
   if (save.state !== 'saved') await flushSave();
   await sb.auth.signOut();
+  location.replace(location.pathname + '#login');
   location.reload();
 };
 const AUTH_SLIDES = [
@@ -3512,14 +3814,7 @@ const AUTH_SLIDES = [
   ['For teachers', 'Attendance and assessments in minutes.'],
   ['For families', 'Report cards that tell a child’s story.'],
 ];
-const AUTH_ART = `<svg class="auth-art" viewBox="0 0 400 400" aria-hidden="true">
-  <circle cx="300" cy="90" r="46" fill="#ffd166" opacity=".95"/>
-  <g fill="#fff" opacity=".85"><path d="M70 70l5 14 15 1-12 9 4 15-12-9-12 9 4-15-12-9 15-1z"/><path d="M340 230l3 8 9 .5-7 5.5 2.5 9-7.5-5-7.5 5 2.5-9-7-5.5 9-.5z"/><circle cx="120" cy="150" r="4"/><circle cx="250" cy="40" r="3"/><circle cx="360" cy="160" r="3"/></g>
-  <g transform="translate(70 230)"><rect width="86" height="86" rx="14" fill="#ef476f"/><text x="43" y="60" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="50" font-weight="800" fill="#fff">A</text></g>
-  <g transform="translate(166 230)"><rect width="86" height="86" rx="14" fill="#06d6a0"/><text x="43" y="60" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="50" font-weight="800" fill="#fff">B</text></g>
-  <g transform="translate(118 140)"><rect width="86" height="86" rx="14" fill="#118ab2"/><text x="43" y="60" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="50" font-weight="800" fill="#fff">C</text></g>
-  <g transform="translate(262 238) rotate(-35)"><rect width="110" height="16" rx="3" fill="#ffd166"/><path d="M110 0l22 8-22 8z" fill="#f4c995"/><path d="M124 5l8 3-8 3z" fill="#333"/><rect x="-14" width="16" height="16" rx="3" fill="#ef476f"/></g>
-</svg>`;
+const AUTH_ART = '<img class="auth-photo" src="teacher.jpg" alt="A teacher working on a laptop in a classroom"><div class="auth-shade"></div>';
 let authHasSuper = true;
 function authHtml(mode, msg) {
   const first = !authHasSuper;
@@ -3544,23 +3839,27 @@ function authHtml(mode, msg) {
           ${signup ? `<label class="fl"><span>Full name</span><input name="name" autocomplete="name" required></label>` : ''}
           <label class="fl"><span>Email</span><input type="email" name="email" autocomplete="email" required></label>
           <label class="fl"><span>Password</span><input type="password" name="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="6" required><button type="button" class="eye" id="authEye" aria-label="Show password"><svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
+          ${signup ? '' : '<div class="auth-forgot"><button type="button" class="link" id="authForgot">Forgot your password?</button></div>'}
           <button type="submit" class="btn primary auth-submit">${signup ? 'Create Super Admin account' : 'Login'}</button>
         </form>
+        <div id="authForgotBox" class="forgot-box" hidden><strong>Get quick support</strong><p>We will help you reset your password. Contact KIDNOVA support:</p><div class="row">${supportLinks('btn sm primary')}</div></div>
         <p class="small muted auth-switch">${first ? `${signup ? 'Already have an account?' : 'Setting up KIDNOVA for the first time?'} <button type="button" class="link" data-mode="${signup ? 'signin' : 'signup'}">${signup ? 'Login' : 'Create the Super Admin account'}</button>` : 'Accounts are created by the Super Admin.'}</p>
       </div>
-      <p class="auth-foot small faint">© ${new Date().getFullYear()} KIDNOVA</p>
+      <p class="auth-foot small faint"><a href="#home">← Back to homepage</a> · Support ${SUPPORT.show} · © ${new Date().getFullYear()} KIDNOVA</p>
     </section>
   </div>`;
 }
 let authSlideTimer = null;
 function showAuth(mode = 'signin', msg = '') {
   $('#app').hidden = true;
+  if ($('#homeRoot')) $('#homeRoot').hidden = true;
   const root = $('#authRoot');
   root.hidden = false;
   root.innerHTML = authHtml(mode, msg);
   document.title = (mode === 'signup' ? 'Sign up' : 'Login') + ' · KIDNOVA';
   $$('[data-mode]', root).forEach(b => { b.onclick = () => showAuth(b.dataset.mode); });
   $('#authHelp').onclick = () => { const h = $('#authHelpBox'); h.hidden = !h.hidden; };
+  if ($('#authForgot')) $('#authForgot').onclick = () => { const f = $('#authForgotBox'); f.hidden = !f.hidden; };
   $('#authEye').onclick = () => { const i = $('input[name=password]', root); i.type = i.type === 'password' ? 'text' : 'password'; };
   clearInterval(authSlideTimer);
   let k = 0;
@@ -3584,7 +3883,7 @@ function showAuth(mode = 'signin', msg = '') {
     if (res.error) return showAuth(mode, res.error.message);
     if (!res.data.session) return showAuth('signin', 'Account created, but sign-in did not start automatically. Please log in.');
     clearInterval(authSlideTimer);
-    await startApp(res.data.session.user);
+    await showChooser(res.data.session.user);
   };
   const first = $('input', root); if (first) first.focus();
 }
@@ -3599,6 +3898,64 @@ function showNoAccess() {
     <button type="button" class="btn primary auth-submit" style="margin-top:22px" id="naOut">Sign out</button></div></section></div>`;
   $('#naOut').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 }
+/* ---------- Public homepage ---------- */
+function showHome() {
+  $('#app').hidden = true;
+  $('#authRoot').hidden = true;
+  const root = $('#homeRoot');
+  root.hidden = false;
+  document.title = 'KIDNOVA · Nursery school management';
+  const mark = $('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgH');
+  const ico = p => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const features = [
+    [ICON.students, 'Learner register', 'Admissions, guardians, photos and class history for every child, kept safe in one place.'],
+    [ICON.attendance, 'Daily attendance', 'Mark a class register in seconds and follow attendance rates by day, class and term.'],
+    [ICON.assessments, 'Colour-level assessments', 'Rate each subject Excellent, Very good, Good or Fair, or enter marks that convert to a colour.'],
+    [ICON.reports, 'National report cards', 'One-page A4 report cards with the coat of arms and the three-term colour grid, ready to print.'],
+    [ICON.school, 'One school or many', 'Each school has its own records. Directors see only their school; KIDNOVA oversees all.'],
+    [ICON.teachers, 'Teacher logins', 'Give each teacher only the features they need: students, attendance, marks or report cards.'],
+  ].map(([i, t, d]) => `<article class="hp-feat"><span class="hp-ico">${ico(i)}</span><h3>${t}</h3><p>${d}</p></article>`).join('');
+  const steps = [
+    ['Get your school link', 'KIDNOVA sends your school a secure registration link.'],
+    ['Register the school', 'Fill in the school details and the director email. The director gets access straight away.'],
+    ['Add classes, subjects and teachers', 'Register subjects by category and give teachers their own logins.'],
+    ['Record and report', 'Take attendance, enter colour levels, and print report cards every term.'],
+  ].map(([t, d], i) => `<li><span>${i + 1}</span><div><h3>${t}</h3><p>${d}</p></div></li>`).join('');
+  const lv = LEVELS.map(l => `<i style="background:${l.color}"></i>`).join('');
+  const grid = ['Early numeracy', 'Language', 'Drawing', 'Music and dance', 'Personal hygiene', 'Working with others'].map((n, r) => `<tr><td>${n}</td>${[0, 1, 2].map(tm => LEVELS.map((l, k) => `<td class="hp-c${tm === 0 && k === [0, 1, 0, 2, 1, 0][r] ? ' on' : ''}" style="--c:${l.color}"></td>`).join('')).join('')}</tr>`).join('');
+  root.innerHTML = `
+  <header class="hp-nav"><a class="hp-brand" href="#home"><span class="kn-mark">${mark}</span><strong>KIDNOVA</strong></a>
+    <nav><a href="#features" data-scroll>Features</a><a href="#how" data-scroll>How it works</a><a href="#report" data-scroll>Report card</a><a href="#support" data-scroll>Support</a></nav>
+    <a class="btn primary" href="#login">Log in</a></header>
+  <section class="hp-hero">
+    <div class="hp-copy">
+      <span class="hp-eyebrow">Nursery school management for Rwanda</span>
+      <h1>Every child’s progress, clearly recorded.</h1>
+      <p>KIDNOVA helps nursery schools manage learners, attendance and colour-level assessments, and print the national report card in one click.</p>
+      <div class="hp-cta"><a class="btn primary lg" href="#login">Log in to KIDNOVA</a><a class="btn lg" href="${SUPPORT.wa}?text=${encodeURIComponent('Hello KIDNOVA, I would like to register my school.')}" target="_blank" rel="noopener">Register your school</a></div>
+      <ul class="hp-ticks"><li>Colour-level grading</li><li>Coat of arms on every report</li><li>Works on phone and computer</li></ul>
+    </div>
+    <div class="hp-visual">
+      <img src="teacher.jpg" alt="A teacher recording learners’ progress on a laptop">
+      <div class="hp-float a"><span>Attendance today</span><strong>Register saved ✓</strong></div>
+      <div class="hp-float b"><span>Colour levels</span><div class="hp-dots">${lv}</div></div>
+    </div>
+  </section>
+  <section class="hp-sec" id="features"><div class="hp-head"><span class="hp-eyebrow">Features</span><h2>Everything a nursery school needs</h2><p>Simple screens for directors and teachers, with records that stay accurate from the first day of term to the last report card.</p></div>
+    <div class="hp-grid">${features}</div></section>
+  <section class="hp-sec hp-alt" id="how"><div class="hp-two"><div class="hp-head left"><span class="hp-eyebrow">How it works</span><h2>From registration to report cards</h2><p>No installation. Open kidnova.site on any device and log in.</p></div><ol class="hp-steps">${steps}</ol></div></section>
+  <section class="hp-sec" id="report"><div class="hp-two">
+    <div class="hp-head left"><span class="hp-eyebrow">Report card</span><h2>The national nursery report, done for you</h2>
+      <p>Results fill the three-term colour grid automatically: Excellent, Very good, Good and Fair. The Republic of Rwanda coat of arms, school details, percentage, comments and signature boxes are all on one A4 page.</p>
+      <div class="hp-key">${LEVELS.map(l => `<span><i style="background:${l.color}"></i>${l.label}</span>`).join('')}</div></div>
+    <div class="hp-card"><div class="hp-card-h"><strong>REPORT CARD</strong><span>Term 1 · Term 2 · Term 3</span></div><table class="hp-grid-tbl"><tbody>${grid}</tbody></table></div>
+  </div></section>
+  <section class="hp-support" id="support"><div><span class="hp-eyebrow light">Quick support</span><h2>Need help? We answer fast.</h2><p>Forgot your password, registering a school, or printing report cards: call or WhatsApp KIDNOVA support.</p></div>
+    <div class="hp-support-box"><strong>${SUPPORT.show}</strong><div class="row">${supportLinks('btn lg')}</div></div></section>
+  <footer class="hp-foot"><span class="hp-brand"><span class="kn-mark">${mark.replace(/kgH/g, 'kgF')}</span><strong>KIDNOVA</strong></span><span>© ${new Date().getFullYear()} KIDNOVA · kidnova.site</span><a href="#login">Log in</a></footer>`;
+  $$('[data-scroll]', root).forEach(a => { a.onclick = e => { e.preventDefault(); const t = $(a.getAttribute('href'), root); if (t) t.scrollIntoView({ behavior: 'smooth' }); }; });
+}
+
 /* ---------- Public school registration (via link) ---------- */
 function regShell(inner) {
   return `<div class="auth-wrap reg"><aside class="auth-side">${AUTH_ART}<div class="auth-cap"><small>School registration</small><strong>Join KIDNOVA in a few minutes.</strong></div></aside>
@@ -3667,7 +4024,54 @@ async function submitRegistration(token, form) {
   await startApp(authUser);
 }
 let started = false;
-async function startApp(user) {
+/* After an explicit login: choose profile, then school, then continue to the dashboard. */
+async function showChooser(user) {
+  authUser = user;
+  const root = $('#authRoot');
+  $('#app').hidden = true; root.hidden = false;
+  const shell = inner => `<div class="auth-wrap"><aside class="auth-side">${AUTH_ART}<div class="auth-cap"><small>Welcome to KIDNOVA</small><strong>Every child’s progress, clearly recorded.</strong></div></aside>
+    <section class="auth-main"><div class="auth-top"><div class="kn-brand"><span class="kn-mark">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgP')}</span><strong>KIDNOVA</strong></div><button type="button" class="pill-btn" id="chOut">Log out</button></div>
+    <div class="auth-box">${inner}</div><p class="auth-foot small faint">Need help? ${SUPPORT.show}</p></section></div>`;
+  root.innerHTML = shell('<p class="muted" style="text-align:center">Loading your profile…</p>');
+  const bindOut = () => { $('#chOut').onclick = async () => { await sb.auth.signOut(); location.replace(location.pathname + '#login'); location.reload(); }; };
+  bindOut();
+  const { data: role, error } = await sb.rpc('kn_claim_super');
+  if (error) { root.innerHTML = shell(`<div class="banner bad"><span>${esc(error.message)}</span></div>`); bindOut(); return; }
+  if (!role) { myRole = null; showNoAccess(); return; }
+  myRole = role;
+  const { data: me } = await sb.from('kn_members').select('school_id').eq('user_id', user.id).maybeSingle();
+  let schools = [];
+  try { schools = await loadWorkspaceList(); } catch (e) { schools = []; }
+  if (!isSuper() && me) schools = schools.filter(w => w.school_id === me.school_id);
+  const icoUser = '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="6" width="40" height="30" rx="4" fill="#eaf3fc"/><circle cx="18" cy="20" r="6" fill="#0b6cb5"/><path d="M8 36c1.5-7 6-10 10-10s8.5 3 10 10" fill="#7fb8e8"/><rect x="28" y="12" width="12" height="3" rx="1.5" fill="#f3c22c"/><rect x="28" y="18" width="9" height="3" rx="1.5" fill="#21a04a"/></svg>';
+  const icoSchool = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#0b6cb5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>';
+  const tick = '<span class="ch-tick">✓</span>';
+  const step1 = () => {
+    root.innerHTML = shell(`<h1 class="auth-h">Choose profile</h1>
+      <div class="ch-list"><button type="button" class="ch-card on">${icoUser}<span><strong>${esc(PROFILE_NAME[role] || role)}</strong><small>${esc(user.email)}</small></span>${tick}</button></div>
+      <p class="ch-help small">Not seeing your profile? <a href="${SUPPORT.wa}" target="_blank" rel="noopener">Contact support</a></p>
+      <button type="button" class="btn primary auth-submit" id="chNext">Continue</button>`);
+    bindOut();
+    $('#chNext').onclick = step2;
+  };
+  let picked = null;
+  const step2 = () => {
+    const last = (() => { try { return localStorage.getItem('kn.ws'); } catch (e) { return null; } })();
+    picked = picked || (schools.find(w => w.school_id === last) || schools[0] || {}).school_id || null;
+    const cards = schools.map(w => `<button type="button" class="ch-card ${w.school_id === picked ? 'on' : ''}" data-id="${esc(w.school_id)}"><span class="ch-ico">${icoSchool}</span><span><strong>${esc(w.school_name)}</strong><small>${esc(ROLE_NAME[role] || role)}${w.reg_number ? ' · ' + esc(w.reg_number) : ''}</small></span>${tick}</button>`).join('');
+    root.innerHTML = shell(`<h1 class="auth-h">Choose school <span class="ch-count">${schools.length}</span></h1>
+      <div class="ch-list ch-scroll">${cards || `<div class="banner info"><span>${isSuper() ? 'No school has registered yet. Continue to the Schools page to send a registration link.' : 'Your school could not be found. Contact support.'}</span></div>`}</div>
+      <p class="ch-help small">Not seeing your school? <a href="${SUPPORT.wa}" target="_blank" rel="noopener">Contact support</a></p>
+      <button type="button" class="btn primary auth-submit" id="chGo" ${!cards && !isSuper() ? 'disabled' : ''}>Continue</button>
+      <p class="auth-switch small"><button type="button" class="link" id="chBack">← Back</button></p>`);
+    bindOut();
+    $$('.ch-card[data-id]', root).forEach(b => { b.onclick = () => { picked = b.dataset.id; $$('.ch-card', root).forEach(x => x.classList.toggle('on', x === b)); }; });
+    $('#chBack').onclick = step1;
+    $('#chGo').onclick = () => { history.replaceState(null, '', location.pathname + (picked ? '#dashboard' : '#schools')); startApp(user, { schoolId: picked, welcome: true }); };
+  };
+  step1();
+}
+async function startApp(user, opts = {}) {
   authUser = user;
   $('#authRoot').hidden = true;
   $('#app').hidden = false;
@@ -3679,12 +4083,14 @@ async function startApp(user) {
   } catch (e) { $('#view').innerHTML = `<div class="banner bad">${esc(e.message)}</div>`; return; }
   if (!myRole) { showNoAccess(); return; }
   try {
-    const { data: me } = await sb.from('kn_members').select('school_id').eq('user_id', user.id).maybeSingle();
+    const { data: me } = await sb.from('kn_members').select('school_id, features').eq('user_id', user.id).maybeSingle();
     mySchool = me ? me.school_id : null;
+    myFeatures = me && Array.isArray(me.features) ? me.features : [];
     let target = mySchool;
     if (isSuper()) {
       await loadWorkspaceList();
       let last = null; try { last = localStorage.getItem('kn.ws'); } catch (e) { /* storage blocked */ }
+      if (opts.schoolId && ws.list.some(w => w.school_id === opts.schoolId)) last = opts.schoolId;
       target = (ws.list.find(w => w.school_id === last) || ws.list[0] || {}).school_id || null;
     }
     await openWorkspace(target);
@@ -3695,7 +4101,9 @@ async function startApp(user) {
     $('#modalRoot').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modalRoot').hidden) closeModal(); });
   }
-  if (!location.hash || location.hash === '#register') history.replaceState(null, '', location.pathname + (curSchool() ? '#dashboard' : isSuper() ? '#schools' : '#dashboard'));
+  ui.welcome = !!opts.welcome;
+  if (opts.welcome) toast(`Welcome, ${currentAdmin().name.split(' ')[0].charAt(0) + currentAdmin().name.split(' ')[0].slice(1).toLowerCase()}! You are signed in as ${PROFILE_NAME[myRole] || myRole}.`, 'ok', 5000);
+  if (!location.hash || ['#register', '#login', '#home'].includes(location.hash)) history.replaceState(null, '', location.pathname + (curSchool() ? '#dashboard' : isSuper() ? '#schools' : '#dashboard'));
   applyRoute();
   render();
 }
@@ -3712,9 +4120,14 @@ async function init() {
   }
   const { data } = await sb.auth.getSession();
   if (data && data.session) await startApp(data.session.user);
-  else showAuth(authHasSuper ? 'signin' : 'signup');
+  else {
+    /* Visitors see the homepage; #login opens the login page. */
+    const route = () => { if (started || authUser) return; if (location.hash === '#login' || !authHasSuper) showAuth(authHasSuper ? 'signin' : 'signup'); else showHome(); };
+    window.addEventListener('hashchange', route);
+    route();
+  }
   sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' && started) location.reload();
+    if (event === 'SIGNED_OUT' && started) { location.replace(location.pathname + '#login'); location.reload(); }
     if (session && authUser && session.user.id === authUser.id) authUser = session.user;
   });
 }
