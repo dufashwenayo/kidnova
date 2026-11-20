@@ -630,6 +630,22 @@ textarea.input{min-height:76px;resize:vertical}
 tr.is-suspended td{opacity:.6}
 /* ---------- Approval & setup wizard ---------- */
 .nav-badge{margin-left:auto;font-style:normal;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#e2472f;color:#fff;font-size:11.5px;font-weight:800;display:inline-grid;place-items:center}
+.rev-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-bottom:12px}
+.rev-f span{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.rev-f .input.edited{background:#fff8e1;border-color:#f3a712}
+.rev-was{display:block;font-size:11.5px;color:#8f5606;margin-top:3px}
+.rev-ul{margin:10px 0 0;padding-left:18px;font-size:13px}
+.sugg-box{margin:14px 0;padding:14px;border-radius:14px;background:#fff8e1;border:1px solid #f2c46b}
+.sugg-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;color:#8f5606}
+.sugg-tbl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:10px;overflow:hidden}
+.sugg-tbl th,.sugg-tbl td{padding:8px 10px;border-bottom:1px solid var(--line-soft);text-align:left}
+.sugg-tbl th{background:#fdf3d7;font-size:12px;color:var(--muted)}
+.sugg-tbl td.old{color:var(--muted);text-decoration:line-through}
+.sugg-tbl td.new{font-weight:700;color:#145c3a}
+.input.sugg{border-color:#f3a712;background:#fffaf0}
+.input.sugg-used{border-color:#21a04a;background:#f0faf3}
+.sugg-hint{display:block;font-size:12px;color:#8f5606;margin-top:4px}
+@media (max-width:640px){.rev-grid{grid-template-columns:minmax(0,1fr)}}
 .rev-wrap{border-color:#f2c46b;background:linear-gradient(135deg,#fffaf0,#fff)}
 .rev-list{display:grid;gap:10px}
 .rev-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
@@ -4617,7 +4633,7 @@ VIEWS.schools = () => {
     const dir = directors.filter(d => d.school_id === w.school_id);
     return `<div class="rev-card"><div class="rev-h"><div><strong>${esc(w.school_name)}</strong><span>Reg. ${esc(w.reg_number || '—')} · submitted ${esc(fmtStamp(w.submitted_at || w.created_at))}</span></div>${badge('Waiting approval', 'warn')}</div>
       <div class="rev-dir">Director login: ${dir.map(d => `<strong>${esc(d.full_name || '')}</strong> ${esc(d.email)}`).join(', ') || '—'}</div>
-      <div class="rev-a"><button type="button" class="btn sm" data-action="school-review-view" data-id="${esc(w.school_id)}">View full details</button><button type="button" class="btn sm danger" data-action="school-reject" data-id="${esc(w.school_id)}">Request changes</button><button type="button" class="btn sm primary" data-action="school-approve" data-id="${esc(w.school_id)}">✓ Approve</button></div></div>`;
+      <div class="rev-a"><button type="button" class="btn sm" data-action="school-review-view" data-id="${esc(w.school_id)}">Review details</button><button type="button" class="btn sm danger" data-action="school-review-view" data-id="${esc(w.school_id)}">Suggest edits</button><button type="button" class="btn sm primary" data-action="school-approve" data-id="${esc(w.school_id)}">✓ Approve</button></div></div>`;
   }).join('');
   const schoolRows = ws.list.map(w => {
     const dir = directors.filter(d => d.school_id === w.school_id);
@@ -4645,6 +4661,14 @@ VIEWS.schools = () => {
       <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Sent to</th><th>Status</th><th>Created</th><th>School</th><th class="r">Actions</th></tr></thead>
       <tbody>${invRows || `<tr><td colspan="5">${emptyState('No links yet', 'Use “Create registration link” to invite a school.')}</td></tr>`}</tbody></table></div></div>`;
 };
+/* Fields the Super Admin can correct or suggest during review (same names as the registration form). */
+const REVIEW_FIELDS = [['name', 'Official school name'], ['regNumber', 'Registration number'], ['motto', 'Motto'], ['district', 'District'], ['sector', 'Sector'], ['cell', 'Cell'], ['village', 'Village'], ['address', 'Physical address'], ['email', 'Official email'], ['phone', 'Phone number'], ['director', 'School director'], ['headteacher', 'Headteacher']];
+const REVIEW_LABEL = Object.fromEntries(REVIEW_FIELDS);
+function reviewChanges() {
+  const out = {};
+  $$('.modal [data-input="rev-field"]').forEach(i => { if (i.value.trim() !== i.dataset.orig) out[i.dataset.k] = i.value.trim(); });
+  return out;
+}
 ACTIONS['school-review-view'] = async el => {
   requireSuper();
   const w = ws.list.find(x => x.school_id === el.dataset.id); if (!w) return;
@@ -4652,10 +4676,49 @@ ACTIONS['school-review-view'] = async el => {
   if (error || !data) throw new AppError('Could not load the submitted details.');
   const sc = (data.data.schools || [])[0] || {};
   const yr = (data.data.academicYears || [])[0];
-  const kv = (k, v) => `<dt>${esc(k)}</dt><dd>${esc(v || '—')}</dd>`;
-  openModal({ title: `Review · ${w.school_name}`, wide: true, body: `<div class="modal-b"><div class="rev-detail">${sc.logo ? `<img src="${sc.logo}" alt="School logo">` : '<span class="logo lg ph">' + esc(initials(sc.name)) + '</span>'}
-    <dl class="kv">${kv('Official name', sc.name)}${kv('Registration number', sc.regNumber)}${kv('Motto', sc.motto)}${kv('District', sc.district)}${kv('Sector', sc.sector)}${kv('Cell', sc.cell)}${kv('Village', sc.village)}${kv('Physical address', sc.address)}${kv('Official email', sc.email)}${kv('Phone', sc.phone)}${kv('Director', sc.director)}${kv('Headteacher', sc.headteacher)}${kv('First academic year', yr ? `${yr.name} (${fmtDate(yr.openDate)} – ${fmtDate(yr.closeDate)})` : '')}${kv('Submitted', fmtStamp(w.submitted_at || w.created_at))}</dl></div></div>
-    <div class="modal-f"><button type="button" class="btn" data-action="close-modal">Close</button><button type="button" class="btn danger" data-action="school-reject" data-id="${esc(w.school_id)}">Request changes</button><button type="button" class="btn primary" data-action="school-approve" data-id="${esc(w.school_id)}">✓ Approve school</button></div>` });
+  const inputs = REVIEW_FIELDS.map(([k, l]) => `<label class="rev-f"><span>${esc(l)}</span><input class="input" data-input="rev-field" data-k="${k}" data-orig="${esc(sc[k] || '')}" value="${esc(sc[k] || '')}"><small class="rev-was" hidden>Submitted: <b>${esc(sc[k] || '—')}</b></small></label>`).join('');
+  openModal({ title: `Review · ${w.school_name}`, wide: true, body: `<div class="modal-b">
+    <div class="rev-detail">${sc.logo ? `<img src="${sc.logo}" alt="School logo">` : '<span class="logo lg ph">' + esc(initials(sc.name)) + '</span>'}
+      <div><p class="muted small" style="margin-bottom:10px">Check what the school submitted. To correct something, change the field: it turns yellow. Then either <strong>send your suggestions</strong> to the school, or <strong>apply your edits and approve</strong>.</p>
+      <div class="rev-grid">${inputs}</div>
+      <p class="small muted mt">First academic year: ${yr ? `${esc(yr.name)} (${fmtDate(yr.openDate)} – ${fmtDate(yr.closeDate)})` : '—'} · Submitted ${esc(fmtStamp(w.submitted_at || w.created_at))}</p>
+      ${field('Note to the school (optional)', '<textarea class="input" id="revNote" maxlength="400" placeholder="e.g. Please use the registration number on your MINEDUC certificate."></textarea>')}</div></div></div>
+    <div class="modal-f"><span class="small muted grow" id="revCount">No changes</span><button type="button" class="btn" data-action="close-modal">Close</button>
+      <button type="button" class="btn" data-action="school-suggest" data-id="${esc(w.school_id)}">Send suggestions to school</button>
+      <button type="button" class="btn primary" id="revApprove" data-action="school-approve-edits" data-id="${esc(w.school_id)}">✓ Approve as submitted</button></div>` });
+};
+INPUTS['rev-field'] = el => {
+  const changed = el.value.trim() !== el.dataset.orig;
+  el.classList.toggle('edited', changed);
+  const was = el.parentElement.querySelector('.rev-was'); if (was) was.hidden = !changed;
+  const n = Object.keys(reviewChanges()).length;
+  const c = $('#revCount'); if (c) c.textContent = n ? `${n} field${n === 1 ? '' : 's'} changed` : 'No changes';
+  const a = $('#revApprove'); if (a) a.textContent = n ? `✓ Apply ${n} edit${n === 1 ? '' : 's'} & approve` : '✓ Approve as submitted';
+};
+ACTIONS['school-suggest'] = async el => {
+  requireSuper();
+  const w = ws.list.find(x => x.school_id === el.dataset.id); if (!w) return;
+  const fields = reviewChanges();
+  const note = ($('#revNote') || {}).value || '';
+  if (!Object.keys(fields).length && !note.trim()) throw new AppError('Change at least one field, or write a note to the school.');
+  const { error } = await sb.rpc('kn_suggest_edits', { p_school: w.school_id, p_fields: fields, p_note: note });
+  if (error) throw new AppError(error.message);
+  closeModal();
+  toast(`Suggestions sent to ${w.school_name}. The director accepts them and submits again.`, 'info', 6000);
+  ui.schoolsData = null; render();
+};
+ACTIONS['school-approve-edits'] = async el => {
+  requireSuper();
+  const w = ws.list.find(x => x.school_id === el.dataset.id); if (!w) return;
+  const fields = reviewChanges();
+  const n = Object.keys(fields).length;
+  const list = Object.entries(fields).map(([k, v]) => `<li>${esc(REVIEW_LABEL[k])}: <strong>${esc(v || '(empty)')}</strong></li>`).join('');
+  const ok = await confirmDialog(n ? `Apply these ${n} edit${n === 1 ? '' : 's'} and approve <strong>${esc(w.school_name)}</strong>?<ul class="rev-ul">${list}</ul>` : `Approve <strong>${esc(w.school_name)}</strong> as submitted? Its director can then log in and complete the setup wizard.`, { title: 'Approve school', ok: n ? 'Apply & approve' : 'Approve' });
+  if (!ok) return;
+  const { error } = n ? await sb.rpc('kn_approve_with_edits', { p_school: w.school_id, p_fields: fields }) : await sb.rpc('kn_review_school', { p_school: w.school_id, p_approve: true, p_note: '' });
+  if (error) throw new AppError(error.message);
+  toast(`${n ? (fields.name || w.school_name) : w.school_name} is approved. The director can now log in and set up the school.`, 'ok', 6000);
+  ui.schoolsData = null; render();
 };
 ACTIONS['school-approve'] = async el => {
   requireSuper();
@@ -4840,19 +4903,21 @@ function showPending(info) {
   document.title = 'Registration status · KIDNOVA';
   const sc = info.school || {};
   const rejected = info.status === 'rejected';
+  const sugg = Object.entries(info.suggestions || {});
   if (!db) db = emptyDb();
   const kv = (k, v) => `<div><span>${esc(k)}</span><strong>${esc(v || '—')}</strong></div>`;
   const details = `<div class="pend-kv">${kv('School', sc.name)}${kv('Registration number', sc.regNumber)}${kv('District / Sector', [sc.district, sc.sector].filter(Boolean).join(' · '))}${kv('Cell / Village', [sc.cell, sc.village].filter(Boolean).join(' · '))}${kv('Phone', sc.phone)}${kv('Email', sc.email)}${kv('Director', sc.director)}${kv('Headteacher', sc.headteacher)}</div>`;
   const steps = `<ol class="pend-steps">
     <li class="done"><b>✓</b><div><strong>Registration submitted</strong><span>${info.submitted_at ? esc(fmtStamp(info.submitted_at)) : ''}</span></div></li>
-    <li class="${rejected ? 'bad' : 'now'}"><b>${rejected ? '!' : '2'}</b><div><strong>${rejected ? 'Changes requested by KIDNOVA' : 'KIDNOVA is reviewing your registration'}</strong><span>${rejected ? 'Fix the details below and submit again.' : 'You will get access as soon as it is approved.'}</span></div></li>
+    <li class="${rejected ? 'bad' : 'now'}"><b>${rejected ? '!' : '2'}</b><div><strong>${rejected ? (sugg.length ? 'KIDNOVA suggested edits' : 'Changes requested by KIDNOVA') : 'KIDNOVA is reviewing your registration'}</strong><span>${rejected ? 'Accept the suggestions or correct the details below, then submit again to continue.' : 'You will get access as soon as it is approved.'}</span></div></li>
     <li><b>3</b><div><strong>Set up your school</strong><span>Classes, subjects, teachers and learners</span></div></li></ol>`;
   const form = rejected ? `<form id="resubForm" class="pend-form" novalidate><h3>Correct your registration</h3><div id="resubMsg"></div>${schoolFormHtml(sc, false)}<button type="submit" class="btn primary auth-submit mt">Submit again for review</button></form>` : '';
   root.innerHTML = `<div class="auth-wrap reg"><aside class="auth-side">${AUTH_ART}<div class="auth-cap"><small>School registration</small><strong>${rejected ? 'Almost there.' : 'Thank you for registering.'}</strong></div></aside>
     <section class="auth-main"><div class="auth-top"><div class="kn-brand"><span class="kn-mark">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgW')}</span><strong>KIDNOVA</strong></div><button type="button" class="pill-btn" id="pendOut">Log out</button></div>
     <div class="reg-box">
-      <h1 class="auth-h" style="text-align:left">${rejected ? 'Your registration needs changes' : 'Registration submitted ✓'}</h1>
-      ${rejected ? `<div class="banner bad"><span><strong>Reason from KIDNOVA:</strong> ${esc(info.note || 'Please contact support.')}</span></div>` : '<div class="banner info"><span>KIDNOVA is reviewing <strong>' + esc(sc.name || info.school_name) + '</strong>. You cannot open the school until it is approved. Check back later or contact support.</span></div>'}
+      <h1 class="auth-h" style="text-align:left">${rejected ? (sugg.length ? 'KIDNOVA suggested some edits' : 'Your registration needs changes') : 'Registration submitted ✓'}</h1>
+      ${rejected ? `${info.note ? `<div class="banner bad"><span><strong>Note from KIDNOVA:</strong> ${esc(info.note)}</span></div>` : ''}${sugg.length ? `<div class="sugg-box"><div class="sugg-h"><strong>KIDNOVA suggested ${sugg.length} change${sugg.length === 1 ? '' : 's'}</strong><button type="button" class="btn sm primary" id="suggAll">✓ Accept all suggestions</button></div>
+        <table class="sugg-tbl"><thead><tr><th>Field</th><th>You wrote</th><th>Suggested</th><th></th></tr></thead><tbody>${sugg.map(([k, v]) => `<tr><td>${esc(REVIEW_LABEL[k] || k)}</td><td class="old">${esc(sc[k] || '—')}</td><td class="new">${esc(v || '(empty)')}</td><td><button type="button" class="btn xs" data-sugg="${esc(k)}">Use</button></td></tr>`).join('')}</tbody></table></div>` : ''}` : '<div class="banner info"><span>KIDNOVA is reviewing <strong>' + esc(sc.name || info.school_name) + '</strong>. You cannot open the school until it is approved. Check back later or contact support.</span></div>'}
       ${steps}
       ${rejected ? '' : `<h3 class="pend-h">What you submitted</h3>${details}`}
       ${form}
@@ -4862,6 +4927,19 @@ function showPending(info) {
   $('#pendCheck').onclick = () => location.reload();
   if (rejected) {
     db = emptyDb();
+    /* Highlight suggested fields in the form and let the director use them one by one or all at once. */
+    const useSugg = k => { const i = $(`#resubForm [name="${k}"]`); if (i) { i.value = info.suggestions[k]; i.classList.add('sugg-used'); } const b = $(`[data-sugg="${k}"]`); if (b) { b.textContent = '✓ Used'; b.disabled = true; } };
+    sugg.forEach(([k, v]) => {
+      const i = $(`#resubForm [name="${k}"]`);
+      if (!i) return;
+      i.classList.add('sugg');
+      const h = document.createElement('small');
+      h.className = 'sugg-hint';
+      h.innerHTML = `KIDNOVA suggests: <b>${esc(v || '(empty)')}</b> <button type="button" class="link" data-sugg-inline="${esc(k)}">Use it</button>`;
+      i.insertAdjacentElement('afterend', h);
+    });
+    $$('[data-sugg], [data-sugg-inline]', root).forEach(b => { b.onclick = () => useSugg(b.dataset.sugg || b.dataset.suggInline); });
+    if ($('#suggAll')) $('#suggAll').onclick = () => { sugg.forEach(([k]) => useSugg(k)); toast('Suggestions filled in. Check the form, then press “Submit again for review”.', 'info', 5500); const f = $('#resubForm'); if (f) f.scrollIntoView({ behavior: 'smooth' }); };
     $('#resubForm').onsubmit = async e => {
       e.preventDefault();
       const btn = $('.auth-submit', e.target);

@@ -468,3 +468,96 @@ language sql immutable as $$
   select coalesce(array(select distinct f from unnest(coalesce(p, '{}')) f where f in ('attendance', 'marks', 'discipline') order by f), '{}')
 $$;
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v8: Super Admin can suggest field edits during review, or apply them
+-- and approve in one step. Safe to re-run.
+-- ===================================================================
+alter table public.kn_workspace add column if not exists review_suggestions jsonb not null default '{}';
+
+create or replace function public.kn_clean_school_fields(p jsonb) returns jsonb
+language sql immutable as $$
+  select coalesce(jsonb_object_agg(key, to_jsonb(trim(both from value #>> '{}'))), '{}')
+  from jsonb_each(coalesce(p, '{}'))
+  where key in ('name', 'regNumber', 'motto', 'district', 'sector', 'cell', 'village', 'address', 'email', 'phone', 'director', 'headteacher')
+    and jsonb_typeof(value) = 'string'
+$$;
+
+-- Send suggested values back to the school (it accepts them and resubmits).
+create or replace function public.kn_suggest_edits(p_school text, p_fields jsonb, p_note text) returns void
+language plpgsql security definer set search_path = public as $$
+declare clean jsonb := public.kn_clean_school_fields(p_fields);
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can review schools'; end if;
+  if clean = '{}'::jsonb and coalesce(trim(p_note), '') = '' then raise exception 'Suggest at least one change or write a note'; end if;
+  update public.kn_workspace set status = 'rejected', review_suggestions = clean, review_note = coalesce(trim(p_note), ''),
+         reviewed_at = now(), reviewed_by = auth.uid()
+   where school_id = p_school and status in ('pending', 'rejected');
+  if not found then raise exception 'This school is not waiting for review'; end if;
+end $$;
+
+-- Apply the Super Admin's edits to the registration and approve it.
+create or replace function public.kn_approve_with_edits(p_school text, p_fields jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+declare clean jsonb := public.kn_clean_school_fields(p_fields); w record;
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can review schools'; end if;
+  select * into w from public.kn_workspace where school_id = p_school for update;
+  if w is null then raise exception 'School not found'; end if;
+  if clean ? 'name' and coalesce(clean->>'name', '') = '' then raise exception 'The school name cannot be empty'; end if;
+  if clean ? 'regNumber' and exists (select 1 from public.kn_workspace where school_id <> p_school and lower(reg_number) = lower(clean->>'regNumber')) then
+    raise exception 'Another school already uses this registration number';
+  end if;
+  update public.kn_workspace set data = jsonb_set(data, '{schools,0}', (data->'schools'->0) || clean),
+         school_name = coalesce(nullif(clean->>'name', ''), school_name), reg_number = coalesce(nullif(clean->>'regNumber', ''), reg_number),
+         status = 'approved', review_note = '', review_suggestions = '{}', reviewed_at = now(), reviewed_by = auth.uid(),
+         rev = rev + 1, updated_at = now(), updated_by = auth.uid()
+   where school_id = p_school;
+end $$;
+
+create or replace function public.kn_review_school(p_school text, p_approve boolean, p_note text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can review schools'; end if;
+  if not p_approve and coalesce(trim(p_note), '') = '' then raise exception 'Write the reason for rejecting, so the school knows what to fix'; end if;
+  update public.kn_workspace set status = case when p_approve then 'approved' else 'rejected' end,
+         review_note = coalesce(trim(p_note), ''), review_suggestions = case when p_approve then '{}'::jsonb else review_suggestions end,
+         reviewed_at = now(), reviewed_by = auth.uid()
+   where school_id = p_school;
+  if not found then raise exception 'School not found'; end if;
+end $$;
+
+create or replace function public.kn_my_school_info() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('school_id', w.school_id, 'school_name', w.school_name, 'reg_number', w.reg_number, 'status', w.status,
+                            'note', w.review_note, 'suggestions', w.review_suggestions, 'submitted_at', w.submitted_at, 'reviewed_at', w.reviewed_at,
+                            'school', w.data->'schools'->0, 'year', w.data->'academicYears'->0)
+  from public.kn_workspace w join public.kn_members m on m.school_id = w.school_id
+  where m.user_id = auth.uid() and not m.suspended
+$$;
+
+-- Resubmitting clears the suggestions that were handled.
+create or replace function public.kn_resubmit_school(p_fields jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+declare m record; w record; clean jsonb;
+begin
+  select * into m from public.kn_members where user_id = auth.uid() and not suspended;
+  if m is null or m.role <> 'director' then raise exception 'Only the school director can resubmit the registration'; end if;
+  select * into w from public.kn_workspace where school_id = m.school_id for update;
+  if w.status <> 'rejected' then raise exception 'Only a registration with requested changes can be resubmitted'; end if;
+  select coalesce(jsonb_object_agg(key, value), '{}') into clean from jsonb_each(coalesce(p_fields, '{}'))
+   where key in ('name', 'regNumber', 'motto', 'district', 'sector', 'cell', 'village', 'address', 'email', 'phone', 'director', 'headteacher', 'logo');
+  if coalesce(clean->>'name', '') = '' or coalesce(clean->>'regNumber', '') = '' then raise exception 'School name and registration number are required'; end if;
+  if exists (select 1 from public.kn_workspace where school_id <> w.school_id and lower(reg_number) = lower(trim(clean->>'regNumber'))) then
+    raise exception 'A school with this registration number is already registered.';
+  end if;
+  update public.kn_workspace set data = jsonb_set(data, '{schools,0}', (data->'schools'->0) || clean),
+         school_name = clean->>'name', reg_number = trim(clean->>'regNumber'), status = 'pending', submitted_at = now(),
+         review_suggestions = '{}', rev = rev + 1, updated_at = now(), updated_by = auth.uid()
+   where school_id = w.school_id;
+end $$;
+
+revoke all on function public.kn_suggest_edits(text, jsonb, text), public.kn_approve_with_edits(text, jsonb) from public, anon;
+grant execute on function public.kn_suggest_edits(text, jsonb, text), public.kn_approve_with_edits(text, jsonb) to authenticated;
+
+notify pgrst, 'reload schema';
