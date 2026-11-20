@@ -639,6 +639,14 @@ tr.is-suspended td{opacity:.6}
 .del-grid span{font-size:11.5px;color:var(--muted)}
 .del-list{margin:0;padding-left:18px;font-size:13px;max-height:160px;overflow-y:auto}
 @media (max-width:640px){.del-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+body.pdf-capture{zoom:1!important}
+body.pdf-capture .report-sheet{box-shadow:none;border:0;min-height:0}
+body.pdf-capture .report-sheet .screen-only{display:none!important}
+body.pdf-capture .report-sheet .print-only{display:block!important}
+.report-sheet .rs-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.rw-made{white-space:nowrap}
+.rw-made a{color:#0b6cb5;text-decoration:none}
+.rw-made b{letter-spacing:.04em}
 .gen-card{border-color:var(--blue-line);background:linear-gradient(135deg,#f3f9ff,#fff)}
 .gen-btn{padding:12px 20px;font-size:14.5px}
 .gen-stamp{margin:0 0 14px}
@@ -1749,6 +1757,7 @@ Object.assign(ACTIONS, {
   'nav-school': () => go('school'),
   'nav-schools': () => go('schools'),
   'print-page': () => window.print(),
+  'report-pdf': () => downloadReportsPdf(),
 });
 
 /* ---------- 11. School information ---------- */
@@ -3358,6 +3367,12 @@ function issueReportCard(studentId, yearId, termId, opts = {}) {
   db.reportCards.push(card);
   return card;
 }
+/* Mix a hex colour with white (amt = share of the colour). */
+function tint(hex, amt) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '')); if (!m) return '#f1f4f8';
+  const n = parseInt(m[1], 16), mix = c => Math.round(c * amt + 255 * (1 - amt));
+  return '#' + [mix(n >> 16), mix((n >> 8) & 255), mix(n & 255)].map(v => v.toString(16).padStart(2, '0')).join('');
+}
 function reportSheetHtml(snap, o = {}) {
   const sc = o.school || curSchool() || { name: snap.school.name, logo: '' };
   const rep = settingsOf().report;
@@ -3373,7 +3388,7 @@ function reportSheetHtml(snap, o = {}) {
     : `<div class="rs-comment">${esc(value)}</div>`);
   const cells = (t, areaId) => bands.map(b => {
     const hit = t && !t.pending && t.areas[areaId] && t.areas[areaId].percent !== null && t.areas[areaId].code === b.code;
-    return `<td class="rw-c${hit ? ' on' : ''}" style="--c:${esc(b.color)}">${hit ? '✓' : ''}</td>`;
+    return `<td class="rw-c${hit ? ' on' : ''}" style="--c:${esc(b.color)};background:${hit ? esc(b.color) : tint(b.color, 0.22)}">${hit ? '✓' : ''}</td>`;
   }).join('');
   let lastGroup = null;
   const body = snap.areas.map(r => {
@@ -3391,9 +3406,9 @@ function reportSheetHtml(snap, o = {}) {
   /* Many subjects: switch to a compact layout so the card stays on one A4 page. */
   const hasConduct = terms.some(t => t && t.conduct);
   const rowCount = snap.areas.length + new Set(snap.areas.map(r => r.group || '')).size + (hasConduct ? 2 : 0);
-  const conductRows = hasConduct ? `<tr class="rw-grp"><td colspan="13">DISCIPLINE AND CONDUCT</td></tr><tr><td class="rw-area">Conduct and behaviour</td>${cols.map(t => bands.map(b => { const hit = t && !t.pending && t.conduct && t.conduct.code === b.code; return `<td class="rw-c${hit ? ' on' : ''}" style="--c:${esc(b.color)}">${hit ? '✓' : ''}</td>`; }).join('')).join('')}</tr>` : '';
+  const conductRows = hasConduct ? `<tr class="rw-grp"><td colspan="13">DISCIPLINE AND CONDUCT</td></tr><tr><td class="rw-area">Conduct and behaviour</td>${cols.map(t => bands.map(b => { const hit = t && !t.pending && t.conduct && t.conduct.code === b.code; return `<td class="rw-c${hit ? ' on' : ''}" style="--c:${esc(b.color)};background:${hit ? esc(b.color) : tint(b.color, 0.22)}">${hit ? '✓' : ''}</td>`; }).join('')).join('')}</tr>` : '';
   const density = rowCount > 40 ? ' xdense' : rowCount > 24 ? ' dense' : '';
-  return `<article class="report-sheet rw${density}">
+  return `<article class="report-sheet rw${density}" data-learner="${esc(st.fullName)}" data-term="${esc(snap.termName)}" data-year="${esc(snap.yearName)}" data-class="${esc(snap.className)}">
     <header class="rw-head">
       <div class="rw-id">
         <div class="rw-rep">REPUBLIC OF RWANDA</div>
@@ -3429,7 +3444,7 @@ function reportSheetHtml(snap, o = {}) {
       <div><h4>PARENT’S SIGNATURE</h4><table class="rw-sign"><tr><th>Term 1</th><th>Term 2</th><th>Term 3</th></tr><tr><td></td><td></td><td></td></tr></table></div>
     </div>
     <div class="rw-head-sign"><div><h4>HEAD TEACHER’S NAME AND SIGNATURE</h4><p>${esc(snap.headName)}</p><span></span></div><div class="rs-stamp">School stamp</div></div>
-    <footer class="rs-foot">${esc(rep.footer)} · Issued ${fmtDate(issued)}</footer>
+    <footer class="rs-foot"><span>${esc(rep.footer)} · Issued ${fmtDate(issued)}</span><span class="rw-made">Report made using <a href="https://kidnova.site" target="_blank" rel="noopener"><b>KIDNOVA</b> · kidnova.site</a></span></footer>
   </article>`;
 }
 function reportListHtml(c) {
@@ -3509,8 +3524,8 @@ function reportGeneratedHtml() {
     </tbody></table></div></div>`;
   return `<div class="page-head no-print"><div><h2>${one ? `Student report · ${esc(g.items[0].snap.student.fullName)}` : `Class report · ${esc(classNameOf(g.classId))}`}</h2>
       <p>${esc(term ? term.name : '')} · ${esc(year ? year.name : '')} · ${g.items.length} report card${one ? '' : 's'}</p></div>
-    <div class="actions">${back}<button type="button" class="btn" data-action="report-generate-again">↻ Generate again</button>${one && canIssue ? `<a class="btn" href="#reports/preview/${esc(g.items[0].studentId)}">Edit comments</a>` : ''}<button type="button" class="btn" data-action="print-page">Print</button>${canIssue ? `<button type="button" class="btn primary" data-action="report-issue-generated">Issue ${one ? 'report card' : `${g.items.length} report cards`}</button>` : ''}</div></div>
-    <div class="banner ok no-print gen-stamp"><span>✓ <strong>Generated at ${esc(at)}</strong> from the latest saved records${g.refreshed ? ' (new changes were fetched from the server first)' : ''}. Press “Generate again” after new marks are recorded.</span></div>
+    <div class="actions">${back}<button type="button" class="btn" data-action="report-generate-again">↻ Generate again</button>${one && canIssue ? `<a class="btn" href="#reports/preview/${esc(g.items[0].studentId)}">Edit comments</a>` : ''}<button type="button" class="btn primary" data-action="report-pdf">⬇ Download PDF</button>${canIssue ? `<button type="button" class="btn primary" data-action="report-issue-generated">Issue ${one ? 'report card' : `${g.items.length} report cards`}</button>` : ''}</div></div>
+    <div class="banner ok no-print gen-stamp"><span>✓ <strong>Generated at ${esc(at)}</strong> from the latest saved records${g.refreshed ? ' (new changes were fetched from the server first)' : ''}. Download the PDF, or press “Generate again” after new marks are recorded.</span></div>
     ${summary}
     <div class="print-root">${g.items.map(({ studentId, snap }) => reportSheetHtml(snap, { editable: false, school: curSchool(), issuedAt: todayISO(), photo: photoOf(studentId) })).join('')}</div>`;
 }
@@ -3549,7 +3564,7 @@ function reportPreviewHtml(studentId, c) {
   const sc = curSchool();
   const inactive = !sc || sc.status !== 'Active';
   return `<div class="page-head no-print"><div><h2>Report card preview</h2><p>${esc(st.fullName)} · ${esc(snap.className)} · ${esc(c.term.name)} · ${esc(c.year.name)}</p></div>
-    <div class="actions"><a class="btn" href="#reports">Back to report list</a><button type="button" class="btn" data-action="print-page">Print preview</button></div></div>
+    <div class="actions"><a class="btn" href="#reports">Back to report list</a><button type="button" class="btn" data-action="report-pdf">⬇ Download PDF</button></div></div>
   ${existing ? `<div class="banner warn mb no-print">A report card for this term was issued on ${fmtDate(existing.issuedAt.slice(0, 10))}. Issuing again replaces it.</div>` : ''}
   ${closed ? `<div class="banner info mb no-print">${esc(c.year.name)} is closed, so this card can be previewed but not issued.</div>` : ''}
   <form data-form="report-issue" data-arg="${esc(st.id)}|${esc(c.term.id)}">
@@ -3563,7 +3578,7 @@ function reportCardViewHtml(cardId) {
   if (!card) return emptyState('Report card not found', 'It may have been replaced or removed.', '<a class="btn" href="#reports">Back to report list</a>');
   const snap = card.snapshot;
   return `<div class="page-head no-print"><div><h2>Report card</h2><p>${esc(snap.student.fullName)} · ${esc(snap.className)} · ${esc(snap.termName)} · ${esc(snap.yearName)} · issued ${fmtStamp(card.issuedAt)}</p></div>
-    <div class="actions"><a class="btn" href="#reports">Back to report list</a><button type="button" class="btn" data-action="report-show-issued">Issued cards</button><a class="btn" href="#student/${esc(snap.student.id)}">Learner profile</a><button type="button" class="btn primary" data-action="print-page">Print</button></div></div>
+    <div class="actions"><a class="btn" href="#reports">Back to report list</a><button type="button" class="btn" data-action="report-show-issued">Issued cards</button><a class="btn" href="#student/${esc(snap.student.id)}">Learner profile</a><button type="button" class="btn primary" data-action="report-pdf">⬇ Download PDF</button></div></div>
   <div class="print-root">${reportSheetHtml(snap, { editable: false, school: byId('schools', card.schoolId), issuedAt: card.issuedAt.slice(0, 10), photo: photoOf(snap.student.id) })}</div>`;
 }
 function reportBatchViewHtml(classId) {
@@ -3577,7 +3592,7 @@ function reportBatchViewHtml(classId) {
     return `<div class="page-head no-print"><div><h2>Class report cards</h2><p>${cls ? esc(cls.name) : ''}${c.term ? ` · ${esc(c.term.name)}` : ''}</p></div><div class="actions">${back}</div></div>`
       + emptyState('No report cards issued for this class and term', 'Issue report cards from the report list first.');
   }
-  return `<div class="page-head no-print"><div><h2>${esc(cls.name)} · report cards</h2><p>${cards.length} card(s) · ${esc(c.term.name)} · ${esc(c.year.name)}</p></div><div class="actions">${back}<button type="button" class="btn primary" data-action="print-page">Print all ${cards.length}</button></div></div>
+  return `<div class="page-head no-print"><div><h2>${esc(cls.name)} · report cards</h2><p>${cards.length} card(s) · ${esc(c.term.name)} · ${esc(c.year.name)}</p></div><div class="actions">${back}<button type="button" class="btn primary" data-action="report-pdf">⬇ Download PDF (${cards.length})</button></div></div>
   <div class="print-root">${cards.map(card => reportSheetHtml(card.snapshot, { editable: false, school: byId('schools', card.schoolId), issuedAt: card.issuedAt.slice(0, 10), photo: photoOf(card.studentId) })).join('')}</div>`;
 }
 VIEWS.reports = () => {
@@ -4841,6 +4856,65 @@ FORMS['school-reject'] = async (fd, arg) => {
   ui.schoolsData = null; render();
   return true;
 };
+/* ---------- Report PDF export (html2canvas + jsPDF, loaded only when needed) ---------- */
+const PDF_LIBS = ['https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'];
+let pdfLibsReady = null;
+function loadPdfLibs() {
+  if (window.html2canvas && window.jspdf) return Promise.resolve();
+  if (!pdfLibsReady) {
+    pdfLibsReady = PDF_LIBS.reduce((chain, src) => chain.then(() => new Promise((ok, fail) => {
+      const sc = document.createElement('script'); sc.src = src; sc.onload = ok; sc.onerror = () => fail(new AppError('The PDF tool could not be loaded. Check the internet connection and try again.'));
+      document.head.appendChild(sc);
+    })), Promise.resolve()).catch(e => { pdfLibsReady = null; throw e; });
+  }
+  return pdfLibsReady;
+}
+function pdfFileName(sheets) {
+  const clean = v => String(v || '').trim().replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const g = ui.page === 'reports' && ui.reportMode === 'generated' ? ui.genReport : null;
+  const one = sheets.length === 1;
+  const learner = one ? (sheets[0].dataset.learner || '') : '';
+  const term = sheets[0].dataset.term || '', year = sheets[0].dataset.year || '';
+  const cls = g ? classNameOf(g.classId) : (sheets[0].dataset.class || '');
+  return `${one ? `Report-${clean(learner)}` : `Reports-${clean(cls)}`}-${clean(term)}-${clean(year)}.pdf`;
+}
+async function downloadReportsPdf() {
+  const sheets = $$('.print-root .report-sheet');
+  if (!sheets.length) throw new AppError('There is no report card on this page.');
+  toast('Preparing the PDF…', 'info', 2500);
+  await loadPdfLibs();
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+  const zoom = document.body.style.zoom;
+  document.body.style.zoom = '1';
+  document.body.classList.add('pdf-capture');
+  try {
+    for (let i = 0; i < sheets.length; i++) {
+      const sh = sheets[i];
+      $$('textarea', sh).forEach(t => { const out = t.nextElementSibling; if (out && out.classList.contains('print-only')) out.textContent = t.value; });
+      const canvas = await window.html2canvas(sh, { scale: 1.7, backgroundColor: '#ffffff', useCORS: true, logging: false, windowWidth: 1100 });
+      const W = 210, H = 297;
+      let w = W, h = (canvas.height * W) / canvas.width, x = 0;
+      if (h > H) { w = (canvas.width * H) / canvas.height; h = H; x = (W - w) / 2; }
+      if (i) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.8), 'JPEG', x, 0, w, h);
+      /* keep the kidnova.site footer link clickable in the PDF */
+      const a = $('.rw-made a', sh);
+      if (a) {
+        const sr = sh.getBoundingClientRect(), ar = a.getBoundingClientRect(), k = w / sr.width;
+        pdf.link(x + (ar.left - sr.left) * k, (ar.top - sr.top) * k, ar.width * k, ar.height * k, { url: 'https://kidnova.site' });
+      }
+      if (sheets.length > 3) toast(`PDF: ${i + 1} of ${sheets.length} report cards`, 'info', 1200);
+    }
+  } finally {
+    document.body.classList.remove('pdf-capture');
+    document.body.style.zoom = zoom;
+  }
+  const name = pdfFileName(sheets);
+  pdf.save(name);
+  toast(`Downloaded ${name}`, 'ok', 5000);
+}
+
 /* Permanently delete a school: records, links and every staff login (emails can be reused). */
 ACTIONS['school-delete'] = async el => {
   requireSuper();
