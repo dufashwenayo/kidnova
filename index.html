@@ -510,6 +510,22 @@ textarea.input{min-height:76px;resize:vertical}
 .t-count{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12.5px}
 .t-count i{width:10px;height:10px;border-radius:50%;background:var(--c)}
 .t-list{display:flex;flex-direction:column;gap:10px}
+.disc-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.disc-item{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:14px;background:#fff;padding:12px 14px}
+.disc-h{display:flex;align-items:center;gap:10px}
+.disc-h>div{flex:1;min-width:0}
+.disc-h strong{display:block;color:var(--navy-deep)}
+.disc-h span{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.disc-ico{font-size:22px}
+.disc-b{margin-top:8px;font-size:13.5px}
+.disc-act{display:block;margin-top:4px;color:var(--ink)}
+.disc-meta{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+.disc-meta b{color:var(--bad)}
+.disc-types{display:flex;gap:8px;flex-wrap:wrap}
+.disc-type input{position:absolute;opacity:0;pointer-events:none}
+.disc-type span{display:inline-flex;padding:10px 14px;border-radius:12px;border:2px solid color-mix(in srgb,var(--c) 45%,#fff);background:#fff;font-weight:700;font-size:13.5px;cursor:pointer}
+.disc-type input:checked+span{background:var(--c);border-color:var(--c);color:#fff}
+.disc-type input:focus-visible+span{outline:2px solid var(--navy);outline-offset:2px}
 .t-pick{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:12px;padding:14px;border-radius:18px;background:#fff;border:1px solid var(--line);border-left:6px solid var(--c)}
 .t-field>span{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}
 .t-cls-sel{height:48px;font-size:15.5px;font-weight:650}
@@ -1026,11 +1042,12 @@ const NAV = [
   { key: 'terms', label: 'Academic Terms', group: 'Academic' },
   { key: 'assessments', label: 'Assessments', group: 'Academic' },
   { key: 'attendance', label: 'Attendance', group: 'Academic' },
+  { key: 'discipline', label: 'Discipline', group: 'Academic' },
   { key: 'reports', label: 'Report Generation', group: 'Academic' },
   { key: 'settings', label: 'Settings', group: 'Administration' },
 ];
 const PAGE_META = {
-  schools: 'Schools', register: 'Register school', setup: 'School setup', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
+  schools: 'Schools', register: 'Register school', setup: 'School setup', discipline: 'Discipline', tdisc: 'Conduct', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
   classes: 'Classes', teachers: 'Teachers', years: 'Academic Years', terms: 'Academic Terms',
   assessments: 'Assessments', attendance: 'Attendance', reports: 'Report Generation', settings: 'Settings',
 };
@@ -1046,6 +1063,7 @@ const ICON = {
   terms: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   assessments: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
   attendance: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>',
+  discipline: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
   reports: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>',
   settings: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
 };
@@ -1077,7 +1095,7 @@ const LEVEL_BY_KEY = Object.fromEntries(LEVELS.map(l => [l.key, l]));
 /* A/D/N are ratings from the earlier three-level scale, kept readable. */
 const RATING_PCT = { G: 95, B: 85, Y: 75, R: 65, A: 95, D: 75, N: 65 };
 const COMP_LABEL = { G: 'Excellent', B: 'Very good', Y: 'Good', R: 'Fair', A: 'Excellent', D: 'Good', N: 'Fair' };
-const COLLECTIONS = ['schools', 'academicYears', 'terms', 'classes', 'learningAreas', 'teachers', 'assignments', 'students', 'enrolments', 'promotions', 'assessments', 'results', 'attendance', 'reportNotes', 'reportCards', 'activity'];
+const COLLECTIONS = ['schools', 'academicYears', 'terms', 'classes', 'learningAreas', 'teachers', 'assignments', 'students', 'enrolments', 'promotions', 'assessments', 'results', 'attendance', 'reportNotes', 'reportCards', 'activity', 'discipline'];
 const ACTIONS = {}, FORMS = {}, CHANGES = {}, INPUTS = {}, VIEWS = {};
 
 /* ---------- 3. Data model, storage and schema ---------- */
@@ -1154,11 +1172,12 @@ const supportLinks = (cls = 'btn sm') => `<a class="${cls}" href="tel:${SUPPORT.
 const FEATURES = [
   ['attendance', 'Attendance', 'Take daily registers for their classes'],
   ['marks', 'Assessments & marks', 'Create assessments and record levels or marks'],
+  ['discipline', 'Discipline records', 'Record good behaviour and concerns for their classes'],
 ];
 const FEATURE_NAME = Object.fromEntries(FEATURES.map(f => [f[0], f[1]]));
-const PAGE_FEATURE = { tattend: 'attendance', tmarks: 'marks' };
+const PAGE_FEATURE = { tattend: 'attendance', tmarks: 'marks', tdisc: 'discipline' };
 /* Teachers never open learners' report cards or any other page. */
-const TEACHER_PAGES = ['thome', 'tattend', 'tmarks'];
+const TEACHER_PAGES = ['thome', 'tattend', 'tmarks', 'tdisc'];
 let myFeatures = [];
 let myTeacherId = null;
 /* Each class has its own colour across dashboards, chips and teacher screens. */
@@ -1175,7 +1194,7 @@ const visibleClasses = () => (myRole === 'teacher' ? classList().filter(c => tea
 function requireMyClass(classId) {
   if (myRole === 'teacher' && !teacherClassIds(myTeacher()).includes(classId)) throw new AppError('You can only record for the classes assigned to you.');
 }
-const can = f => (myRole === 'teacher' ? ['attendance', 'marks'].includes(f) && myFeatures.includes(f) : !!myRole);
+const can = f => (myRole === 'teacher' ? ['attendance', 'marks', 'discipline'].includes(f) && myFeatures.includes(f) : !!myRole);
 function requireFeature(f) { if (!can(f)) throw new AppError(`Your account does not have access to ${FEATURE_NAME[f] || f}. Ask your school director.`); }
 /* Which pages each role sees. School staff never see academic calendar tools; teachers only see their features. */
 function pageAllowed(page) {
@@ -1185,7 +1204,7 @@ function pageAllowed(page) {
     if (!TEACHER_PAGES.includes(page)) return false;
     return PAGE_FEATURE[page] ? can(PAGE_FEATURE[page]) : true;
   }
-  if (['thome', 'tattend', 'tmarks'].includes(page)) return false;
+  if (['thome', 'tattend', 'tmarks', 'tdisc'].includes(page)) return false;
   return !['years', 'terms'].includes(page);
 }
 /* ---------- School setup wizard: shown to the director until the school is ready ---------- */
@@ -1568,7 +1587,7 @@ function renderTabbar() {
   const tb = $('#tabbar');
   if (!tb) return;
   if (myRole !== 'teacher') { tb.innerHTML = ''; return; }
-  const tabs = [['thome', 'Home', 'dashboard'], ['tattend', 'Attendance', 'attendance'], ['tmarks', 'Marks', 'assessments']].filter(([k]) => pageAllowed(k));
+  const tabs = [['thome', 'Home', 'dashboard'], ['tattend', 'Attendance', 'attendance'], ['tmarks', 'Marks', 'assessments'], ['tdisc', 'Conduct', 'discipline']].filter(([k]) => pageAllowed(k));
   tb.innerHTML = tabs.map(([k, l, i]) => `<a href="#${k}" class="${ui.page === k ? 'on' : ''}" ${k === 'tattend' ? 'data-action="t-att-tab"' : k === 'tmarks' ? 'data-action="t-marks-tab"' : ''}>${icon(i)}<span>${l}</span></a>`).join('');
 }
 function renderChrome() {
@@ -3250,9 +3269,9 @@ function buildSnapshot(studentId, yearId, termId, opts = {}) {
   /* Every term of the year up to this one, for the three-term progress table. Nursery reports never rank learners. */
   const thisTerm = term ? term.order : 1;
   const termsData = (yearId ? db.terms.filter(t => t.yearId === yearId).sort((x, y) => x.order - y.order) : []).map(t => {
-    if (t.order > thisTerm) return { id: t.id, name: t.name, order: t.order, pending: true, areas: {}, percent: null };
+    if (t.order > thisTerm) return { id: t.id, name: t.name, order: t.order, pending: true, areas: {}, percent: null, conduct: null };
     const tr = t.id === termId ? rows : reportAreaRows(studentId, classId, t.id);
-    return { id: t.id, name: t.name, order: t.order, pending: false, areas: Object.fromEntries(tr.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: overallOf(tr).percent };
+    return { id: t.id, name: t.name, order: t.order, pending: false, areas: Object.fromEntries(tr.map(r => [r.id, { percent: r.percent, code: r.grade, color: r.color }])), percent: overallOf(tr).percent, conduct: conductFor(studentId, t.id) };
   });
   const lowAtt = attendance.rate !== null && attendance.rate < rep.attendanceThreshold;
   const auto = overall.band
@@ -3277,6 +3296,7 @@ function buildSnapshot(studentId, yearId, termId, opts = {}) {
     terms: termsData,
     bands: bandsSorted().map(b => ({ min: b.min, code: b.code, label: b.label, color: b.color })),
     attendance,
+    discipline: conductFor(studentId, termId),
     promotion: promotionFor(overall, attendance),
     teacherComment: (opts.teacherComment || '').trim() || auto,
     headComment: (opts.headComment || '').trim() || rep.headDefault,
@@ -3320,7 +3340,9 @@ function reportSheetHtml(snap, o = {}) {
   const legendBottom = bands.map(b => `<div><span>${esc(b.label.toUpperCase())}</span><i style="background:${esc(b.color)}"></i></div>`).join('');
   const schoolLogo = sc && sc.logo ? `<img class="rw-logo" src="${sc.logo}" alt="">` : '';
   /* Many subjects: switch to a compact layout so the card stays on one A4 page. */
-  const rowCount = snap.areas.length + new Set(snap.areas.map(r => r.group || '')).size;
+  const hasConduct = terms.some(t => t && t.conduct);
+  const rowCount = snap.areas.length + new Set(snap.areas.map(r => r.group || '')).size + (hasConduct ? 2 : 0);
+  const conductRows = hasConduct ? `<tr class="rw-grp"><td colspan="13">DISCIPLINE AND CONDUCT</td></tr><tr><td class="rw-area">Conduct and behaviour</td>${cols.map(t => bands.map(b => { const hit = t && !t.pending && t.conduct && t.conduct.code === b.code; return `<td class="rw-c${hit ? ' on' : ''}" style="--c:${esc(b.color)}">${hit ? '✓' : ''}</td>`; }).join('')).join('')}</tr>` : '';
   const density = rowCount > 40 ? ' xdense' : rowCount > 27 ? ' dense' : '';
   return `<article class="report-sheet rw${density}">
     <header class="rw-head">
@@ -3342,7 +3364,7 @@ function reportSheetHtml(snap, o = {}) {
         <tr><th></th><th colspan="12" class="rw-title">REPORT CARD</th></tr>
         <tr><th class="rw-subj">SUBJECTS AND BEHAVIOUR</th>${[1, 2, 3].map(n => `<th colspan="4">PROGRESS ACHIEVED<br>TERM ${n}</th>`).join('')}</tr>
       </thead>
-      <tbody>${body || '<tr><td colspan="13">No subjects are registered for this class yet.</td></tr>'}</tbody>
+      <tbody>${body || '<tr><td colspan="13">No subjects are registered for this class yet.</td></tr>'}${conductRows}</tbody>
       <tfoot>
         <tr><td class="rw-area">Percentage (%)</td>${perTerm(t => (t.percent === null ? '—' : fmtPct(t.percent)))}</tr>
         <tr><td class="rw-area">Class teacher’s signature</td>${perTerm(() => '')}</tr>
@@ -3352,7 +3374,7 @@ function reportSheetHtml(snap, o = {}) {
       <div class="rs-box"><h4>Class teacher’s comment</h4>${commentBox('teacherComment', snap.teacherComment, 'Class teacher comment')}</div>
       <div class="rs-box"><h4>Head teacher’s comment</h4>${commentBox('headComment', snap.headComment, 'Headteacher comment')}</div>
     </div>
-    <p class="rw-att">Days attended: <strong>${at.attended}</strong> of ${at.totalDays} · Attendance rate: <strong>${fmtPct(at.rate)}</strong> · Class teacher: ${esc(snap.teacherName)}</p>
+    <p class="rw-att">Days attended: <strong>${at.attended}</strong> of ${at.totalDays} · Attendance rate: <strong>${fmtPct(at.rate)}</strong>${snap.discipline ? ` · Discipline: <strong>${snap.discipline.positive}</strong> positive, <strong>${snap.discipline.minor + snap.discipline.serious}</strong> concern${snap.discipline.minor + snap.discipline.serious === 1 ? '' : 's'}` : ''} · Class teacher: ${esc(snap.teacherName)}</p>
     <div class="rw-foot">
       <div><h4>KEY TO THE COLOURS USED</h4><div class="rw-legend2">${legendBottom}</div></div>
       <div><h4>PARENT’S SIGNATURE</h4><table class="rw-sign"><tr><th>Term 1</th><th>Term 2</th><th>Term 3</th></tr><tr><td></td><td></td><td></td></tr></table></div>
@@ -3968,6 +3990,141 @@ ACTIONS['t-att'] = el => {
 };
 CHANGES['t-date'] = el => { ui.tDate = el.value; ui.attDraft = null; render(); };
 CHANGES['t-area'] = el => { ui.tArea = el.value; ui.assessId = null; render(); };
+
+/* ---------- 22c. Discipline records ---------- */
+const DISC_TYPES = [
+  ['positive', 'Positive behaviour', '#21a04a', '👍'],
+  ['minor', 'Minor concern', '#f3a712', '⚠️'],
+  ['serious', 'Serious concern', '#e2472f', '⛔'],
+];
+const DISC_TYPE = Object.fromEntries(DISC_TYPES.map(t => [t[0], { label: t[1], color: t[2], ico: t[3] }]));
+const DISC_CATS = {
+  positive: ['Helping others', 'Sharing and taking turns', 'Good manners', 'Following instructions', 'Kindness to classmates', 'Tidying up', 'Other'],
+  minor: ['Not listening', 'Disturbing the class', 'Refusing to share', 'Not tidying up', 'Rough play', 'Other'],
+  serious: ['Hitting or biting', 'Bullying', 'Damaging property', 'Leaving class without permission', 'Bad language', 'Other'],
+};
+/* Conduct level for a term, from the record: no concerns = 95 (Excellent); concerns lower it. Counted on the report card. */
+function conductFor(studentId, termId) {
+  const recs = (db.discipline || []).filter(r => r.studentId === studentId && r.termId === termId);
+  const positive = recs.filter(r => r.type === 'positive').length;
+  const minor = recs.filter(r => r.type === 'minor').length;
+  const serious = recs.filter(r => r.type === 'serious').length;
+  const pct = serious >= 2 || minor >= 4 ? 65 : serious === 1 || minor >= 2 ? 75 : minor === 1 ? 85 : 95;
+  const band = bandFor(pct);
+  return { positive, minor, serious, percent: pct, code: band ? band.code : '', color: band ? band.color : '', label: band ? band.label : '' };
+}
+function discListHtml(list, canDelete) {
+  if (!list.length) return '<div class="t-empty"><h3>No records yet</h3><p>Record good behaviour as well as concerns. Each one counts on the report card.</p></div>';
+  return `<div class="disc-list">${list.map(r => {
+    const st = byId('students', r.studentId) || { fullName: '—' };
+    const ty = DISC_TYPE[r.type] || DISC_TYPE.minor;
+    return `<div class="disc-item" style="--c:${ty.color}"><div class="disc-h"><span class="disc-ico">${ty.ico}</span><div><strong>${esc(st.fullName)}</strong><span>${esc(longDate(r.date))} · ${classChip(byId('classes', r.classId))}</span></div><span class="badge" style="background:color-mix(in srgb,${ty.color} 16%,#fff);color:color-mix(in srgb,${ty.color} 75%,#000)">${esc(ty.label)}</span></div>
+      <div class="disc-b"><strong>${esc(r.category)}</strong>${r.note ? ` — ${esc(r.note)}` : ''}${r.action ? `<span class="disc-act">Action taken: ${esc(r.action)}</span>` : ''}
+      <span class="disc-meta">${r.type !== 'positive' ? (r.parentInformed ? '✓ Parent informed' : '<b>Parent not informed yet</b>') + ' · ' : ''}by ${esc(String(r.by || '—').split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' '))}${canDelete ? ` · <button type="button" class="link" data-action="disc-delete" data-id="${esc(r.id)}">Delete</button>` : ''}</span></div></div>`;
+  }).join('')}</div>`;
+}
+function discData(classIds) {
+  const c = ctx();
+  const term = c.term;
+  const all = (db.discipline || []).filter(r => classIds.includes(r.classId) && (!term || r.termId === term.id)).sort((a, b) => (a.date === b.date ? ((b.createdAt || '') < (a.createdAt || '') ? -1 : 1) : a.date < b.date ? 1 : -1));
+  return { term, all };
+}
+function discStatsHtml(all) {
+  const pos = all.filter(r => r.type === 'positive').length, minor = all.filter(r => r.type === 'minor').length, serious = all.filter(r => r.type === 'serious').length;
+  const notInformed = all.filter(r => r.type !== 'positive' && !r.parentInformed).length;
+  return `<div class="t-stats">
+    <div class="card stat ok"><span class="lbl">Positive notes</span><span class="val">${pos}</span><span class="sub">this term</span></div>
+    <div class="card stat warn"><span class="lbl">Minor concerns</span><span class="val">${minor}</span><span class="sub">this term</span></div>
+    <div class="card stat info"><span class="lbl">Serious concerns</span><span class="val">${serious}</span><span class="sub">this term</span></div>
+    <div class="card stat accent"><span class="lbl">Parents to inform</span><span class="val">${notInformed}</span><span class="sub">concerns not yet shared</span></div></div>`;
+}
+const discFilter = list => {
+  const fc = ui.discClass || '', ft = ui.discType || '';
+  return list.filter(r => (!fc || r.classId === fc) && (!ft || r.type === ft));
+};
+const discFilterHtml = cls => `<div class="t-filter"><select class="input" data-change="disc-class" aria-label="Class"><option value="">All classes</option>${cls.map(c => `<option value="${c.id}" ${c.id === ui.discClass ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
+  <select class="input" data-change="disc-type" aria-label="Type"><option value="">All records</option>${DISC_TYPES.map(([k, l]) => `<option value="${k}" ${k === ui.discType ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>`;
+VIEWS.discipline = () => {
+  const cls = classList();
+  const { term, all } = discData(cls.map(c => c.id));
+  return pageHead('Discipline', `Behaviour records${term ? ` for ${esc(term.name)}` : ''}. Each learner’s record gives the conduct level on the report card.`, '<button type="button" class="btn primary" data-action="disc-new">+ Add record</button>')
+    + discStatsHtml(all) + discFilterHtml(cls) + discListHtml(discFilter(all), true)
+    + `<p class="small muted mt">Conduct level per term on the report card: no concerns = ${esc((bandFor(95) || {}).label || 'Excellent')}; 1 minor concern = ${esc((bandFor(85) || {}).label || '')}; 2–3 minor or 1 serious = ${esc((bandFor(75) || {}).label || '')}; 4+ minor or 2+ serious = ${esc((bandFor(65) || {}).label || '')}.</p>`;
+};
+VIEWS.tdisc = () => {
+  const cls = visibleClasses();
+  if (!cls.length) return tNoClass();
+  const { all } = discData(cls.map(c => c.id));
+  return `<div class="t-head"><h2>Conduct</h2><p>Record good behaviour and concerns for your learners. They appear on the report card.</p></div>`
+    + `<div class="t-tools"><h3>This term <span class="t-badge">${all.length}</span></h3><button type="button" class="btn primary" data-action="disc-new">+ Add record</button></div>`
+    + discFilterHtml(cls) + discListHtml(discFilter(all), false);
+};
+function discLearnerOptions(classId, selected) {
+  const list = studentsIn(classId);
+  return list.length ? list.map(st => `<option value="${st.id}" ${st.id === selected ? 'selected' : ''}>${esc(st.fullName)}</option>`).join('') : '<option value="">No learners in this class</option>';
+}
+ACTIONS['disc-new'] = () => {
+  if (myRole === 'teacher') requireFeature('discipline');
+  requireWritable();
+  const c = ctx();
+  if (!c.term || c.readOnly) throw new AppError('Discipline records can only be added in the current term.');
+  const cls = visibleClasses();
+  if (!cls.length) throw new AppError('No class is available.');
+  const clsId = cls.some(x => x.id === ui.discClass) ? ui.discClass : cls[0].id;
+  const today = todayISO() < c.term.openDate ? c.term.openDate : todayISO() > c.term.closeDate ? c.term.closeDate : todayISO();
+  openForm({ title: 'Add discipline record', form: 'discipline', submit: 'Save record', html: `<div class="form-grid">
+    ${field('Class *', `<select class="input" name="classId" data-change="disc-form-class">${cls.map(x => `<option value="${x.id}" ${x.id === clsId ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>`)}
+    ${field('Learner *', `<select class="input" name="studentId" id="discLearner">${discLearnerOptions(clsId)}</select>`)}
+    <div class="field span2"><span class="lbl">Type *</span><div class="disc-types">${DISC_TYPES.map(([k, l, col, ico], i) => `<label class="disc-type" style="--c:${col}"><input type="radio" name="type" value="${k}" data-change="disc-form-type" ${i === 0 ? 'checked' : ''}><span>${ico} ${esc(l)}</span></label>`).join('')}</div></div>
+    ${field('What happened *', `<select class="input" name="category" id="discCat">${DISC_CATS.positive.map(x => `<option>${esc(x)}</option>`).join('')}</select>`)}
+    ${field('Date *', `<input class="input" type="date" name="date" value="${today}" min="${c.term.openDate}" max="${todayISO() < c.term.closeDate ? todayISO() : c.term.closeDate}" required>`)}
+    ${field('Details', '<textarea class="input" name="note" maxlength="300" placeholder="Short description"></textarea>', '', 'span2')}
+    <div class="span2 disc-concern" hidden>${field('Action taken', '<input class="input" name="action" maxlength="160" placeholder="e.g. Talked with the learner, time-out, called parent">')}
+      <label class="check" style="margin-top:10px"><input type="checkbox" name="parentInformed" value="1"> Parent / guardian has been informed</label><div id="discParent" class="small muted" style="margin-top:6px"></div></div>
+  </div>` });
+  CHANGES['disc-form-class']($('.modal [name=classId]'));
+};
+CHANGES['disc-form-class'] = el => {
+  const sel = $('#discLearner'); if (sel) sel.innerHTML = discLearnerOptions(el.value);
+  const upd = () => { const st = byId('students', sel.value); const box = $('#discParent'); if (box) box.innerHTML = st && st.guardianPhone ? `Parent: <strong>${esc(st.guardianName || '')}</strong> · <a href="tel:${esc(telOf(st.guardianPhone))}">${esc(st.guardianPhone)}</a>` : ''; };
+  if (sel) { sel.onchange = upd; upd(); }
+};
+CHANGES['disc-form-type'] = el => {
+  const cat = $('#discCat'); if (cat) cat.innerHTML = (DISC_CATS[el.value] || []).map(x => `<option>${esc(x)}</option>`).join('');
+  const box = $('.modal .disc-concern'); if (box) box.hidden = el.value === 'positive';
+};
+FORMS.discipline = async fd => {
+  if (myRole === 'teacher') requireFeature('discipline');
+  requireWritable();
+  const c = ctx();
+  requireOpen(c.term, c.year);
+  const classId = String(fd.get('classId') || ''), studentId = String(fd.get('studentId') || ''), type = String(fd.get('type') || '');
+  requireMyClass(classId);
+  const st = byId('students', studentId);
+  if (!st || st.classId !== classId) throw new AppError('Choose a learner from the selected class.');
+  if (!DISC_TYPE[type]) throw new AppError('Choose the type of record.');
+  const date = String(fd.get('date') || '');
+  if (!date || date < c.term.openDate || date > c.term.closeDate || date > todayISO()) throw new AppError(`Choose a date in ${c.term.name}, not in the future.`);
+  const rec = { id: uid('dsc'), schoolId: sid(), yearId: c.year.id, termId: c.term.id, classId, studentId, date, type,
+    category: String(fd.get('category') || 'Other'), note: String(fd.get('note') || '').trim().slice(0, 300),
+    action: type === 'positive' ? '' : String(fd.get('action') || '').trim().slice(0, 160), parentInformed: type !== 'positive' && fd.get('parentInformed') === '1',
+    by: currentAdmin().name, createdAt: nowISO() };
+  db.discipline.push(rec);
+  commit('Discipline record added', `${st.fullName} · ${DISC_TYPE[type].label} · ${rec.category}`);
+  await confirmSaved(`${DISC_TYPE[type].label} recorded for ${st.fullName}`);
+  return true;
+};
+ACTIONS['disc-delete'] = async el => {
+  if (myRole === 'teacher') throw new AppError('Only the school can delete discipline records.');
+  requireWritable();
+  const r = (db.discipline || []).find(x => x.id === el.dataset.id); if (!r) return;
+  const ok = await confirmDialog('Delete this discipline record? It no longer counts on the report card.', { title: 'Delete record', ok: 'Delete', danger: true });
+  if (!ok) return;
+  db.discipline = db.discipline.filter(x => x.id !== r.id);
+  commit('Discipline record deleted', (byId('students', r.studentId) || {}).fullName || '');
+};
+CHANGES['disc-class'] = el => { ui.discClass = el.value; render(); };
+CHANGES['disc-type'] = el => { ui.discType = el.value; render(); };
 
 /* ---------- 23. Settings ---------- */
 const SETTINGS_SECTIONS = [

@@ -459,3 +459,12 @@ revoke all on function public.kn_my_school_info(), public.kn_review_school(text,
 grant execute on function public.kn_my_school_info(), public.kn_review_school(text, boolean, text), public.kn_resubmit_school(jsonb) to authenticated;
 
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v7: teachers may also be given discipline records. Safe to re-run.
+-- ===================================================================
+create or replace function public.kn_teacher_features(p text[]) returns text[]
+language sql immutable as $$
+  select coalesce(array(select distinct f from unnest(coalesce(p, '{}')) f where f in ('attendance', 'marks', 'discipline') order by f), '{}')
+$$;
+notify pgrst, 'reload schema';
