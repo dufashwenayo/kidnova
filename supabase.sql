@@ -678,3 +678,109 @@ revoke all on function public.kn_platform_overview() from public, anon;
 grant execute on function public.kn_platform_overview() to authenticated;
 revoke all on function public.kn_status_changes(jsonb, jsonb) from public, anon;
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v11: Secretary role + fees on the Super Admin overview. Safe to re-run.
+--   secretary : school level; learners, parents and finance (fees,
+--               payments, expenses). No marks, reports or settings.
+--   Directors add administrators, secretaries and teachers.
+--   Administrators add secretaries and teachers.
+-- ===================================================================
+alter table public.kn_members drop constraint if exists kn_members_role_check;
+alter table public.kn_members add constraint kn_members_role_check check (role in ('super_admin', 'director', 'admin', 'secretary', 'teacher'));
+
+create or replace function public.kn_add_member(p_email text, p_name text, p_role text, p_school text,
+                                                p_features text[] default '{}', p_teacher_id text default null) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare uid uuid; me text := public.kn_my_role(); my_school text := public.kn_my_school();
+begin
+  if p_role not in ('director', 'admin', 'secretary', 'teacher') then raise exception 'Invalid role'; end if;
+  if me = 'super_admin' then
+    if not exists (select 1 from public.kn_workspace where school_id = p_school) then raise exception 'Unknown school'; end if;
+  elsif me = 'director' then
+    if p_school is distinct from my_school or p_role not in ('admin', 'secretary', 'teacher') then raise exception 'Directors can only add staff to their own school'; end if;
+  elsif me = 'admin' then
+    if p_school is distinct from my_school or p_role not in ('secretary', 'teacher') then raise exception 'Administrators can only add secretaries and teachers to their own school'; end if;
+  else raise exception 'Not allowed'; end if;
+  select id into uid from auth.users where lower(email) = lower(trim(p_email));
+  if uid is null then raise exception 'No account exists for %', p_email; end if;
+  if exists (select 1 from public.kn_members where user_id = uid and (role = 'super_admin' or school_id <> p_school)) then
+    raise exception '% already has access to another school', p_email;
+  end if;
+  insert into public.kn_members (user_id, email, full_name, role, school_id, features, teacher_id)
+  values (uid, lower(trim(p_email)), coalesce(p_name, ''), p_role, p_school, coalesce(p_features, '{}'), p_teacher_id)
+  on conflict (user_id) do update set role = excluded.role, features = excluded.features,
+    teacher_id = coalesce(excluded.teacher_id, kn_members.teacher_id),
+    full_name = coalesce(nullif(excluded.full_name, ''), kn_members.full_name);
+  return uid;
+end $$;
+
+drop policy if exists kn_members_update on public.kn_members;
+create policy kn_members_update on public.kn_members for update to authenticated
+  using (public.kn_my_role() = 'super_admin' and role <> 'super_admin')
+  with check (public.kn_my_role() = 'super_admin' and role in ('director', 'admin', 'secretary'));
+drop policy if exists kn_members_delete on public.kn_members;
+create policy kn_members_delete on public.kn_members for delete to authenticated
+  using (user_id <> auth.uid() and role <> 'super_admin' and (public.kn_my_role() = 'super_admin'
+         or (public.kn_my_role() = 'director' and role in ('admin', 'secretary', 'teacher') and school_id = public.kn_my_school())
+         or (public.kn_my_role() = 'admin' and role in ('secretary', 'teacher') and school_id = public.kn_my_school())));
+
+-- Fees collected this term per school, and secretaries, on the Super Admin overview.
+create or replace function public.kn_school_fees(d jsonb) returns jsonb
+language sql immutable as $$
+  with t as (
+    select t->>'id' id from jsonb_array_elements(coalesce(d->'academicYears', '[]')) y
+    join jsonb_array_elements(coalesce(d->'terms', '[]')) t on t->>'yearId' = y->>'id'
+    where y->>'status' = 'Active' and t->>'status' = 'Active' limit 1)
+  select jsonb_build_object(
+    'paid', coalesce((select sum((p->>'amount')::numeric) from jsonb_array_elements(coalesce(d->'payments', '[]')) p, t
+                      where p->>'termId' = t.id and coalesce((p->>'voided')::boolean, false) = false), 0),
+    'payments', coalesce((select count(*) from jsonb_array_elements(coalesce(d->'payments', '[]')) p, t
+                      where p->>'termId' = t.id and coalesce((p->>'voided')::boolean, false) = false), 0))
+$$;
+
+create or replace function public.kn_platform_overview() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare today text := to_char((now() at time zone 'Africa/Kigali')::date, 'YYYY-MM-DD');
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can see the platform overview'; end if;
+  return jsonb_build_object(
+    'today', today,
+    'schools', coalesce((select jsonb_agg(x order by x->>'name') from (
+      select jsonb_build_object(
+        'school_id', w.school_id, 'name', w.school_name, 'reg', w.reg_number, 'status', w.status,
+        'created_at', w.created_at, 'updated_at', w.updated_at, 'submitted_at', w.submitted_at,
+        'active', coalesce(w.data #>> '{schools,0,status}', 'Active'),
+        'setup_done', coalesce((w.data #>> '{schools,0,setup,done}')::boolean, false),
+        'learners', (select count(*) from jsonb_array_elements(coalesce(w.data->'students', '[]')) s where coalesce(s->>'status', 'Active') = 'Active'),
+        'girls', (select count(*) from jsonb_array_elements(coalesce(w.data->'students', '[]')) s where coalesce(s->>'status', 'Active') = 'Active' and s->>'gender' = 'Female'),
+        'teachers', (select count(*) from jsonb_array_elements(coalesce(w.data->'teachers', '[]')) t where coalesce(t->>'employmentStatus', 'Active') = 'Active'),
+        'classes', (select count(*) from jsonb_array_elements(coalesce(w.data->'classes', '[]'))),
+        'assessments', (select count(*) from jsonb_array_elements(coalesce(w.data->'assessments', '[]'))),
+        'year', (select y->>'name' from jsonb_array_elements(coalesce(w.data->'academicYears', '[]')) y where y->>'status' = 'Active' limit 1),
+        'term', (select jsonb_build_object('id', t->>'id', 'name', t->>'name', 'open', t->>'openDate', 'close', t->>'closeDate')
+                   from jsonb_array_elements(coalesce(w.data->'academicYears', '[]')) y
+                   join jsonb_array_elements(coalesce(w.data->'terms', '[]')) t on t->>'yearId' = y->>'id'
+                  where y->>'status' = 'Active' and t->>'status' = 'Active' limit 1),
+        'next_term', (select jsonb_build_object('name', t->>'name', 'open', t->>'openDate')
+                   from jsonb_array_elements(coalesce(w.data->'academicYears', '[]')) y
+                   join jsonb_array_elements(coalesce(w.data->'terms', '[]')) t on t->>'yearId' = y->>'id'
+                  where y->>'status' = 'Active' and t->>'status' = 'Upcoming' order by t->>'openDate' limit 1),
+        'registers_today', (select count(distinct a->>'classId') from jsonb_array_elements(coalesce(w.data->'attendance', '[]')) a where a->>'date' = today),
+        'fees', public.kn_school_fees(w.data),
+        'last_activity', (w.data #>> '{activity,0,at}'),
+        'last_actor', (w.data #>> '{activity,0,actor}'),
+        'last_action', (w.data #>> '{activity,0,action}')
+      ) x from public.kn_workspace w) q), '[]'::jsonb),
+    'users', (select jsonb_build_object(
+        'total', count(*), 'directors', count(*) filter (where role = 'director'), 'admins', count(*) filter (where role = 'admin'),
+        'secretaries', count(*) filter (where role = 'secretary'),
+        'teachers', count(*) filter (where role = 'teacher'), 'suspended', count(*) filter (where suspended)) from public.kn_members),
+    'logins', coalesce((select jsonb_object_agg(m.user_id, u.last_sign_in_at) from public.kn_members m join auth.users u on u.id = m.user_id), '{}'::jsonb),
+    'open_links', (select count(*) from public.kn_invites where used_at is null and (expires_at is null or expires_at > now()))
+  );
+end $$;
+revoke all on function public.kn_platform_overview() from public, anon;
+grant execute on function public.kn_platform_overview() to authenticated;
+revoke all on function public.kn_school_fees(jsonb) from public, anon;
+notify pgrst, 'reload schema';

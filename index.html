@@ -708,6 +708,66 @@ tr.is-suspended td{opacity:.6}
 .th-app.upd .th-app-a .btn{background:#fff;color:#0f5a39;font-weight:700}
 .th-app-steps{margin:12px 0 0;padding:12px 12px 12px 30px;border-radius:12px;background:rgba(255,255,255,.12);font-size:13px;line-height:1.5;position:relative;z-index:1}
 .th-app-steps li+li{margin-top:6px}
+.fin-kpis .stat .val{font-size:22px}
+.fin-bar{min-width:140px}
+.fin-bar i{display:inline-block;vertical-align:middle;width:90px;height:7px;border-radius:99px;background:var(--line-soft);overflow:hidden;margin-right:8px}
+.fin-bar em{display:block;height:100%;background:#21a04a;border-radius:99px}
+.fin-bar b{font-size:12px}
+.fin-list{list-style:none;margin:0;padding:4px 18px 12px}
+.fin-list li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.fin-list li:last-child{border-bottom:0}
+.fin-list li>div{flex:1;min-width:0}
+.fin-list strong{display:block;font-size:13.5px}
+.fin-list small{font-size:11.5px;color:var(--muted)}
+.fin-list b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.fin-methods{display:flex;flex-wrap:wrap;gap:8px;padding:0 18px 16px}
+.fin-methods span{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--blue-soft);color:var(--navy)}
+.fin-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fin-tools .input{width:auto;flex:1 1 160px;max-width:300px}
+.fin-perclass{display:grid;gap:2px}
+.fin-perclass div{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.fin-perclass b{font-variant-numeric:tabular-nums}
+.fin-net{border-top:2px solid var(--navy)!important;border-bottom:0!important;font-size:14px!important}
+.fin-big{font-size:30px;font-weight:800;color:var(--navy-deep);font-variant-numeric:tabular-nums}
+.fin-dash-b{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fin-dash-b span{display:block;font-size:12px;color:var(--muted)}
+.fin-dash-b b{font-size:18px;font-variant-numeric:tabular-nums}
+.fin-dash-b b.ok{color:var(--ok)} .fin-dash-b b.warn{color:var(--warn)}
+.fin-dash-bar{grid-column:1/-1;height:8px;border-radius:99px;background:var(--line-soft);overflow:hidden}
+.fin-dash-bar i{display:block;height:100%;background:linear-gradient(90deg,#21a04a,#2a9fd8)}
+tr.is-void td{opacity:.55;text-decoration:line-through}
+tr.is-void td:last-child{text-decoration:none}
+.sub.bad{color:var(--bad)}
+.pay-bal-in{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 12px;border-radius:10px;background:var(--blue-soft);border:1px solid var(--blue-line);font-size:12.5px}
+.pay-bal-in span:first-child{font-weight:700;width:100%}
+.pay-bal-now{margin-left:auto}
+.fee-learners{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;max-height:260px;overflow:auto}
+.fee-learners b{display:block;font-size:12px;margin-bottom:4px}
+.fee-learners .check{display:flex;font-size:13px;margin:2px 0}
+.receipt-wrap{display:flex;justify-content:center;background:var(--bg);padding:12px;border-radius:12px}
+.receipt{width:520px;max-width:100%;background:#fff;color:#18212f;padding:22px 24px;border:1px solid var(--line);border-radius:10px;font-size:13px}
+.rc-top{display:flex;gap:12px;align-items:center;border-bottom:2px solid #14305c;padding-bottom:12px}
+.rc-top img,.rc-logo{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none}
+.rc-logo{display:grid;place-items:center;background:#14305c;color:#fff;font-weight:800}
+.rc-top h3{margin:0;font-size:16px}
+.rc-top p{margin:2px 0 0;font-size:11.5px;color:#5d6b7f}
+.rc-top>div:nth-child(2){flex:1}
+.rc-no{text-align:right}
+.rc-no small{display:block;font-size:10px;letter-spacing:.12em;color:#5d6b7f}
+.rc-no b{font-size:14px}
+.rc-amt{margin:14px 0;padding:12px 14px;border-radius:10px;background:#e4f4eb;display:flex;justify-content:space-between;align-items:center}
+.rc-amt small{color:#17744a;font-weight:600}
+.rc-amt b{font-size:22px;color:#17744a}
+.rc-dl{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin:0}
+.rc-dl dt{font-size:10.5px;color:#5d6b7f;text-transform:uppercase;letter-spacing:.05em}
+.rc-dl dd{margin:1px 0 0;font-weight:600}
+.rc-bal{grid-column:1/-1;border-top:1px dashed #cfd8e3;padding-top:8px}
+.rc-note{font-size:12px;color:#5d6b7f;margin:10px 0 0}
+.rc-sign{margin-top:26px;text-align:right}
+.rc-sign span{display:inline-block;border-top:1px solid #18212f;padding-top:4px;font-size:11px;min-width:180px;text-align:center}
+.rc-foot{margin:14px 0 0;text-align:center;font-size:10.5px;color:#8a96a8}
+.sa-hero.sec-hero{background:linear-gradient(120deg,#0f5a39 0%,#17744a 55%,#2a9fd8 100%)}
+@media (max-width:760px){.fin-dash-b{grid-template-columns:1fr 1fr}.rc-dl{grid-template-columns:1fr}}
 .sa-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:22px 24px;border-radius:18px;color:#fff;background:linear-gradient(120deg,#14305c 0%,#0b6cb5 70%,#2a9fd8 100%);box-shadow:0 10px 28px rgba(20,48,92,.22)}
 .sa-hero span{font-size:12.5px;color:#cfe4f7;font-weight:600;letter-spacing:.02em}
 .sa-hero h2{margin:4px 0 6px;font-size:26px;color:#fff}
@@ -1243,17 +1303,19 @@ const NAV = [
   { key: 'attendance', label: 'Attendance', group: 'Academic' },
   { key: 'discipline', label: 'Discipline', group: 'Academic' },
   { key: 'reports', label: 'Report Generation', group: 'Academic' },
+  { key: 'finance', label: 'Finance', group: 'Finance' },
   { key: 'settings', label: 'Settings', group: 'Administration' },
   { key: 'platform', label: 'Admin settings', group: 'Administration', superOnly: true },
 ];
 /* Pages the Super Admin uses without opening a school */
 const SUPER_PAGES = ['admin', 'schools', 'platform'];
 const PAGE_META = {
-  admin: 'KIDNOVA Admin', platform: 'Admin settings', schools: 'Schools', register: 'Register school', setup: 'School setup', discipline: 'Discipline', tdisc: 'Conduct', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
+  finance: 'Finance', admin: 'KIDNOVA Admin', platform: 'Admin settings', schools: 'Schools', register: 'Register school', setup: 'School setup', discipline: 'Discipline', tdisc: 'Conduct', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
   classes: 'Classes', teachers: 'Teachers', years: 'Academic Years', terms: 'Academic Terms',
   assessments: 'Assessments', attendance: 'Attendance', reports: 'Report Generation', settings: 'Settings',
 };
 const ICON = {
+  finance: '<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="16.5" cy="14.5" r="1.6"/><path d="M6 15h4"/>',
   admin: '<path d="M12 2l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.3 6.1 19.9l1.7-6.7L2.5 8.8l6.9-.5z"/>',
   platform: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.5"/>',
   schools: '<path d="M2 20h20M4 20V10l4-3 4 3v10M12 20V6l4-3 4 3v14"/><path d="M7 13h2M15 9h2M15 13h2"/>',
@@ -1299,7 +1361,7 @@ const LEVEL_BY_KEY = Object.fromEntries(LEVELS.map(l => [l.key, l]));
 /* A/D/N are ratings from the earlier three-level scale, kept readable. */
 const RATING_PCT = { G: 95, B: 85, Y: 75, R: 65, A: 95, D: 75, N: 65 };
 const COMP_LABEL = { G: 'Excellent', B: 'Very good', Y: 'Good', R: 'Fair', A: 'Excellent', D: 'Good', N: 'Fair' };
-const COLLECTIONS = ['schools', 'academicYears', 'terms', 'classes', 'learningAreas', 'teachers', 'assignments', 'students', 'enrolments', 'promotions', 'assessments', 'results', 'attendance', 'reportNotes', 'reportCards', 'activity', 'discipline'];
+const COLLECTIONS = ['schools', 'academicYears', 'terms', 'classes', 'learningAreas', 'teachers', 'assignments', 'students', 'enrolments', 'promotions', 'assessments', 'results', 'attendance', 'reportNotes', 'reportCards', 'activity', 'discipline', 'feeItems', 'feeDiscounts', 'payments', 'expenses'];
 const ACTIONS = {}, FORMS = {}, CHANGES = {}, INPUTS = {}, VIEWS = {};
 
 /* ---------- 3. Data model, storage and schema ---------- */
@@ -1381,8 +1443,10 @@ const sb = CONFIGURED ? window.supabase.createClient(CFG.supabaseUrl, CFG.supaba
 let authUser = null, myRole = null, mySchool = null;
 const ws = { rev: 0, schoolId: null, list: [] };
 const save = { timer: null, inFlight: null, dirty: false, state: 'saved' };
-const ROLE_LABEL = { super_admin: 'GLOBAL SUPER ADMIN', director: 'SCHOOL DIRECTOR', admin: 'SCHOOL ADMINISTRATOR', teacher: 'TEACHER' };
-const ROLE_NAME = { super_admin: 'Super Admin', director: 'Director', admin: 'Administrator', teacher: 'Teacher' };
+const ROLE_LABEL = { super_admin: 'GLOBAL SUPER ADMIN', director: 'SCHOOL DIRECTOR', admin: 'SCHOOL ADMINISTRATOR', secretary: 'SCHOOL SECRETARY', teacher: 'TEACHER' };
+const ROLE_NAME = { super_admin: 'Super Admin', director: 'Director', admin: 'Administrator', secretary: 'Secretary', teacher: 'Teacher' };
+/* Secretaries work on learners, parents and money: no marks, report cards, teachers or settings. */
+const SECRETARY_PAGES = ['dashboard', 'students', 'student', 'finance'];
 const PROFILE_NAME = { super_admin: 'Global Super Admin', director: 'School Director', admin: 'School Administrator', teacher: 'Teacher' };
 /* Quick support line shown on every dashboard, the login page and the homepage. */
 const SUPPORT = { tel: '+250783568044', show: '+250 783 568 044', wa: 'https://wa.me/250783568044' };
@@ -1503,6 +1567,7 @@ function requireFeature(f) { if (!can(f)) throw new AppError(`Your account does 
 function pageAllowed(page) {
   if (!myRole || isSuper()) return true;
   if (page === 'schools') return false;
+  if (myRole === 'secretary') return SECRETARY_PAGES.includes(page);
   if (myRole === 'teacher') {
     if (!TEACHER_PAGES.includes(page)) return false;
     return PAGE_FEATURE[page] ? can(PAGE_FEATURE[page]) : true;
@@ -1534,6 +1599,7 @@ function pageAllowedSetupCheck(page) {
 const featureChecks = (selected, name = 'feat') => `<div class="feat-grid">${FEATURES.map(([k, l, d]) => `<label class="feat"><input type="checkbox" name="${name}" value="${k}" ${selected.includes(k) ? 'checked' : ''}><span><strong>${esc(l)}</strong><small>${esc(d)}</small></span></label>`).join('')}</div>`;
 const isSuper = () => myRole === 'super_admin';
 const isDirector = () => myRole === 'director';
+const isSecretary = () => myRole === 'secretary';
 function currentAdmin() {
   const u = authUser || {}, m = u.user_metadata || {};
   return { name: (m.full_name || (u.email || 'Administrator').split('@')[0]).toUpperCase(), role: ROLE_LABEL[myRole] || 'USER', email: u.email || '' };
@@ -1811,7 +1877,7 @@ function applyRoute() {
   document.body.classList.remove('nav-open');
 }
 function renderNav() {
-  const groups = ['Overview', 'People', 'Academic', 'Administration'];
+  const groups = ['Overview', 'People', 'Academic', 'Finance', 'Administration'];
   $('#nav').innerHTML = groups.map(g => {
     const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()) && (!n.setupOnly || setupNeeded()) && pageAllowed(n.key)
       && (!isSuper() || ws.schoolId || SUPER_PAGES.includes(n.key)));
@@ -2873,7 +2939,8 @@ VIEWS.student = () => {
   const st = byId('students', ui.studentId);
   if (!st || st.schoolId !== sid()) return emptyState('Learner not found', 'The record may have been deleted.', '<a class="btn" href="#students">Back to students</a>');
   const cls = byId('classes', st.classId);
-  const tabs = [['profile', 'Profile'], ['history', 'Academic history'], ['assessments', 'Assessments'], ['attendance', 'Attendance'], ['reports', 'Report cards']];
+  const tabs = isSecretary() ? [['profile', 'Profile'], ['fees', 'Fees']] : [['profile', 'Profile'], ['history', 'Academic history'], ['assessments', 'Assessments'], ['attendance', 'Attendance'], ['fees', 'Fees'], ['reports', 'Report cards']];
+  if (!tabs.some(([k]) => k === ui.studentTab)) ui.studentTab = 'profile';
   return `<div class="card"><div class="card-b"><div class="row" style="align-items:flex-start;gap:20px">
       ${avatarHtml(st, 'lg')}
       <div class="grow" style="min-width:230px"><h2>${esc(st.fullName)}</h2>
@@ -2886,6 +2953,7 @@ VIEWS.student = () => {
 };
 function studentTabHtml(st) {
   const tab = ui.studentTab;
+  if (tab === 'fees') return learnerFeesHtml(st);
   if (tab === 'history') {
     const enrol = db.enrolments.filter(e => e.studentId === st.id).sort((a, b) => (byId('academicYears', a.yearId).openDate < byId('academicYears', b.yearId).openDate ? 1 : -1));
     const promos = db.promotions.filter(p => p.studentId === st.id).sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -3904,6 +3972,7 @@ CHANGES['report-class'] = el => { ui.reportClassId = el.value; render(); };
 
 /* ---------- 22. Dashboard ---------- */
 VIEWS.dashboard = () => {
+  if (isSecretary()) return secretaryDashboard();
   const sc = curSchool();
   const c = ctx();
   const set = settingsOf();
@@ -4034,7 +4103,7 @@ VIEWS.dashboard = () => {
     <div class="table-wrap mt"><table class="tbl"><thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead><tbody>${actRows || `<tr><td colspan="3">${emptyState('No activity yet', '')}</td></tr>`}</tbody></table></div></div>`;
 
   const remindAdmin = notTaken.length ? `<div class="t-remind mt"><div><strong>⏰ Attendance not taken today</strong><span>${notTaken.map(cl => `${classChip(cl)} ${teacherOfClass(cl.id) ? `<small>${esc(teacherOfClass(cl.id).fullName)}</small>` : ''}`).join(' ')}</span></div><a class="btn" href="#attendance">Open attendance</a></div>` : '';
-  return welcome + remindAdmin + (myRole === 'teacher' ? '' : appShareCard()) + overview
+  return welcome + remindAdmin + (myRole === 'teacher' ? '' : appShareCard()) + overview + (myRole === 'teacher' ? '' : finDashCard())
     + `<div class="grid g-side mt">${levelCard}${incCard}</div>` + teamCard
     + `<h3 class="sec-title">Academic performance${term ? ` · ${esc(term.name)}` : ''}</h3>`
     + `<div class="grid g3">${perfCard}${gradeCard}${catCard}</div>`
@@ -4894,7 +4963,7 @@ function settingsUsersHtml() {
   if (!ui.members) { loadMembers(); return '<div class="card"><div class="card-b muted">Loading users…</div></div>'; }
   if (ui.members.error) return `<div class="banner bad">${esc(ui.members.error)}</div>`;
   const me = authUser.id;
-  const canManage = m => m.user_id !== me && m.role !== 'super_admin' && (isSuper() || (m.school_id === mySchool && ((isDirector() && ['admin', 'teacher'].includes(m.role)) || (myRole === 'admin' && m.role === 'teacher'))));
+  const canManage = m => m.user_id !== me && m.role !== 'super_admin' && (isSuper() || (m.school_id === mySchool && ((isDirector() && ['admin', 'secretary', 'teacher'].includes(m.role)) || (myRole === 'admin' && ['secretary', 'teacher'].includes(m.role)))));
   const superTools = m => (isSuper() ? `<button type="button" class="btn xs" data-action="member-reset" data-id="${esc(m.user_id)}">Reset password</button>${m.user_id !== me && m.role !== 'super_admin' ? ` <button type="button" class="btn xs ${m.suspended ? 'light' : 'danger'}" data-action="member-suspend" data-id="${esc(m.user_id)}">${m.suspended ? 'Reactivate' : 'Suspend'}</button>` : ''} ` : '');
   const f = ui.memFilter || {};
   const q = String(f.q || '').trim().toLowerCase();
@@ -4918,13 +4987,14 @@ function settingsUsersHtml() {
     ${isSuper() || isDirector() || myRole === 'admin' ? '<button type="button" class="btn primary sm" data-action="member-add">Add user</button>' : ''}</div>
     ${filters}<div class="table-wrap mt"><table class="tbl"><thead><tr><th>User</th><th>Role</th><th>School</th><th>Status</th><th>${isSuper() && ui.platform ? 'Last login' : 'Added'}</th><th class="r">Actions</th></tr></thead><tbody>${rows || `<tr><td colspan="6">${emptyState('No user matches', 'Change the search or filters.')}</td></tr>`}</tbody></table></div></div>`;
 }
+const SECRETARY_OPT = '<option value="secretary">Secretary — learners, parents and finance (fees, payments, expenses)</option>';
 ACTIONS['member-add'] = () => {
   if (!isSuper() && !isDirector() && myRole !== 'admin') throw new AppError('Only the Super Admin, the director or an administrator can add users.');
   if (isSuper() && !ws.list.length) throw new AppError('No school has registered yet. Create a registration link on the Schools page first.');
   const schoolPick = isSuper()
     ? field('School *', `<select class="input" name="school">${ws.list.map(w => `<option value="${esc(w.school_id)}" ${w.school_id === ws.schoolId ? 'selected' : ''}>${esc(w.school_name)}</option>`).join('')}</select>`)
-      + field('Role *', '<select class="input" name="role"><option value="admin">Administrator — school records</option><option value="director">Director — school records and staff</option><option value="teacher">Teacher — only the features below</option></select>')
-    : `<input type="hidden" name="school" value="${esc(mySchool)}">` + field('Role *', `<select class="input" name="role">${isDirector() ? '<option value="admin">Administrator — school records</option>' : ''}<option value="teacher">Teacher — only the features below</option></select>`);
+      + field('Role *', `<select class="input" name="role"><option value="admin">Administrator — school records</option><option value="director">Director — school records and staff</option>${SECRETARY_OPT}<option value="teacher">Teacher — only the features below</option></select>`)
+    : `<input type="hidden" name="school" value="${esc(mySchool)}">` + field('Role *', `<select class="input" name="role">${isDirector() ? '<option value="admin">Administrator — school records</option>' : ''}${SECRETARY_OPT}<option value="teacher">Teacher — only the features below</option></select>`);
   const featBox = `<fieldset class="fieldset span2"><legend>Teacher features (used when the role is Teacher)</legend>${featureChecks(['attendance', 'marks'])}</fieldset>`;
   openForm({ title: 'Add user', form: 'member-add', submit: 'Create user', html: `<div class="form-grid">
     ${field('Full name *', '<input class="input" name="name" required autocomplete="off">', '', 'span2')}
@@ -5352,6 +5422,457 @@ VIEWS.settings = () => {
     <div style="min-width:0">${bodies[cur]()}</div></div>`;
 };
 
+/* ---------- 22c. Finance: fee structure, learner fees, payments, expenses ----------
+   Fees are set per term (optionally per class). A learner's balance carries over from earlier terms.
+   Payments are tied to the term they were received in and each one gets a receipt number. */
+const PAY_METHODS = ['Cash', 'Mobile Money', 'Bank transfer', 'Other'];
+const EXPENSE_CATS = ['Salaries', 'Food & feeding', 'Teaching materials', 'Rent & utilities', 'Transport', 'Maintenance', 'Office & admin', 'Other'];
+const money = n => `${(db && sid() && settingsOf().currency) || 'RWF'} ${Math.round(Number(n) || 0).toLocaleString('en-US')}`;
+const termsAll = () => S('terms').slice().sort((a, b) => (a.openDate < b.openDate ? -1 : a.openDate > b.openDate ? 1 : 0));
+const termLabel = t => (t ? `${t.name} · ${(byId('academicYears', t.yearId) || {}).name || ''}` : '—');
+const canVoid = () => isSuper() || isDirector() || myRole === 'admin';
+function finTerm() {
+  let t = ui.finTermId ? byId('terms', ui.finTermId) : null;
+  if (!t || t.schoolId !== sid()) t = activeTerm() || termsAll().filter(x => x.status !== 'Upcoming').pop() || termsAll()[0] || null;
+  return t;
+}
+function learnerClassIn(st, term) {
+  const e = enrolmentOf(st.id, term.yearId);
+  if (e) return e.classId;
+  const ay = activeYear();
+  return ay && term.yearId === ay.id && st.status === 'Active' ? st.classId : null;
+}
+/* One pass over the money records, reused for every learner on a page. */
+function finIndex() {
+  const pay = new Map(), disc = new Map(), items = new Map();
+  const k = (a, b) => a + '|' + b;
+  S('payments').forEach(p => { if (!p.voided) pay.set(k(p.studentId, p.termId), (pay.get(k(p.studentId, p.termId)) || 0) + Number(p.amount || 0)); });
+  S('feeDiscounts').forEach(d => disc.set(k(d.studentId, d.termId), (disc.get(k(d.studentId, d.termId)) || 0) + Number(d.amount || 0)));
+  S('feeItems').forEach(i => { if (!items.has(i.termId)) items.set(i.termId, []); items.get(i.termId).push(i); });
+  return { pay, disc, items, k, terms: termsAll() };
+}
+function feeOf(st, term, X) {
+  const cls = learnerClassIn(st, term);
+  const items = cls ? (X.items.get(term.id) || []).filter(i => (!i.classIds || !i.classIds.length || i.classIds.includes(cls)) && (!i.optional || (i.studentIds || []).includes(st.id))) : [];
+  const charged = items.reduce((n, i) => n + Number(i.amount || 0), 0);
+  const disc = Math.min(charged, X.disc.get(X.k(st.id, term.id)) || 0);
+  const paid = X.pay.get(X.k(st.id, term.id)) || 0;
+  return { cls, items, charged, disc, due: charged - disc, paid };
+}
+function feeStatement(st, term, X = finIndex()) {
+  let prev = 0;
+  X.terms.filter(t => t.openDate < term.openDate).forEach(t => { const f = feeOf(st, t, X); prev += f.due - f.paid; });
+  const cur = feeOf(st, term, X);
+  const balance = prev + cur.due - cur.paid;
+  const owed = prev + cur.due;
+  const status = balance < 0 ? 'Credit' : balance === 0 ? (owed > 0 || cur.paid > 0 ? 'Paid' : 'No fees') : (cur.paid > 0 || prev < 0 ? 'Partly paid' : 'Not paid');
+  return { ...cur, prev, balance, status };
+}
+const FEE_TONE = { Paid: 'ok', Credit: 'info', 'Partly paid': 'warn', 'Not paid': 'bad', 'No fees': '' };
+function feeLearners(term) {
+  return S('students').filter(st => !!learnerClassIn(st, term) && (st.status === 'Active' || !!enrolmentOf(st.id, term.yearId))).sort((a, b) => byName(a.fullName, b.fullName));
+}
+function finTotals(term, X = finIndex()) {
+  const rows = feeLearners(term).map(st => ({ st, f: feeStatement(st, term, X) }));
+  const due = rows.reduce((n, r) => n + r.f.due, 0);
+  const paid = S('payments').filter(p => !p.voided && p.termId === term.id).reduce((n, p) => n + Number(p.amount || 0), 0);
+  const outstanding = rows.reduce((n, r) => n + Math.max(0, r.f.balance), 0);
+  const expenses = S('expenses').filter(e => e.termId === term.id).reduce((n, e) => n + Number(e.amount || 0), 0);
+  return { rows, due, paid, outstanding, expenses, rate: due > 0 ? Math.min(100, Math.round((paid / due) * 100)) : 0, hasFees: (X.items.get(term.id) || []).length > 0 };
+}
+const remindMsg = (st, f) => `Hello ${st.guardianName || ''}, this is ${curSchool() ? curSchool().name : 'the school'}. The school fees balance for ${st.fullName} is ${money(f.balance)}. Thank you for paying on time.`;
+function nextReceiptNo() {
+  const yr = todayISO().slice(0, 4);
+  const n = S('payments').filter(p => String(p.receiptNo || '').startsWith(`RC-${yr}-`)).reduce((m, p) => Math.max(m, Number(String(p.receiptNo).split('-')[2]) || 0), 0);
+  return `RC-${yr}-${String(n + 1).padStart(4, '0')}`;
+}
+
+VIEWS.finance = () => {
+  const term = finTerm();
+  if (!term) return pageHead('Finance', 'School fees, payments and expenses.') + '<div class="banner warn"><span>This school has no academic terms yet. Fees are set per term.</span></div>';
+  const X = finIndex();
+  const T = finTotals(term, X);
+  const tab = ['overview', 'learners', 'payments', 'structure', 'expenses'].includes(ui.finTab) ? ui.finTab : 'overview';
+  const termSel = `<label class="year-pill">${icon('terms')}<select data-change="fin-term" aria-label="Term">${termsAll().slice().reverse().map(t => `<option value="${t.id}" ${t.id === term.id ? 'selected' : ''}>${esc(termLabel(t))}${t.status === 'Active' ? ' · current' : t.status === 'Upcoming' ? ' · upcoming' : ''}</option>`).join('')}</select></label>`;
+  const tabs = [['overview', 'Overview'], ['learners', 'Learners & balances'], ['payments', 'Payments'], ['structure', 'Fee structure'], ['expenses', 'Expenses']];
+  const head = pageHead('Finance', `School fees, payments and expenses · ${termLabel(term)}`, `${termSel}<button type="button" class="btn primary" data-action="pay-new">＋ Record payment</button>`)
+    + (!T.hasFees ? `<div class="banner warn"><span>No fees are set for ${esc(termLabel(term))} yet. Add the fee items (tuition, feeding, transport…) so KIDNOVA can work out what each learner owes.</span><button type="button" class="btn sm primary" data-action="fin-tab" data-tab="structure">Set fees</button></div>` : '')
+    + `<div class="tabs">${tabs.map(([k, l]) => `<button type="button" class="tab ${tab === k ? 'on' : ''}" data-action="fin-tab" data-tab="${k}">${l}</button>`).join('')}</div>`;
+  const body = { overview: finOverviewHtml, learners: finLearnersHtml, payments: finPaymentsHtml, structure: finStructureHtml, expenses: finExpensesHtml }[tab](term, X, T);
+  return head + body;
+};
+function finKpis(term, T) {
+  return `<div class="grid g4 fin-kpis">
+    <div class="card stat accent"><span class="lbl">Fees due · ${esc(term.name)}</span><span class="val">${esc(money(T.due))}</span><span class="sub">${plural(T.rows.filter(r => r.f.due > 0).length, 'learner')} with fees</span></div>
+    <div class="card stat ok"><span class="lbl">Collected</span><span class="val">${esc(money(T.paid))}</span><span class="sub">${T.rate}% of fees due</span><span class="track"><i style="width:${T.rate}%"></i></span></div>
+    <div class="card stat warn"><span class="lbl">Outstanding balances</span><span class="val">${esc(money(T.outstanding))}</span><span class="sub">${plural(T.rows.filter(r => r.f.balance > 0).length, 'learner')} still owe, including earlier terms</span></div>
+    <div class="card stat info"><span class="lbl">Expenses</span><span class="val">${esc(money(T.expenses))}</span><span class="sub">Collected minus expenses: <b>${esc(money(T.paid - T.expenses))}</b></span></div></div>`;
+}
+function finOverviewHtml(term, X, T) {
+  const byClass = classList().map(cl => {
+    const r = T.rows.filter(x => x.f.cls === cl.id);
+    const due = r.reduce((n, x) => n + x.f.due, 0), paid = r.reduce((n, x) => n + x.f.paid, 0), out = r.reduce((n, x) => n + Math.max(0, x.f.balance), 0);
+    const pct = due > 0 ? Math.min(100, Math.round((paid / due) * 100)) : 0;
+    return `<tr><td>${classChip(cl)}</td><td class="c num">${r.length}</td><td class="r num">${esc(money(due))}</td><td class="r num">${esc(money(paid))}</td><td class="r num">${esc(money(out))}</td><td class="fin-bar"><i><em style="width:${pct}%"></em></i><b>${pct}%</b></td></tr>`;
+  }).join('');
+  const pays = S('payments').filter(p => !p.voided && p.termId === term.id);
+  const methods = PAY_METHODS.map(m => [m, pays.filter(p => p.method === m).reduce((n, p) => n + Number(p.amount || 0), 0)]).filter(x => x[1] > 0);
+  const recent = pays.slice().sort((a, b) => (a.at < b.at ? 1 : -1)).slice(0, 8).map(p => { const st = byId('students', p.studentId); return `<li><div><strong>${esc(st ? st.fullName : '—')}</strong><small>${esc(p.receiptNo)} · ${fmtDate(p.date)} · ${esc(p.method)}</small></div><b>${esc(money(p.amount))}</b></li>`; }).join('');
+  const today = todayISO();
+  const todayAmt = pays.filter(p => p.date === today).reduce((n, p) => n + Number(p.amount || 0), 0);
+  return finKpis(term, T) + `<div class="grid g-side mt">
+    <div class="card"><div class="card-h"><div><h3>Collection by class</h3><p>Fees due this term and how much is paid</p></div></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Class</th><th class="c">Learners</th><th class="r">Due</th><th class="r">Paid</th><th class="r">Outstanding</th><th>Collected</th></tr></thead><tbody>${byClass}</tbody></table></div></div>
+    <div class="card"><div class="card-h"><div><h3>Recent payments</h3><p>Today: <b>${esc(money(todayAmt))}</b></p></div><button type="button" class="btn sm" data-action="fin-tab" data-tab="payments">All</button></div>
+      ${recent ? `<ul class="fin-list">${recent}</ul>` : `<div class="card-b">${emptyState('No payment yet', 'Record the first payment for this term.')}</div>`}
+      ${methods.length ? `<div class="fin-methods">${methods.map(([m, v]) => `<span>${esc(m)} <b>${esc(money(v))}</b></span>`).join('')}</div>` : ''}</div></div>`;
+}
+function finLearnersHtml(term, X, T) {
+  const f = ui.finFilter || {};
+  const q = String(f.q || '').trim().toLowerCase();
+  const rows = T.rows.filter(({ st, f: fe }) => (!f.cls || fe.cls === f.cls) && (!f.status || (f.status === 'owing' ? fe.balance > 0 : fe.status === f.status))
+    && (!q || `${st.fullName} ${st.regNumber} ${st.guardianName || ''} ${st.guardianPhone || ''}`.toLowerCase().includes(q)));
+  const body = rows.map(({ st, f: fe }) => {
+    const ph = st.guardianPhone;
+    return `<tr><td><a class="who-link" href="#student/${encodeURIComponent(st.id)}" data-action="fin-statement" data-id="${st.id}"><strong>${esc(st.fullName)}</strong></a><span class="sub">${esc(st.regNumber || '')}</span></td>
+      <td>${classChip(byId('classes', fe.cls))}</td><td class="small">${esc(st.guardianName || '—')}<span class="sub">${esc(ph || '')}</span></td>
+      <td class="r num">${esc(money(fe.due))}${fe.disc ? `<span class="sub">−${esc(money(fe.disc))} discount</span>` : ''}</td><td class="r num">${fe.prev ? esc(money(fe.prev)) : '—'}</td><td class="r num">${esc(money(fe.paid))}</td>
+      <td class="r num"><b>${esc(money(fe.balance))}</b></td><td>${badge(fe.status, FEE_TONE[fe.status])}</td>
+      <td class="r nowrap"><button type="button" class="btn xs primary" data-action="pay-new" data-id="${st.id}">Pay</button>${fe.balance > 0 && ph ? ` <a class="btn xs" target="_blank" rel="noopener" href="https://wa.me/${esc(waOf(ph))}?text=${encodeURIComponent(remindMsg(st, fe))}" title="Send a reminder on WhatsApp">Remind</a>` : ''}</td></tr>`;
+  }).join('');
+  const total = rows.reduce((n, r) => n + Math.max(0, r.f.balance), 0);
+  return `<div class="card"><div class="toolbar fin-tools">
+      <input class="input" type="search" placeholder="Search learner, parent or phone" value="${esc(f.q || '')}" data-input="fin-q" aria-label="Search">
+      <select class="input" data-change="fin-f" data-k="cls" aria-label="Class"><option value="">All classes</option>${classList().map(c => `<option value="${c.id}" ${f.cls === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
+      <select class="input" data-change="fin-f" data-k="status" aria-label="Status"><option value="">All learners</option>${[['owing', 'Owing money'], ['Not paid', 'Not paid'], ['Partly paid', 'Partly paid'], ['Paid', 'Paid'], ['Credit', 'In credit']].map(([v, l]) => `<option value="${v}" ${f.status === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <span class="muted small">${plural(rows.length, 'learner')} · owing ${esc(money(total))}</span></div>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Learner</th><th>Class</th><th>Parent</th><th class="r">Due this term</th><th class="r">Earlier balance</th><th class="r">Paid</th><th class="r">Balance</th><th>Status</th><th></th></tr></thead>
+    <tbody>${body || `<tr><td colspan="9">${emptyState('No learner matches', 'Change the search or filters.')}</td></tr>`}</tbody></table></div></div>`;
+}
+function finPaymentsHtml(term) {
+  const q = String(ui.finPayQ || '').trim().toLowerCase();
+  const list = S('payments').filter(p => p.termId === term.id).sort((a, b) => (a.at < b.at ? 1 : -1)).filter(p => {
+    if (!q) return true; const st = byId('students', p.studentId) || {};
+    return `${p.receiptNo} ${st.fullName || ''} ${p.reference || ''} ${p.payer || ''}`.toLowerCase().includes(q);
+  });
+  const sum = list.filter(p => !p.voided).reduce((n, p) => n + Number(p.amount || 0), 0);
+  const rows = list.map(p => { const st = byId('students', p.studentId); return `<tr class="${p.voided ? 'is-void' : ''}"><td class="nowrap">${fmtDate(p.date)}</td><td class="nowrap"><b>${esc(p.receiptNo)}</b></td>
+    <td><strong>${esc(st ? st.fullName : '—')}</strong><span class="sub">${esc(classNameOf(p.classId))}</span></td><td>${esc(p.method)}${p.reference ? `<span class="sub">${esc(p.reference)}</span>` : ''}</td><td class="small">${esc(p.payer || '—')}</td>
+    <td class="r num"><b>${esc(money(p.amount))}</b>${p.voided ? `<span class="sub bad">Cancelled: ${esc(p.voidReason || '')}</span>` : ''}</td><td class="small">${esc(p.by || '')}</td>
+    <td class="r nowrap">${p.voided ? '' : `<button type="button" class="btn xs" data-action="pay-receipt" data-id="${p.id}">Receipt</button>${canVoid() ? ` <button type="button" class="btn xs ghost" data-action="pay-void" data-id="${p.id}">Cancel</button>` : ''}`}</td></tr>`; }).join('');
+  return `<div class="card"><div class="toolbar fin-tools"><input class="input" type="search" placeholder="Search receipt, learner or reference" value="${esc(ui.finPayQ || '')}" data-input="fin-payq" aria-label="Search payments"><span class="muted small">${plural(list.filter(p => !p.voided).length, 'payment')} · ${esc(money(sum))}</span></div>
+    <div class="table-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Receipt</th><th>Learner</th><th>Method</th><th>Paid by</th><th class="r">Amount</th><th>Received by</th><th></th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="8">${emptyState('No payment in this term', 'Press “Record payment” when a parent pays.')}</td></tr>`}</tbody></table></div></div>`;
+}
+function finStructureHtml(term, X) {
+  const items = (X.items.get(term.id) || []).slice().sort((a, b) => byName(a.name, b.name));
+  const prevTerm = termsAll().filter(t => t.openDate < term.openDate && (X.items.get(t.id) || []).length).pop();
+  const rows = items.map(i => `<tr><td><strong>${esc(i.name)}</strong></td><td class="r num"><b>${esc(money(i.amount))}</b></td>
+    <td>${!i.classIds || !i.classIds.length ? '<span class="muted">All classes</span>' : i.classIds.map(c => classChip(byId('classes', c))).join(' ')}</td>
+    <td>${i.optional ? `${badge('Optional', 'info')}<span class="sub">${plural((i.studentIds || []).length, 'learner')} take it</span>` : badge('Every learner', 'ok')}</td>
+    <td class="r nowrap"><button type="button" class="btn xs" data-action="fee-edit" data-id="${i.id}">Edit</button> <button type="button" class="btn xs ghost" data-action="fee-delete" data-id="${i.id}">Delete</button></td></tr>`).join('');
+  const perClass = classList().map(cl => { const sumc = items.filter(i => !i.optional && (!i.classIds || !i.classIds.length || i.classIds.includes(cl.id))).reduce((n, i) => n + Number(i.amount || 0), 0); return `<div><span>${classChip(cl)}</span><b>${esc(money(sumc))}</b></div>`; }).join('');
+  const discs = S('feeDiscounts').filter(d => d.termId === term.id).map(d => { const st = byId('students', d.studentId); return `<tr><td><strong>${esc(st ? st.fullName : '—')}</strong></td><td>${esc(d.reason || '—')}</td><td class="r num">${esc(money(d.amount))}</td><td class="r"><button type="button" class="btn xs ghost" data-action="disc-delete" data-id="${d.id}">Remove</button></td></tr>`; }).join('');
+  return `<div class="grid g-side"><div class="card"><div class="card-h"><div><h3>Fee items · ${esc(termLabel(term))}</h3><p>What parents pay this term. Optional items (transport, uniform…) are charged only to the learners you choose.</p></div>
+      <div class="row">${!items.length && prevTerm ? `<button type="button" class="btn sm" data-action="fee-copy" data-id="${prevTerm.id}">Copy from ${esc(termLabel(prevTerm))}</button>` : ''}<button type="button" class="btn sm primary" data-action="fee-new">＋ Add fee item</button></div></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Fee item</th><th class="r">Amount</th><th>Classes</th><th>Who pays</th><th></th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="5">${emptyState('No fee items yet', 'Add tuition, feeding and other fees for this term.')}</td></tr>`}</tbody></table></div></div>
+    <div class="card"><div class="card-h"><div><h3>Required fees per learner</h3><p>Before discounts and optional items</p></div></div><div class="card-b fin-perclass">${perClass}</div></div></div>
+    <div class="card mt"><div class="card-h"><div><h3>Discounts &amp; bursaries</h3><p>Reduce what one learner owes this term (siblings, scholarships, staff children…)</p></div><button type="button" class="btn sm" data-action="disc-new">＋ Add discount</button></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Learner</th><th>Reason</th><th class="r">Amount</th><th></th></tr></thead><tbody>${discs || `<tr><td colspan="4">${emptyState('No discount', 'Every learner pays the full fees.')}</td></tr>`}</tbody></table></div></div>`;
+}
+function finExpensesHtml(term, X, T) {
+  const list = S('expenses').filter(e => e.termId === term.id).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const cats = EXPENSE_CATS.map(c => [c, list.filter(e => e.category === c).reduce((n, e) => n + Number(e.amount || 0), 0)]).filter(x => x[1] > 0);
+  const rows = list.map(e => `<tr><td class="nowrap">${fmtDate(e.date)}</td><td>${badge(e.category, 'info')}</td><td><strong>${esc(e.description)}</strong>${e.payee ? `<span class="sub">Paid to ${esc(e.payee)}</span>` : ''}</td><td>${esc(e.method || '')}</td><td class="r num"><b>${esc(money(e.amount))}</b></td><td class="small">${esc(e.by || '')}</td>
+    <td class="r">${canVoid() ? `<button type="button" class="btn xs ghost" data-action="exp-delete" data-id="${e.id}">Delete</button>` : ''}</td></tr>`).join('');
+  return `<div class="grid g-side"><div class="card"><div class="card-h"><div><h3>Expenses · ${esc(termLabel(term))}</h3><p>Money the school spent this term</p></div><button type="button" class="btn sm primary" data-action="exp-new">＋ Add expense</button></div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Method</th><th class="r">Amount</th><th>Recorded by</th><th></th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="7">${emptyState('No expense recorded', 'Record salaries, food, materials and other spending.')}</td></tr>`}</tbody></table></div></div>
+    <div class="card"><div class="card-h"><div><h3>Summary</h3><p>${esc(term.name)}</p></div></div><div class="card-b fin-perclass">
+      <div><span>Fees collected</span><b>${esc(money(T.paid))}</b></div>${cats.map(([c, v]) => `<div><span>${esc(c)}</span><b>− ${esc(money(v))}</b></div>`).join('')}
+      <div class="fin-net"><span>Balance</span><b>${esc(money(T.paid - T.expenses))}</b></div></div></div></div>`;
+}
+function learnerFeesHtml(st) {
+  const X = finIndex();
+  const terms = X.terms.filter(t => (t.status !== 'Upcoming' && learnerClassIn(st, t)) || X.pay.has(X.k(st.id, t.id)));
+  let run = 0;
+  const rows = terms.map(t => { const f = feeOf(st, t, X); run += f.due - f.paid; return `<tr><td><strong>${esc(t.name)}</strong><span class="sub">${esc((byId('academicYears', t.yearId) || {}).name || '')}</span></td><td class="r num">${esc(money(f.charged))}</td><td class="r num">${f.disc ? '−' + esc(money(f.disc)) : '—'}</td><td class="r num">${esc(money(f.paid))}</td><td class="r num"><b>${esc(money(run))}</b></td></tr>`; }).join('');
+  const pays = S('payments').filter(p => p.studentId === st.id).sort((a, b) => (a.at < b.at ? 1 : -1));
+  const cur = finTerm();
+  const fs = cur ? feeStatement(st, cur, X) : null;
+  return `<div class="grid g-side"><div class="card"><div class="card-h"><div><h3>Fees statement</h3><p>Each term's fees, discounts and payments. The balance carries over to the next term.</p></div>${fs ? `<button type="button" class="btn sm primary" data-action="pay-new" data-id="${st.id}">＋ Record payment</button>` : ''}</div>
+      <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Term</th><th class="r">Fees</th><th class="r">Discount</th><th class="r">Paid</th><th class="r">Balance</th></tr></thead><tbody>${rows || `<tr><td colspan="5">${emptyState('No fees yet', 'Fees appear once the school sets its fee structure.')}</td></tr>`}</tbody></table></div></div>
+    <div class="card"><div class="card-h"><div><h3>Balance now</h3><p>${cur ? esc(termLabel(cur)) : ''}</p></div>${fs ? badge(fs.status, FEE_TONE[fs.status]) : ''}</div><div class="card-b"><div class="fin-big">${fs ? esc(money(fs.balance)) : '—'}</div>
+      ${fs && fs.balance > 0 && st.guardianPhone ? `<div class="row mt"><a class="btn sm" href="tel:${esc(telOf(st.guardianPhone))}">📞 Call parent</a><a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${esc(waOf(st.guardianPhone))}?text=${encodeURIComponent(remindMsg(st, fs))}">WhatsApp reminder</a></div>` : ''}</div></div></div>
+    <div class="card mt"><div class="card-h"><div><h3>Payments</h3></div></div><div class="table-wrap mt"><table class="tbl"><thead><tr><th>Date</th><th>Receipt</th><th>Term</th><th>Method</th><th class="r">Amount</th><th></th></tr></thead><tbody>
+      ${pays.map(p => `<tr class="${p.voided ? 'is-void' : ''}"><td>${fmtDate(p.date)}</td><td><b>${esc(p.receiptNo)}</b></td><td>${esc(termLabel(byId('terms', p.termId)))}</td><td>${esc(p.method)}</td><td class="r num">${esc(money(p.amount))}${p.voided ? '<span class="sub bad">Cancelled</span>' : ''}</td><td class="r">${p.voided ? '' : `<button type="button" class="btn xs" data-action="pay-receipt" data-id="${p.id}">Receipt</button>`}</td></tr>`).join('') || `<tr><td colspan="6">${emptyState('No payment yet', '')}</td></tr>`}</tbody></table></div></div>`;
+}
+/* Director / admin dashboard card */
+function finDashCard() {
+  if (!curSchool()) return '';
+  const term = activeTerm(); if (!term) return '';
+  const T = finTotals(term);
+  return `<div class="card mt fin-dash"><div class="card-h"><div><h3>💰 Fees · ${esc(termLabel(term))}</h3><p>${T.hasFees ? `${T.rate}% of fees collected` : 'No fees set for this term yet'}</p></div><a class="btn sm" href="#finance">Open Finance</a></div>
+    <div class="card-b fin-dash-b"><div><span>Due</span><b>${esc(money(T.due))}</b></div><div><span>Collected</span><b class="ok">${esc(money(T.paid))}</b></div><div><span>Outstanding</span><b class="warn">${esc(money(T.outstanding))}</b></div><div><span>Expenses</span><b>${esc(money(T.expenses))}</b></div>
+    <div class="fin-dash-bar"><i style="width:${T.rate}%"></i></div></div></div>`;
+}
+/* Secretary home */
+function secretaryDashboard() {
+  const sc = curSchool();
+  const term = activeTerm();
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const nm = currentAdmin().name.split(' ')[0]; const nice = nm.charAt(0) + nm.slice(1).toLowerCase();
+  const learners = S('students').filter(x => x.status === 'Active');
+  const T = term ? finTotals(term) : null;
+  const today = todayISO();
+  const payToday = S('payments').filter(p => !p.voided && p.date === today);
+  const owing = T ? T.rows.filter(r => r.f.balance > 0).sort((a, b) => b.f.balance - a.f.balance).slice(0, 6) : [];
+  const recent = S('payments').filter(p => !p.voided).sort((a, b) => (a.at < b.at ? 1 : -1)).slice(0, 6);
+  const noParent = learners.filter(x => !x.guardianPhone).length;
+  return `<section class="sa-hero sec-hero"><div><span>${esc(longDate(today))} · ${esc(sc ? sc.name : '')}</span><h2>${greet}, ${esc(nice)}</h2><p>${term ? esc(termLabel(term)) : 'No current term yet'} · School secretary</p></div>
+      <div class="sa-hero-a"><button type="button" class="btn" data-action="pay-new">＋ Record payment</button><button type="button" class="btn" data-action="student-new">＋ Register learner</button><a class="btn" href="#finance">Finance</a></div></section>
+    <div class="grid g4 mt">
+      <div class="card stat accent"><span class="lbl">Active learners</span><span class="val">${learners.length}</span><span class="sub">${learners.filter(x => x.gender === 'Female').length} girls · ${learners.filter(x => x.gender !== 'Female').length} boys</span></div>
+      <div class="card stat ok"><span class="lbl">Collected this term</span><span class="val">${T ? esc(money(T.paid)) : '—'}</span><span class="sub">${T ? `${T.rate}% of ${esc(money(T.due))}` : ''}</span></div>
+      <div class="card stat warn"><span class="lbl">Outstanding</span><span class="val">${T ? esc(money(T.outstanding)) : '—'}</span><span class="sub">${T ? plural(T.rows.filter(r => r.f.balance > 0).length, 'learner') + ' owing' : ''}</span></div>
+      <div class="card stat info"><span class="lbl">Payments today</span><span class="val">${payToday.length}</span><span class="sub">${esc(money(payToday.reduce((n, p) => n + Number(p.amount || 0), 0)))}</span></div></div>
+    ${T && !T.hasFees ? `<div class="banner warn mt"><span>No fees are set for ${esc(term.name)} yet.</span><a class="btn sm primary" href="#finance" data-action="fin-goto" data-tab="structure">Set fees</a></div>` : ''}
+    ${noParent ? `<div class="banner info mt"><span>${plural(noParent, 'learner')} have no parent phone number. Add it so the school can reach the family.</span><a class="btn sm" href="#students">Open Students</a></div>` : ''}
+    <div class="grid g2 mt"><div class="card"><div class="card-h"><div><h3>Highest balances</h3><p>Learners who still owe the most</p></div><a class="btn sm" href="#finance" data-action="fin-goto" data-tab="learners">All balances</a></div>
+      ${owing.length ? `<ul class="fin-list">${owing.map(({ st, f }) => `<li><div><strong>${esc(st.fullName)}</strong><small>${esc(classNameOf(f.cls))} · ${esc(st.guardianPhone || 'no phone')}</small></div><b>${esc(money(f.balance))}</b><button type="button" class="btn xs primary" data-action="pay-new" data-id="${st.id}">Pay</button></li>`).join('')}</ul>` : `<div class="card-b">${emptyState('Nobody owes money', 'All fees are paid.')}</div>`}</div>
+    <div class="card"><div class="card-h"><div><h3>Latest payments</h3></div><a class="btn sm" href="#finance" data-action="fin-goto" data-tab="payments">All payments</a></div>
+      ${recent.length ? `<ul class="fin-list">${recent.map(p => { const st = byId('students', p.studentId); return `<li><div><strong>${esc(st ? st.fullName : '—')}</strong><small>${esc(p.receiptNo)} · ${fmtDate(p.date)} · ${esc(p.method)}</small></div><b>${esc(money(p.amount))}</b><button type="button" class="btn xs" data-action="pay-receipt" data-id="${p.id}">Receipt</button></li>`; }).join('')}</ul>` : `<div class="card-b">${emptyState('No payment yet', '')}</div>`}</div></div>
+    <div class="th-help mt"><div><strong>Need help?</strong><span>Quick support ${SUPPORT.show}</span></div><div class="row">${supportLinks('btn sm')}</div></div>`;
+}
+
+/* ----- finance actions ----- */
+ACTIONS['fin-tab'] = el => { ui.finTab = el.dataset.tab; render(); };
+ACTIONS['fin-goto'] = el => { ui.finTab = el.dataset.tab; ui.finTermId = null; go('finance'); };
+ACTIONS['fin-statement'] = el => { ui.studentTab = 'fees'; ui.studentId = el.dataset.id; go('student/' + encodeURIComponent(el.dataset.id)); };
+CHANGES['fin-term'] = el => { ui.finTermId = el.value; render(); };
+CHANGES['fin-f'] = el => { ui.finFilter = { ...(ui.finFilter || {}), [el.dataset.k]: el.value }; render(); };
+const keepFocus = (sel2, fn) => { const el = $(sel2); const pos = el ? el.selectionStart : 0; fn(); render(); const n = $(sel2); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { /* ignore */ } } };
+INPUTS['fin-q'] = el => keepFocus('input[data-input="fin-q"]', () => { ui.finFilter = { ...(ui.finFilter || {}), q: el.value }; });
+INPUTS['fin-payq'] = el => keepFocus('input[data-input="fin-payq"]', () => { ui.finPayQ = el.value; });
+const amountOf = v => { const n = Math.round(Number(String(v || '').replace(/[^\d.]/g, ''))); return Number.isFinite(n) ? n : 0; };
+const learnerOptions = (term, selected) => {
+  const X = finIndex();
+  return classList().map(cl => { const ls = feeLearners(term).filter(st => learnerClassIn(st, term) === cl.id); return ls.length ? `<optgroup label="${esc(cl.name)}">${ls.map(st => { const f = feeStatement(st, term, X); return `<option value="${st.id}" ${st.id === selected ? 'selected' : ''}>${esc(st.fullName)} · balance ${esc(money(f.balance))}</option>`; }).join('')}</optgroup>` : ''; }).join('');
+};
+/* fee items */
+function feeForm(item, term) {
+  const it = item || { name: '', amount: '', classIds: [], optional: false, studentIds: [] };
+  const learners = feeLearners(term);
+  return `<div class="form-grid">
+    ${field('Fee item *', inp('name', it.name, 'required maxlength="60" placeholder="e.g. Tuition, Feeding, Transport" list="feeNames"'), '', '')}<datalist id="feeNames">${['Tuition', 'Feeding', 'Transport', 'Uniform', 'Books & materials', 'Registration', 'Insurance', 'Trips & activities'].map(x => `<option value="${x}">`).join('')}</datalist>
+    ${field(`Amount (${esc(settingsOf().currency || 'RWF')}) *`, inp('amount', it.amount, 'required inputmode="numeric" placeholder="e.g. 60000"'))}
+    <fieldset class="fieldset span2"><legend>Classes (leave all unticked for every class)</legend><div class="feat-grid">${classList().map(cl => `<label class="feat"><input type="checkbox" name="cls" value="${cl.id}" ${(it.classIds || []).includes(cl.id) ? 'checked' : ''}><span><strong>${esc(cl.name)}</strong></span></label>`).join('')}</div></fieldset>
+    <label class="check span2"><input type="checkbox" name="optional" ${it.optional ? 'checked' : ''} data-change="fee-opt"> Optional: only some learners pay it (transport, uniform…)</label>
+    <fieldset class="fieldset span2 fee-who" ${it.optional ? '' : 'hidden'}><legend>Learners who pay this item</legend><div class="fee-learners">${classList().map(cl => { const ls = learners.filter(st => learnerClassIn(st, term) === cl.id); return ls.length ? `<div><b>${esc(cl.name)}</b>${ls.map(st => `<label class="check"><input type="checkbox" name="stu" value="${st.id}" ${(it.studentIds || []).includes(st.id) ? 'checked' : ''}> ${esc(st.fullName)}</label>`).join('')}</div>` : ''; }).join('')}</div></fieldset>
+  </div><p class="muted small mt">Applies to ${esc(termLabel(term))}.</p>`;
+}
+CHANGES['fee-opt'] = el => { const w = $('.fee-who'); if (w) w.hidden = !el.checked; };
+ACTIONS['fee-new'] = () => { requireWritable(); const t = finTerm(); openForm({ title: `Add fee item · ${termLabel(t)}`, form: 'fee', arg: 'new:' + t.id, submit: 'Add fee item', html: feeForm(null, t) }); };
+ACTIONS['fee-edit'] = el => { requireWritable(); const i = byId('feeItems', el.dataset.id); const t = byId('terms', i.termId); openForm({ title: `Edit ${i.name}`, form: 'fee', arg: i.id, submit: 'Save fee item', html: feeForm(i, t) }); };
+FORMS.fee = async (fd, arg) => {
+  requireWritable();
+  const name = String(fd.get('name') || '').trim(), amount = amountOf(fd.get('amount'));
+  if (!name) throw new AppError('Enter the name of the fee item.');
+  if (amount <= 0) throw new AppError('Enter an amount above zero.');
+  const optional = fd.get('optional') === 'on';
+  const data = { name, amount, classIds: fd.getAll('cls').map(String), optional, studentIds: optional ? fd.getAll('stu').map(String) : [] };
+  const creating = arg.startsWith('new:');
+  const termId = creating ? arg.slice(4) : byId('feeItems', arg).termId;
+  if (S('feeItems').some(i => i.termId === termId && i.name.toLowerCase() === name.toLowerCase() && i.id !== arg && JSON.stringify(i.classIds || []) === JSON.stringify(data.classIds))) throw new AppError(`${name} already exists for these classes this term.`);
+  if (creating) db.feeItems.push({ id: uid('fee'), schoolId: sid(), termId, ...data, createdAt: nowISO() });
+  else Object.assign(byId('feeItems', arg), data);
+  logActivity(creating ? 'Fee item added' : 'Fee item updated', `${name} · ${money(amount)} · ${termLabel(byId('terms', termId))}`);
+  persist(); render();
+  await confirmSaved(`${name} ${creating ? 'added' : 'updated'}`);
+  return true;
+};
+ACTIONS['fee-delete'] = async el => {
+  requireWritable();
+  const i = byId('feeItems', el.dataset.id);
+  if (!(await confirmDialog(`Delete the fee item <strong>${esc(i.name)}</strong> (${esc(money(i.amount))})? Learners will no longer owe it. Payments already made are kept.`, { title: 'Delete fee item', ok: 'Delete', danger: true }))) return;
+  db.feeItems = db.feeItems.filter(x => x.id !== i.id);
+  commit('Fee item deleted', `${i.name} · ${termLabel(byId('terms', i.termId))}`);
+};
+ACTIONS['fee-copy'] = async el => {
+  requireWritable();
+  const from = byId('terms', el.dataset.id), to = finTerm();
+  const items = S('feeItems').filter(i => i.termId === from.id);
+  if (!(await confirmDialog(`Copy ${plural(items.length, 'fee item')} from <strong>${esc(termLabel(from))}</strong> to <strong>${esc(termLabel(to))}</strong>? You can edit the amounts afterwards.`, { title: 'Copy fees', ok: 'Copy fees' }))) return;
+  items.forEach(i => db.feeItems.push({ ...JSON.parse(JSON.stringify(i)), id: uid('fee'), termId: to.id, createdAt: nowISO() }));
+  logActivity('Fees copied', `${items.length} item(s) · ${termLabel(from)} → ${termLabel(to)}`);
+  persist(); render();
+  await confirmSaved('Fees copied');
+};
+/* discounts */
+ACTIONS['disc-new'] = () => {
+  requireWritable(); const t = finTerm();
+  openForm({ title: `Add discount · ${termLabel(t)}`, form: 'disc', arg: t.id, submit: 'Add discount', html: `<div class="form-grid">
+    ${field('Learner *', `<select class="input" name="student" required><option value="">Choose a learner</option>${learnerOptions(t, '')}</select>`, '', 'span2')}
+    ${field(`Amount (${esc(settingsOf().currency || 'RWF')}) *`, inp('amount', '', 'required inputmode="numeric"'))}
+    ${field('Reason *', inp('reason', '', 'required maxlength="80" placeholder="e.g. Sibling discount, bursary" list="discR"'))}<datalist id="discR"><option value="Sibling discount"><option value="Bursary"><option value="Staff child"><option value="Early payment"></datalist></div>` });
+};
+FORMS.disc = async (fd, termId) => {
+  requireWritable();
+  const studentId = String(fd.get('student') || ''), amount = amountOf(fd.get('amount')), reason = String(fd.get('reason') || '').trim();
+  if (!studentId) throw new AppError('Choose a learner.');
+  if (amount <= 0) throw new AppError('Enter an amount above zero.');
+  if (!reason) throw new AppError('Enter the reason for the discount.');
+  db.feeDiscounts.push({ id: uid('dsc'), schoolId: sid(), termId, studentId, amount, reason, by: currentAdmin().name, at: nowISO() });
+  logActivity('Discount added', `${(byId('students', studentId) || {}).fullName} · ${money(amount)} · ${reason}`);
+  persist(); render();
+  await confirmSaved('Discount added');
+  return true;
+};
+ACTIONS['disc-delete'] = async el => {
+  requireWritable(); const d = byId('feeDiscounts', el.dataset.id);
+  if (!(await confirmDialog(`Remove this discount of <strong>${esc(money(d.amount))}</strong>?`, { title: 'Remove discount', ok: 'Remove', danger: true }))) return;
+  db.feeDiscounts = db.feeDiscounts.filter(x => x.id !== d.id);
+  commit('Discount removed', `${(byId('students', d.studentId) || {}).fullName} · ${money(d.amount)}`);
+};
+/* payments */
+ACTIONS['pay-new'] = el => {
+  requireWritable();
+  const t = ui.page === 'finance' ? finTerm() : (activeTerm() || finTerm());
+  if (!t) throw new AppError('There is no term yet, so payments cannot be recorded.');
+  const pre = el && el.dataset ? el.dataset.id || '' : '';
+  const st = pre ? byId('students', pre) : null;
+  const fs = st ? feeStatement(st, t) : null;
+  openForm({ title: `Record payment · ${termLabel(t)}`, form: 'pay', arg: t.id, submit: 'Save payment', html: `<div class="form-grid">
+    ${field('Learner *', `<select class="input" name="student" required data-change="pay-learner"><option value="">Choose a learner</option>${learnerOptions(t, pre)}</select>`, '', 'span2')}
+    <div class="span2 pay-bal" id="payBal">${fs ? payBalHtml(st, fs) : ''}</div>
+    ${field(`Amount paid (${esc(settingsOf().currency || 'RWF')}) *`, inp('amount', fs && fs.balance > 0 ? fs.balance : '', 'required inputmode="numeric" id="payAmt"'))}
+    ${field('Date *', inp('date', todayISO(), `type="date" required max="${todayISO()}"`))}
+    ${field('Method *', sel('method', PAY_METHODS, 'Cash'))}
+    ${field('Reference', inp('reference', '', 'maxlength="60" placeholder="MoMo or bank transaction ID"'))}
+    ${field('Paid by', inp('payer', st ? st.guardianName || '' : '', 'maxlength="80" id="payPayer"'))}
+    ${field('Note', inp('note', '', 'maxlength="120"'))}
+  </div>` });
+};
+const payBalHtml = (st, f) => `<div class="pay-bal-in"><span>${esc(st.fullName)} · ${esc(classNameOf(f.cls))}</span><span>Due this term <b>${esc(money(f.due))}</b>${f.prev ? ` · earlier balance <b>${esc(money(f.prev))}</b>` : ''} · paid <b>${esc(money(f.paid))}</b></span><span class="pay-bal-now">Balance <b>${esc(money(f.balance))}</b></span></div>`;
+CHANGES['pay-learner'] = el => {
+  const form = el.closest('form'); const t = byId('terms', form.dataset.arg || '') || finTerm();
+  const st = byId('students', el.value); const box = $('#payBal');
+  if (!st) { if (box) box.innerHTML = ''; return; }
+  const f = feeStatement(st, t);
+  if (box) box.innerHTML = payBalHtml(st, f);
+  const a = $('#payAmt'); if (a && f.balance > 0) a.value = f.balance;
+  const pr = $('#payPayer'); if (pr && !pr.value) pr.value = st.guardianName || '';
+};
+FORMS.pay = async (fd, termId) => {
+  requireWritable();
+  const studentId = String(fd.get('student') || ''), amount = amountOf(fd.get('amount')), date = String(fd.get('date') || '');
+  const st = byId('students', studentId);
+  if (!st) throw new AppError('Choose the learner who is paying.');
+  if (amount <= 0) throw new AppError('Enter the amount paid.');
+  if (!date || date > todayISO()) throw new AppError('Choose the date of the payment (not in the future).');
+  const term = byId('terms', termId);
+  const p = { id: uid('pay'), schoolId: sid(), termId, studentId, classId: learnerClassIn(st, term) || st.classId, amount, date, method: String(fd.get('method') || 'Cash'),
+    reference: String(fd.get('reference') || '').trim(), payer: String(fd.get('payer') || '').trim(), note: String(fd.get('note') || '').trim(),
+    receiptNo: nextReceiptNo(), by: currentAdmin().name, at: nowISO(), voided: false };
+  db.payments.push(p);
+  logActivity('Payment recorded', `${p.receiptNo} · ${st.fullName} · ${money(amount)} · ${p.method}`);
+  persist(); render();
+  await confirmSaved(`Payment ${p.receiptNo} of ${money(amount)}`);
+  setTimeout(() => run(() => showReceipt(p.id)), 50);
+  return true;
+};
+ACTIONS['pay-void'] = el => {
+  if (!canVoid()) throw new AppError('Only the director or an administrator can cancel a payment.');
+  const p = byId('payments', el.dataset.id); const st = byId('students', p.studentId);
+  openForm({ title: `Cancel payment ${p.receiptNo}`, form: 'pay-void', arg: p.id, submit: 'Cancel payment', html: `<p class="muted mb">Cancel <b>${esc(money(p.amount))}</b> from ${esc(st ? st.fullName : '')} (${fmtDate(p.date)})? The receipt stays in the list, marked as cancelled, and the learner's balance goes back up.</p>${field('Reason *', inp('reason', '', 'required maxlength="100" placeholder="e.g. Entered twice, wrong learner"'))}` });
+};
+FORMS['pay-void'] = async (fd, id) => {
+  if (!canVoid()) throw new AppError('Only the director or an administrator can cancel a payment.');
+  const reason = String(fd.get('reason') || '').trim(); if (!reason) throw new AppError('Enter the reason.');
+  const p = byId('payments', id); Object.assign(p, { voided: true, voidReason: reason, voidBy: currentAdmin().name, voidAt: nowISO() });
+  logActivity('Payment cancelled', `${p.receiptNo} · ${money(p.amount)} · ${reason}`);
+  persist(); render();
+  await confirmSaved(`Payment ${p.receiptNo} cancelled`);
+  return true;
+};
+/* receipts */
+function receiptHtml(p) {
+  const sc = curSchool(), st = byId('students', p.studentId) || {}, t = byId('terms', p.termId);
+  const after = t ? feeStatement(st, t).balance : 0;
+  return `<div class="receipt"><div class="rc-top">${sc && sc.logo ? `<img src="${sc.logo}" alt="">` : `<span class="rc-logo">${esc(initials(sc ? sc.name : 'K'))}</span>`}<div><h3>${esc(sc ? sc.name : '')}</h3><p>${esc([sc && sc.address, sc && sc.phone].filter(Boolean).join(' · '))}</p></div><div class="rc-no"><small>RECEIPT</small><b>${esc(p.receiptNo)}</b></div></div>
+    <div class="rc-amt"><small>Amount received</small><b>${esc(money(p.amount))}</b></div>
+    <dl class="rc-dl"><div><dt>Date</dt><dd>${fmtDate(p.date)}</dd></div><div><dt>Learner</dt><dd>${esc(st.fullName || '')}</dd></div><div><dt>Class</dt><dd>${esc(classNameOf(p.classId))}</dd></div><div><dt>Reg. no.</dt><dd>${esc(st.regNumber || '')}</dd></div>
+      <div><dt>Term</dt><dd>${esc(termLabel(t))}</dd></div><div><dt>Method</dt><dd>${esc(p.method)}${p.reference ? ` · ${esc(p.reference)}` : ''}</dd></div><div><dt>Paid by</dt><dd>${esc(p.payer || '—')}</dd></div><div><dt>Received by</dt><dd>${esc(p.by || '')}</dd></div>
+      <div class="rc-bal"><dt>Balance after this payment</dt><dd>${esc(money(after))}</dd></div></dl>
+    ${p.note ? `<p class="rc-note">${esc(p.note)}</p>` : ''}
+    <div class="rc-sign"><span>Signature &amp; stamp</span></div>
+    <p class="rc-foot">Receipt made using <b>KIDNOVA</b> · kidnova.site</p></div>`;
+}
+function showReceipt(id) {
+  const p = byId('payments', id); if (!p) return;
+  openForm({ title: `Receipt ${p.receiptNo}`, form: 'receipt-pdf', arg: p.id, submit: '⬇ Download PDF', html: `<div class="receipt-wrap">${receiptHtml(p)}</div>${(byId('students', p.studentId) || {}).guardianPhone ? `<p class="muted small mt">Tip: download the PDF and send it to the parent on WhatsApp.</p>` : ''}` });
+}
+ACTIONS['pay-receipt'] = el => showReceipt(el.dataset.id);
+FORMS['receipt-pdf'] = async (fd, id) => {
+  const node = $('.modal .receipt');
+  const p = byId('payments', id);
+  await nodesToPdf([node], `Receipt-${p.receiptNo}.pdf`, 'a5');
+  return false;
+};
+/* Render page parts to a PDF (A4 or A5), saved through the Android app when inside it. */
+async function nodesToPdf(nodes, name, format = 'a4') {
+  toast('Preparing the PDF…', 'info', 2500);
+  await loadPdfLibs();
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format, orientation: 'portrait', compress: true });
+  const W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight(), M = 8;
+  const zoom = document.body.style.zoom; document.body.style.zoom = '1';
+  try {
+    for (let i = 0; i < nodes.length; i++) {
+      const canvas = await window.html2canvas(nodes[i], { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+      let w = W - 2 * M, h = (canvas.height * w) / canvas.width;
+      if (h > H - 2 * M) { h = H - 2 * M; w = (canvas.width * h) / canvas.height; }
+      if (i) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.9), 'JPEG', (W - w) / 2, M, w, h);
+    }
+  } finally { document.body.style.zoom = zoom; }
+  if (window.KidnovaApp && window.KidnovaApp.saveFile) { window.KidnovaApp.saveFile(pdf.output('datauristring').split(',')[1], 'application/pdf', name); return; }
+  pdf.save(name);
+  toast(`Downloaded ${name}`, 'ok', 4000);
+}
+/* expenses */
+ACTIONS['exp-new'] = () => {
+  requireWritable(); const t = finTerm();
+  openForm({ title: `Add expense · ${termLabel(t)}`, form: 'exp', arg: t.id, submit: 'Save expense', html: `<div class="form-grid">
+    ${field('Category *', sel('category', EXPENSE_CATS, 'Food & feeding'))}
+    ${field(`Amount (${esc(settingsOf().currency || 'RWF')}) *`, inp('amount', '', 'required inputmode="numeric"'))}
+    ${field('Description *', inp('description', '', 'required maxlength="100" placeholder="e.g. Rice and beans for November"'), '', 'span2')}
+    ${field('Paid to', inp('payee', '', 'maxlength="80"'))}
+    ${field('Date *', inp('date', todayISO(), `type="date" required max="${todayISO()}"`))}
+    ${field('Method', sel('method', PAY_METHODS, 'Cash'))}</div>` });
+};
+FORMS.exp = async (fd, termId) => {
+  requireWritable();
+  const amount = amountOf(fd.get('amount')), description = String(fd.get('description') || '').trim(), date = String(fd.get('date') || '');
+  if (amount <= 0) throw new AppError('Enter the amount spent.');
+  if (!description) throw new AppError('Describe the expense.');
+  if (!date) throw new AppError('Choose the date.');
+  db.expenses.push({ id: uid('exp'), schoolId: sid(), termId, category: String(fd.get('category') || 'Other'), amount, description, payee: String(fd.get('payee') || '').trim(), date, method: String(fd.get('method') || 'Cash'), by: currentAdmin().name, at: nowISO() });
+  logActivity('Expense recorded', `${description} · ${money(amount)}`);
+  persist(); render();
+  await confirmSaved(`Expense of ${money(amount)}`);
+  return true;
+};
+ACTIONS['exp-delete'] = async el => {
+  if (!canVoid()) throw new AppError('Only the director or an administrator can delete an expense.');
+  const e = byId('expenses', el.dataset.id);
+  if (!(await confirmDialog(`Delete the expense <strong>${esc(e.description)}</strong> (${esc(money(e.amount))})?`, { title: 'Delete expense', ok: 'Delete', danger: true }))) return;
+  db.expenses = db.expenses.filter(x => x.id !== e.id);
+  commit('Expense deleted', `${e.description} · ${money(e.amount)}`);
+};
+
 /* ---------- 23b. KIDNOVA Admin (Super Admin's own dashboard, no school opened) ---------- */
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 async function loadPlatform(force) {
@@ -5414,15 +5935,15 @@ VIEWS.admin = () => {
     return `<tr><td><strong>${esc(x.name)}</strong><span class="sub">${esc(x.reg || '')}${x.active !== 'Active' ? ' · deactivated' : ''}</span></td>
       <td>${badge(x.status === 'approved' ? 'Approved' : x.status === 'pending' ? 'Waiting' : 'Changes requested', x.status === 'approved' ? 'ok' : x.status === 'pending' ? 'warn' : 'info')}</td>
       <td>${x.term ? `${esc(x.term.name)} · ${esc(x.year || '')}${ended ? ' <span class="badge warn">ended</span>' : ''}<span class="sub">${fmtDate(x.term.open)} – ${fmtDate(x.term.close)}</span>` : `<span class="badge bad">Not set</span>`}</td>
-      <td class="c num">${x.learners}</td><td class="c num">${x.teachers}</td><td class="c num">${x.classes ? `${Math.min(x.registers_today, x.classes)}/${x.classes}` : '—'}</td>
+      <td class="c num">${x.learners}</td><td class="c num">${x.teachers}</td><td class="c num">${x.classes ? `${Math.min(x.registers_today, x.classes)}/${x.classes}` : '—'}</td><td class="r num">${x.fees && x.fees.payments ? `${esc(money(x.fees.paid))}<span class="sub">${plural(x.fees.payments, 'payment')}</span>` : '<span class="muted">—</span>'}</td>
       <td class="small">${x.last_activity ? `${esc(fmtStamp(x.last_activity))}<span class="sub">${esc(x.last_actor || '')} · ${esc(x.last_action || '')}</span>` : '<span class="muted">No activity</span>'}</td>
       <td class="r">${x.status === 'approved' ? `<button type="button" class="btn xs primary" data-action="sa-open" data-id="${esc(x.school_id)}">Open school</button>` : '<a class="btn xs" href="#schools">Review</a>'}</td></tr>`;
   }).join('');
   const table = `<div class="card mt"><div class="card-h"><div><h3>All schools</h3><p>Opening a school lets you work inside it. Use “KIDNOVA Admin” in the menu to close it again.</p></div><a class="btn sm" href="#schools">Manage schools</a></div>
-    <div class="table-wrap mt"><table class="tbl"><thead><tr><th>School</th><th>Status</th><th>Current term</th><th class="c">Learners</th><th class="c">Teachers</th><th class="c">Registers today</th><th>Last activity</th><th></th></tr></thead>
-    <tbody>${rows || `<tr><td colspan="8">${emptyState('No school yet', 'Create a registration link on the Schools page and send it to a school.')}</td></tr>`}</tbody></table></div></div>`;
+    <div class="table-wrap mt"><table class="tbl"><thead><tr><th>School</th><th>Status</th><th>Current term</th><th class="c">Learners</th><th class="c">Teachers</th><th class="c">Registers today</th><th class="r">Fees this term</th><th>Last activity</th><th></th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="9">${emptyState('No school yet', 'Create a registration link on the Schools page and send it to a school.')}</td></tr>`}</tbody></table></div></div>`;
   const side = `<div class="card"><div class="card-h"><div><h3>Accounts</h3><p>Everyone who can log in</p></div><a class="btn sm" href="#platform">Manage</a></div><div class="card-b sa-acc">
-    ${[['Directors', U.directors], ['Administrators', U.admins], ['Teachers', U.teachers], ['Suspended', U.suspended]].map(([l, v]) => `<div><span>${l}</span><b>${v || 0}</b></div>`).join('')}
+    ${[['Directors', U.directors], ['Administrators', U.admins], ['Secretaries', U.secretaries], ['Teachers', U.teachers], ['Suspended', U.suspended]].map(([l, v]) => `<div><span>${l}</span><b>${v || 0}</b></div>`).join('')}
     <div><span>Unused registration links</span><b>${P.open_links || 0}</b></div></div></div>`;
   return hero + kpis + `<div class="grid g-side mt">${alertCard}${side}</div>` + table;
 };
