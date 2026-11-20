@@ -261,3 +261,78 @@ create policy kn_members_delete on public.kn_members for delete to authenticated
          or (public.kn_my_role() = 'admin' and role = 'teacher' and school_id = public.kn_my_school())));
 
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v4: Super Admin can reset passwords and suspend accounts. Safe to re-run.
+--   A suspended account is banned in Supabase Auth (cannot log in), its
+--   sessions are ended, and it has no access to any school data.
+-- ===================================================================
+alter table public.kn_members add column if not exists suspended boolean not null default false;
+
+create or replace function public.kn_my_role() returns text
+language sql stable security definer set search_path = public as $$
+  select role from public.kn_members where user_id = auth.uid() and not suspended
+$$;
+
+create or replace function public.kn_my_school() returns text
+language sql stable security definer set search_path = public as $$
+  select school_id from public.kn_members where user_id = auth.uid() and not suspended
+$$;
+
+create or replace function public.kn_can_school(p_school text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.kn_members m where m.user_id = auth.uid() and not m.suspended
+                 and (m.role = 'super_admin' or m.school_id = p_school))
+$$;
+
+create or replace function public.kn_claim_super() returns text
+language plpgsql security definer set search_path = public as $$
+declare r text; s boolean; u record;
+begin
+  if auth.uid() is null then raise exception 'Not signed in'; end if;
+  lock table public.kn_members in share row exclusive mode;
+  select role, suspended into r, s from public.kn_members where user_id = auth.uid();
+  if s then return 'suspended'; end if;
+  if r is not null then return r; end if;
+  if exists (select 1 from public.kn_members where role = 'super_admin') then return null; end if;
+  select email, coalesce(raw_user_meta_data->>'full_name', '') as name into u from auth.users where id = auth.uid();
+  insert into public.kn_members (user_id, email, full_name, role) values (auth.uid(), u.email, u.name, 'super_admin');
+  return 'super_admin';
+end $$;
+
+-- Super Admin: set a new password for any account and end its sessions.
+create or replace function public.kn_reset_password(p_user uuid, p_password text) returns void
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can reset passwords'; end if;
+  if p_password is null or length(p_password) < 6 then raise exception 'The new password must be at least 6 characters'; end if;
+  update auth.users set encrypted_password = extensions.crypt(p_password, extensions.gen_salt('bf')), updated_at = now() where id = p_user;
+  if not found then raise exception 'Account not found'; end if;
+  if p_user <> auth.uid() then
+    delete from auth.refresh_tokens where user_id = p_user::text;
+    delete from auth.sessions where user_id = p_user;
+  end if;
+end $$;
+
+-- Super Admin: suspend or reactivate an account (not your own, not a Super Admin).
+create or replace function public.kn_set_suspended(p_user uuid, p_suspended boolean) returns void
+language plpgsql security definer set search_path = public as $$
+declare m record;
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can suspend accounts'; end if;
+  if p_user = auth.uid() then raise exception 'You cannot suspend your own account'; end if;
+  select * into m from public.kn_members where user_id = p_user;
+  if m is null then raise exception 'Account not found'; end if;
+  if m.role = 'super_admin' then raise exception 'A Super Admin account cannot be suspended'; end if;
+  update public.kn_members set suspended = coalesce(p_suspended, false) where user_id = p_user;
+  update auth.users set banned_until = case when p_suspended then now() + interval '100 years' else null end, updated_at = now() where id = p_user;
+  if p_suspended then
+    delete from auth.refresh_tokens where user_id = p_user::text;
+    delete from auth.sessions where user_id = p_user;
+  end if;
+end $$;
+
+revoke all on function public.kn_reset_password(uuid, text), public.kn_set_suspended(uuid, boolean) from public, anon;
+grant execute on function public.kn_reset_password(uuid, text), public.kn_set_suspended(uuid, boolean) to authenticated;
+
+notify pgrst, 'reload schema';
