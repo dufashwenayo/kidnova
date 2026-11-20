@@ -369,3 +369,93 @@ create trigger kn_members_teacher_features before insert or update on public.kn_
   for each row execute function public.kn_members_clean_features();
 
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v6: school approval. A school registered through a link is 'pending'
+-- until the Super Admin approves it. Staff of a pending or rejected
+-- school cannot open or save its records. Existing schools stay
+-- 'approved'. Safe to re-run.
+-- ===================================================================
+alter table public.kn_workspace add column if not exists status text not null default 'approved';
+alter table public.kn_workspace drop constraint if exists kn_workspace_status_check;
+alter table public.kn_workspace add constraint kn_workspace_status_check check (status in ('pending', 'approved', 'rejected'));
+alter table public.kn_workspace add column if not exists review_note text not null default '';
+alter table public.kn_workspace add column if not exists submitted_at timestamptz;
+alter table public.kn_workspace add column if not exists reviewed_at timestamptz;
+alter table public.kn_workspace add column if not exists reviewed_by uuid;
+update public.kn_workspace set submitted_at = created_at where submitted_at is null;
+
+create or replace function public.kn_can_school(p_school text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.kn_members m where m.user_id = auth.uid() and not m.suspended
+                 and (m.role = 'super_admin'
+                      or (m.school_id = p_school and exists (select 1 from public.kn_workspace w where w.school_id = p_school and w.status = 'approved'))))
+$$;
+
+create or replace function public.kn_redeem_invite(p_token text, p_school_id text, p_school_name text, p_reg text, p_director_email text, p_data jsonb)
+returns text language plpgsql security definer set search_path = public as $$
+declare inv record; u record;
+begin
+  if auth.uid() is null then raise exception 'Not signed in'; end if;
+  select * into inv from public.kn_invites where token = p_token for update;
+  if inv is null then raise exception 'This registration link is not valid.'; end if;
+  if inv.used_at is not null then raise exception 'This registration link has already been used.'; end if;
+  if inv.expires_at < now() then raise exception 'This registration link has expired. Ask KIDNOVA for a new one.'; end if;
+  select email, coalesce(raw_user_meta_data->>'full_name', '') as name into u from auth.users where id = auth.uid();
+  if lower(u.email) <> lower(trim(p_director_email)) then raise exception 'The director email must be the account that submits the form.'; end if;
+  if exists (select 1 from public.kn_members where user_id = auth.uid()) then raise exception 'This email already has KIDNOVA access. Use a different director email.'; end if;
+  if exists (select 1 from public.kn_workspace where lower(reg_number) = lower(trim(p_reg))) then raise exception 'A school with this registration number is already registered.'; end if;
+  insert into public.kn_workspace (school_id, school_name, reg_number, data, updated_by, status, submitted_at)
+  values (p_school_id, p_school_name, trim(p_reg), p_data, auth.uid(), 'pending', now());
+  insert into public.kn_members (user_id, email, full_name, role, school_id) values (auth.uid(), lower(u.email), u.name, 'director', p_school_id);
+  update public.kn_invites set used_at = now(), school_id = p_school_id where token = p_token;
+  return p_school_id;
+end $$;
+
+-- The signed-in member's school, whatever its status (for the waiting screen).
+create or replace function public.kn_my_school_info() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('school_id', w.school_id, 'school_name', w.school_name, 'reg_number', w.reg_number, 'status', w.status,
+                            'note', w.review_note, 'submitted_at', w.submitted_at, 'reviewed_at', w.reviewed_at,
+                            'school', w.data->'schools'->0, 'year', w.data->'academicYears'->0)
+  from public.kn_workspace w join public.kn_members m on m.school_id = w.school_id
+  where m.user_id = auth.uid() and not m.suspended
+$$;
+
+-- Super Admin: approve or reject a submitted school.
+create or replace function public.kn_review_school(p_school text, p_approve boolean, p_note text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can review schools'; end if;
+  if not p_approve and coalesce(trim(p_note), '') = '' then raise exception 'Write the reason for rejecting, so the school knows what to fix'; end if;
+  update public.kn_workspace set status = case when p_approve then 'approved' else 'rejected' end,
+         review_note = coalesce(trim(p_note), ''), reviewed_at = now(), reviewed_by = auth.uid()
+   where school_id = p_school;
+  if not found then raise exception 'School not found'; end if;
+end $$;
+
+-- Director of a rejected school: correct the registration details and submit again.
+create or replace function public.kn_resubmit_school(p_fields jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+declare m record; w record; clean jsonb;
+begin
+  select * into m from public.kn_members where user_id = auth.uid() and not suspended;
+  if m is null or m.role <> 'director' then raise exception 'Only the school director can resubmit the registration'; end if;
+  select * into w from public.kn_workspace where school_id = m.school_id for update;
+  if w.status <> 'rejected' then raise exception 'Only a rejected registration can be resubmitted'; end if;
+  select coalesce(jsonb_object_agg(key, value), '{}') into clean from jsonb_each(coalesce(p_fields, '{}'))
+   where key in ('name', 'regNumber', 'motto', 'district', 'sector', 'cell', 'village', 'address', 'email', 'phone', 'director', 'headteacher', 'logo');
+  if coalesce(clean->>'name', '') = '' or coalesce(clean->>'regNumber', '') = '' then raise exception 'School name and registration number are required'; end if;
+  if exists (select 1 from public.kn_workspace where school_id <> w.school_id and lower(reg_number) = lower(trim(clean->>'regNumber'))) then
+    raise exception 'A school with this registration number is already registered.';
+  end if;
+  update public.kn_workspace set data = jsonb_set(data, '{schools,0}', (data->'schools'->0) || clean),
+         school_name = clean->>'name', reg_number = trim(clean->>'regNumber'), status = 'pending', submitted_at = now(),
+         rev = rev + 1, updated_at = now(), updated_by = auth.uid()
+   where school_id = w.school_id;
+end $$;
+
+revoke all on function public.kn_my_school_info(), public.kn_review_school(text, boolean, text), public.kn_resubmit_school(jsonb) from public, anon;
+grant execute on function public.kn_my_school_info(), public.kn_review_school(text, boolean, text), public.kn_resubmit_school(jsonb) to authenticated;
+
+notify pgrst, 'reload schema';

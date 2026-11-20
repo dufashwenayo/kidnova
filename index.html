@@ -612,6 +612,51 @@ textarea.input{min-height:76px;resize:vertical}
   .t-out{padding:3px}
 }
 tr.is-suspended td{opacity:.6}
+/* ---------- Approval & setup wizard ---------- */
+.nav-badge{margin-left:auto;font-style:normal;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#e2472f;color:#fff;font-size:11.5px;font-weight:800;display:inline-grid;place-items:center}
+.rev-wrap{border-color:#f2c46b;background:linear-gradient(135deg,#fffaf0,#fff)}
+.rev-list{display:grid;gap:10px}
+.rev-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.rev-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.rev-h strong{display:block;font-size:15.5px;color:var(--navy-deep)}
+.rev-h span{font-size:12.5px;color:var(--muted)}
+.rev-dir{font-size:13px;color:var(--muted);margin:6px 0 10px}
+.rev-dir strong{color:var(--ink)}
+.rev-a{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.rev-detail{display:grid;grid-template-columns:110px minmax(0,1fr);gap:18px;align-items:start}
+.rev-detail img{width:110px;height:110px;object-fit:contain;border:1px solid var(--line);border-radius:14px}
+.pend-steps{list-style:none;margin:16px 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.pend-steps li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.pend-steps b{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--line-soft);color:var(--muted)}
+.pend-steps strong{display:block;color:var(--navy-deep)}
+.pend-steps span{font-size:13px;color:var(--muted)}
+.pend-steps li.done b{background:#21a04a;color:#fff}
+.pend-steps li.now{border-color:#f2c46b;background:#fffaf0}
+.pend-steps li.now b{background:#f3a712;color:#fff}
+.pend-steps li.bad{border-color:#f0c4c4;background:#fff4f4}
+.pend-steps li.bad b{background:var(--bad);color:#fff}
+.pend-h{margin:18px 0 8px}
+.pend-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pend-kv div{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.pend-kv span{display:block;font-size:11.5px;color:var(--muted);font-weight:700}
+.pend-form{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.pend-form h3{margin-bottom:12px}
+.pend-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.wz-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 18px;border-radius:16px;background:#fff;border:1px solid var(--line);margin-bottom:14px}
+.wz-top>div{flex:1;min-width:220px}
+.wz-bar{height:10px;border-radius:99px;background:var(--line-soft);overflow:hidden;margin-top:8px}
+.wz-bar i{display:block;height:100%;background:linear-gradient(90deg,#21a04a,#2a9fd8);border-radius:99px}
+.wz-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.wz-step{display:flex;gap:14px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.wz-step.done{background:#f5fbf7;border-color:#cde9d8}
+.wz-n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--blue-soft);color:var(--navy)}
+.wz-step.done .wz-n{background:#21a04a;color:#fff}
+.wz-body{flex:1;min-width:0}
+.wz-body h3{font-size:15.5px}
+.wz-body p{color:var(--muted);font-size:13.5px;margin:2px 0 8px}
+.wz-extra{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;margin-bottom:8px}
+.wz-a{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:640px){.pend-kv,.rev-detail{grid-template-columns:minmax(0,1fr)}}
 tr.is-suspended td:last-child{opacity:1}
 /* ---------- Colour levels ---------- */
 .lvl{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:650;color:var(--ink);white-space:nowrap}
@@ -972,6 +1017,7 @@ function readImageFile(file, maxSide, mime) {
 const NAV = [
   { key: 'schools', label: 'Schools', group: 'Overview', superOnly: true },
   { key: 'dashboard', label: 'Dashboard', group: 'Overview' },
+  { key: 'setup', label: 'School setup', group: 'Overview', setupOnly: true },
   { key: 'school', label: 'School Information', group: 'Overview' },
   { key: 'students', label: 'Students', group: 'People' },
   { key: 'classes', label: 'Classes', group: 'People' },
@@ -984,12 +1030,13 @@ const NAV = [
   { key: 'settings', label: 'Settings', group: 'Administration' },
 ];
 const PAGE_META = {
-  schools: 'Schools', register: 'Register school', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
+  schools: 'Schools', register: 'Register school', setup: 'School setup', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
   classes: 'Classes', teachers: 'Teachers', years: 'Academic Years', terms: 'Academic Terms',
   assessments: 'Assessments', attendance: 'Attendance', reports: 'Report Generation', settings: 'Settings',
 };
 const ICON = {
   schools: '<path d="M2 20h20M4 20V10l4-3 4 3v10M12 20V6l4-3 4 3v14"/><path d="M7 13h2M15 9h2M15 13h2"/>',
+  setup: '<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
   school: '<path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/>',
   students: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
@@ -1141,6 +1188,27 @@ function pageAllowed(page) {
   if (['thome', 'tattend', 'tmarks'].includes(page)) return false;
   return !['years', 'terms'].includes(page);
 }
+/* ---------- School setup wizard: shown to the director until the school is ready ---------- */
+function setupState() {
+  const sc = curSchool();
+  if (!sc) return null;
+  const st = sc.setup || {};
+  const legacy = !sc.setup; /* schools from before the wizard: details and classes count as confirmed */
+  const classes = classList();
+  const teacherOk = classes.length && classes.every(cl => S('teachers').some(t => t.employmentStatus === 'Active' && teacherClassIds(t).includes(cl.id)));
+  const steps = [
+    { key: 'profile', title: 'Confirm school details', text: 'Check the name, contacts, leadership and logo that appear on report cards.', done: legacy || !!st.profile },
+    { key: 'classes', title: 'Confirm classes', text: 'Check the class names and number of places (Baby, Middle and Top Class are created for you).', done: legacy || !!st.classes },
+    { key: 'subjects', title: 'Register subjects', text: 'Register each class’s subjects by category. They become the rows of the report card.', done: !!classes.length && classes.every(cl => classAreas(cl.id).length) },
+    { key: 'teachers', title: 'Add teachers for every class', text: 'Register teachers, tick the classes they teach and give them a login.', done: !!teacherOk },
+    { key: 'learners', title: 'Register learners', text: 'Add learners with their parent or guardian phone number.', done: S('students').some(x => x.status === 'Active') },
+  ];
+  return { steps, doneCount: steps.filter(x => x.done).length, finished: !!st.done || (legacy && steps.every(x => x.done)) };
+}
+const setupNeeded = () => !!myRole && myRole !== 'teacher' && !!curSchool() && !!setupState() && !setupState().finished;
+function pageAllowedSetupCheck(page) {
+  return page === 'setup' ? !!curSchool() && myRole !== 'teacher' : true;
+}
 const featureChecks = (selected, name = 'feat') => `<div class="feat-grid">${FEATURES.map(([k, l, d]) => `<label class="feat"><input type="checkbox" name="${name}" value="${k}" ${selected.includes(k) ? 'checked' : ''}><span><strong>${esc(l)}</strong><small>${esc(d)}</small></span></label>`).join('')}</div>`;
 const isSuper = () => myRole === 'super_admin';
 const isDirector = () => myRole === 'director';
@@ -1155,7 +1223,7 @@ async function fetchWorkspace(schoolId) {
   return data;
 }
 async function loadWorkspaceList() {
-  const { data, error } = await sb.from('kn_workspace').select('school_id, school_name, reg_number, created_at').order('school_name');
+  const { data, error } = await sb.from('kn_workspace').select('school_id, school_name, reg_number, created_at, status, review_note, submitted_at, reviewed_at').order('school_name');
   if (error) throw new Error('Could not load schools: ' + error.message);
   ws.list = data || [];
   return ws.list;
@@ -1410,6 +1478,7 @@ function applyRoute() {
   ui.page = (VIEWS[page] || page === 'student') ? page : 'dashboard';
   if (myRole === 'teacher' && !pageAllowed(ui.page)) ui.page = 'thome';
   if (myRole && !pageAllowed(ui.page)) ui.page = 'dashboard';
+  if (ui.page === 'setup' && !pageAllowedSetupCheck('setup')) ui.page = 'dashboard';
   if (isSuper() && db && !ws.schoolId && ui.page === 'dashboard') ui.page = 'schools';
   if (ui.page === 'student') ui.studentId = decodeURIComponent(parts[1] || '');
   ui.reportMode = ui.page === 'reports' ? (parts[1] || 'list') : null;
@@ -1420,10 +1489,11 @@ function applyRoute() {
 function renderNav() {
   const groups = ['Overview', 'People', 'Academic', 'Administration'];
   $('#nav').innerHTML = groups.map(g => {
-    const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()) && pageAllowed(n.key));
+    const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()) && (!n.setupOnly || setupNeeded()) && pageAllowed(n.key));
     const current = ui.page === 'student' ? 'students' : ui.page;
     if (!items.length) return '';
-    return `<div class="nav-label">${g}</div>` + items.map(n => `<a href="#${n.key}" class="${current === n.key ? 'on' : ''}">${icon(n.key)}<span>${esc(n.label)}</span></a>`).join('');
+    const waitingN = ws.list.filter(w => w.status === 'pending').length;
+    return `<div class="nav-label">${g}</div>` + items.map(n => `<a href="#${n.key}" class="${current === n.key ? 'on' : ''}">${icon(n.key)}<span>${esc(n.label)}</span>${n.key === 'schools' && isSuper() && waitingN ? `<em class="nav-badge" title="Waiting for approval">${waitingN}</em>` : ''}</a>`).join('');
   }).join('');
 }
 function renderTopbar() {
@@ -1477,6 +1547,10 @@ function shiftCal(n) { const b = ui.calMonth || todayISO().slice(0, 7); const d 
 function renderBanners() {
   const b = [];
   const sc = curSchool();
+  if (sc && setupNeeded() && ui.page !== 'setup') {
+    const stt = setupState();
+    b.push(['warn', `<span>⚙️ <strong>Finish setting up your school:</strong> ${stt.doneCount} of ${stt.steps.length} steps done.</span> <a class="btn sm" href="#setup">Continue setup</a>`]);
+  }
   if (sc) {
     const ay = activeYear();
     const c = ctx();
@@ -1664,7 +1738,7 @@ function schoolSetupHtml() {
 function buildSchool(data, yearIn, logo) {
   validateYearDates([], yearIn.name, yearIn.openDate, yearIn.closeDate, '');
   const id = uid('sch');
-  db.schools.push({ id, ...data, logo: logo || '', status: 'Active', createdAt: nowISO() });
+  db.schools.push({ id, ...data, logo: logo || '', status: 'Active', createdAt: nowISO(), setup: { profile: false, classes: false, done: false } });
   db.settings[id] = defaultSettings();
   const { classes, areas } = makeClasses(id);
   db.classes.push(...classes);
@@ -3566,6 +3640,55 @@ VIEWS.dashboard = () => {
     + `<div class="grid g2 mt">${asmCard}${myRole === 'teacher' ? '' : actCard}</div>`;
 };
 
+VIEWS.setup = () => {
+  const stt = setupState();
+  if (!stt) return '';
+  const sc = curSchool();
+  const pct = Math.round((stt.doneCount / stt.steps.length) * 100);
+  const extra = {
+    profile: `<div class="wz-extra">${logoHtml(sc, 'sm')}<span><strong>${esc(sc.name)}</strong> · ${esc(sc.phone || '')} · Director ${esc(sc.director || '—')} · Headteacher ${esc(sc.headteacher || '—')}</span></div>`,
+    classes: `<div class="wz-extra">${classList().map(cl => classChip(cl, ` · ${cl.capacity} places`)).join(' ')}</div>`,
+    subjects: `<div class="wz-extra">${classList().map(cl => classChip(cl, ` · ${classAreas(cl.id).length} subjects`)).join(' ')}</div>`,
+    teachers: `<div class="wz-extra">${classList().map(cl => { const n = S('teachers').filter(t => t.employmentStatus === 'Active' && teacherClassIds(t).includes(cl.id)).length; return classChip(cl, ` · ${n ? n + ' teacher' + (n > 1 ? 's' : '') : 'no teacher'}`); }).join(' ')}</div>`,
+    learners: `<div class="wz-extra">${classList().map(cl => classChip(cl, ` · ${studentsIn(cl.id).length} learners`)).join(' ')}</div>`,
+  };
+  const btn = {
+    profile: `<button type="button" class="btn sm" data-action="school-edit">Edit details</button><button type="button" class="btn sm primary" data-action="setup-confirm" data-step="profile">✓ Details are correct</button>`,
+    classes: `<a class="btn sm" href="#classes">Edit classes</a><button type="button" class="btn sm primary" data-action="setup-confirm" data-step="classes">✓ Classes are correct</button>`,
+    subjects: `<button type="button" class="btn sm primary" data-action="setup-go" data-to="subjects">Register subjects</button>`,
+    teachers: `<button type="button" class="btn sm primary" data-action="setup-go" data-to="teachers">Add teachers</button>`,
+    learners: `<button type="button" class="btn sm primary" data-action="setup-go" data-to="learners">Register learners</button>`,
+  };
+  const items = stt.steps.map((x, i) => `<li class="wz-step ${x.done ? 'done' : ''}"><span class="wz-n">${x.done ? '✓' : i + 1}</span><div class="wz-body"><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p>${extra[x.key]}${x.done && !['profile', 'classes'].includes(x.key) ? '' : `<div class="wz-a">${x.done ? '<span class="badge ok">Done</span>' : btn[x.key]}</div>`}</div></li>`).join('');
+  const all = stt.doneCount === stt.steps.length;
+  return pageHead('School setup', stt.finished ? 'Your school is set up. You can change any of this at any time.' : 'Complete these steps to start using KIDNOVA. You will be reminded until everything is done.') + `
+    <div class="wz-top"><div><strong>${stt.doneCount} of ${stt.steps.length} steps done</strong><div class="wz-bar"><i style="width:${pct}%"></i></div></div>
+      ${stt.finished ? '<span class="badge ok">Setup complete</span>' : `<button type="button" class="btn primary" data-action="setup-finish" ${all ? '' : 'disabled'}>${all ? 'Finish setup ✓' : 'Finish setup'}</button>`}</div>
+    <ol class="wz-list">${items}</ol>`;
+};
+ACTIONS['setup-confirm'] = el => {
+  requireWritable();
+  const sc = curSchool();
+  sc.setup = Object.assign({}, sc.setup || {}, { [el.dataset.step]: true });
+  commit(el.dataset.step === 'profile' ? 'Setup: school details confirmed' : 'Setup: classes confirmed', sc.name);
+};
+ACTIONS['setup-go'] = el => {
+  const to = el.dataset.to;
+  if (to === 'subjects') { ui.settingsSection = 'areas'; go('settings'); }
+  else if (to === 'teachers') { go('teachers'); setTimeout(() => run(() => ACTIONS['teacher-new']()), 50); }
+  else if (to === 'learners') { go('students'); setTimeout(() => run(() => ACTIONS['student-new']()), 50); }
+};
+ACTIONS['setup-finish'] = async () => {
+  requireWritable();
+  const stt = setupState();
+  if (stt.doneCount < stt.steps.length) throw new AppError('Finish every step first.');
+  const sc = curSchool();
+  sc.setup = Object.assign({}, sc.setup || {}, { profile: true, classes: true, done: true, doneAt: nowISO() });
+  commit('School setup completed', sc.name);
+  await confirmSaved('School setup completed');
+  go('dashboard');
+};
+
 /* ---------- 22b. Teacher app (mobile first: record attendance and marks) ---------- */
 function tClassId() {
   const cls = visibleClasses();
@@ -4331,9 +4454,17 @@ VIEWS.schools = () => {
   const { invites, directors } = ui.schoolsData;
   const now = new Date().toISOString();
   const pending = invites.filter(i => !i.used_at && i.expires_at > now).length;
+  const waiting = ws.list.filter(w => w.status === 'pending');
+  const statusBadge = w => (w.status === 'pending' ? badge('Waiting approval', 'warn') : w.status === 'rejected' ? badge('Changes requested', 'bad') : badge('Approved', 'ok'));
+  const reviewCards = waiting.map(w => {
+    const dir = directors.filter(d => d.school_id === w.school_id);
+    return `<div class="rev-card"><div class="rev-h"><div><strong>${esc(w.school_name)}</strong><span>Reg. ${esc(w.reg_number || '—')} · submitted ${esc(fmtStamp(w.submitted_at || w.created_at))}</span></div>${badge('Waiting approval', 'warn')}</div>
+      <div class="rev-dir">Director login: ${dir.map(d => `<strong>${esc(d.full_name || '')}</strong> ${esc(d.email)}`).join(', ') || '—'}</div>
+      <div class="rev-a"><button type="button" class="btn sm" data-action="school-review-view" data-id="${esc(w.school_id)}">View full details</button><button type="button" class="btn sm danger" data-action="school-reject" data-id="${esc(w.school_id)}">Request changes</button><button type="button" class="btn sm primary" data-action="school-approve" data-id="${esc(w.school_id)}">✓ Approve</button></div></div>`;
+  }).join('');
   const schoolRows = ws.list.map(w => {
     const dir = directors.filter(d => d.school_id === w.school_id);
-    return `<tr><td><strong>${esc(w.school_name)}</strong></td><td class="nowrap">${esc(w.reg_number || '—')}</td>
+    return `<tr><td><strong>${esc(w.school_name)}</strong><span class="sub">${statusBadge(w)}${w.status === 'rejected' && w.review_note ? ` <span class="small muted">${esc(w.review_note)}</span>` : ''}</span></td><td class="nowrap">${esc(w.reg_number || '—')}</td>
       <td>${dir.length ? dir.map(d => `${esc(d.full_name || '')}<span class="sub">${esc(d.email)}</span>`).join('') : '<span class="muted">—</span>'}</td>
       <td class="nowrap">${fmtStamp(w.created_at)}</td>
       <td class="r">${w.school_id === ws.schoolId ? '<span class="badge navy">Open</span>' : `<button type="button" class="btn xs primary" data-action="ws-open" data-id="${esc(w.school_id)}">Open</button>`}</td></tr>`;
@@ -4344,7 +4475,8 @@ VIEWS.schools = () => {
       <td>${i.used_at ? esc(schoolNameOf(i.school_id)) : `<span class="small muted">Expires ${fmtStamp(i.expires_at)}</span>`}</td>
       <td class="r nowrap">${st === 'Waiting' ? `<button type="button" class="btn xs" data-action="invite-copy" data-token="${esc(i.token)}">Copy link</button> <button type="button" class="btn xs" data-action="invite-show" data-token="${esc(i.token)}" data-note="${esc(i.note)}">Share</button> <button type="button" class="btn xs danger" data-action="invite-delete" data-token="${esc(i.token)}">Cancel</button>` : ''}</td></tr>`;
   }).join('');
-  return head + `<div class="grid g3">
+  const reviewBlock = waiting.length ? `<div class="card rev-wrap"><div class="card-h"><div><h3>Waiting for your approval <span class="t-badge">${waiting.length}</span></h3><p>Check what each school submitted, then approve it or request changes. Staff cannot use a school until it is approved.</p></div></div><div class="card-b"><div class="rev-list">${reviewCards}</div></div></div>` : '';
+  return head + reviewBlock + `<div class="grid g3 ${waiting.length ? 'mt' : ''}">
       <div class="card stat accent"><span class="lbl">Registered schools</span><span class="val">${ws.list.length}</span><span class="sub">each with its own records</span></div>
       <div class="card stat warn"><span class="lbl">Links waiting</span><span class="val">${pending}</span><span class="sub">sent, not yet submitted</span></div>
       <div class="card stat ok"><span class="lbl">School directors</span><span class="val">${directors.length}</span><span class="sub">with school-level access</span></div>
@@ -4355,6 +4487,43 @@ VIEWS.schools = () => {
     <div class="card mt"><div class="card-h"><div><h3>Registration links</h3><p>Each link registers one school and expires after 30 days.</p></div></div>
       <div class="table-wrap mt"><table class="tbl"><thead><tr><th>Sent to</th><th>Status</th><th>Created</th><th>School</th><th class="r">Actions</th></tr></thead>
       <tbody>${invRows || `<tr><td colspan="5">${emptyState('No links yet', 'Use “Create registration link” to invite a school.')}</td></tr>`}</tbody></table></div></div>`;
+};
+ACTIONS['school-review-view'] = async el => {
+  requireSuper();
+  const w = ws.list.find(x => x.school_id === el.dataset.id); if (!w) return;
+  const { data, error } = await sb.from('kn_workspace').select('data').eq('school_id', w.school_id).maybeSingle();
+  if (error || !data) throw new AppError('Could not load the submitted details.');
+  const sc = (data.data.schools || [])[0] || {};
+  const yr = (data.data.academicYears || [])[0];
+  const kv = (k, v) => `<dt>${esc(k)}</dt><dd>${esc(v || '—')}</dd>`;
+  openModal({ title: `Review · ${w.school_name}`, wide: true, body: `<div class="modal-b"><div class="rev-detail">${sc.logo ? `<img src="${sc.logo}" alt="School logo">` : '<span class="logo lg ph">' + esc(initials(sc.name)) + '</span>'}
+    <dl class="kv">${kv('Official name', sc.name)}${kv('Registration number', sc.regNumber)}${kv('Motto', sc.motto)}${kv('District', sc.district)}${kv('Sector', sc.sector)}${kv('Cell', sc.cell)}${kv('Village', sc.village)}${kv('Physical address', sc.address)}${kv('Official email', sc.email)}${kv('Phone', sc.phone)}${kv('Director', sc.director)}${kv('Headteacher', sc.headteacher)}${kv('First academic year', yr ? `${yr.name} (${fmtDate(yr.openDate)} – ${fmtDate(yr.closeDate)})` : '')}${kv('Submitted', fmtStamp(w.submitted_at || w.created_at))}</dl></div></div>
+    <div class="modal-f"><button type="button" class="btn" data-action="close-modal">Close</button><button type="button" class="btn danger" data-action="school-reject" data-id="${esc(w.school_id)}">Request changes</button><button type="button" class="btn primary" data-action="school-approve" data-id="${esc(w.school_id)}">✓ Approve school</button></div>` });
+};
+ACTIONS['school-approve'] = async el => {
+  requireSuper();
+  const w = ws.list.find(x => x.school_id === el.dataset.id); if (!w) return;
+  const ok = await confirmDialog(`Approve <strong>${esc(w.school_name)}</strong>? Its director can then log in and complete the setup wizard.`, { title: 'Approve school', ok: 'Approve' });
+  if (!ok) return;
+  const { error } = await sb.rpc('kn_review_school', { p_school: w.school_id, p_approve: true, p_note: '' });
+  if (error) throw new AppError(error.message);
+  toast(`${w.school_name} is approved. The director can now log in and set up the school.`, 'ok', 6000);
+  ui.schoolsData = null; render();
+};
+ACTIONS['school-reject'] = el => {
+  requireSuper();
+  const w = ws.list.find(x => x.school_id === el.dataset.id); if (!w) return;
+  openForm({ title: `Request changes · ${w.school_name}`, form: 'school-reject', arg: w.school_id, submit: 'Send back to the school', html: `<p class="muted" style="margin-bottom:12px">The director sees this reason, corrects the registration and submits it again.</p>${field('What needs to change? *', '<textarea class="input" name="note" required maxlength="400" placeholder="e.g. The registration number does not match the official certificate."></textarea>')}` });
+};
+FORMS['school-reject'] = async (fd, arg) => {
+  requireSuper();
+  const note = String(fd.get('note') || '').trim();
+  if (!note) throw new AppError('Write what the school needs to change.');
+  const { error } = await sb.rpc('kn_review_school', { p_school: arg, p_approve: false, p_note: note });
+  if (error) throw new AppError(error.message);
+  toast('Sent back to the school with your note.', 'info', 5000);
+  ui.schoolsData = null; render();
+  return true;
 };
 ACTIONS['invite-new'] = () => {
   requireSuper();
@@ -4505,6 +4674,53 @@ function showAuth(mode = 'signin', msg = '') {
   };
   const first = $('input', root); if (first) first.focus();
 }
+/* Shown while KIDNOVA reviews the registration, or when it was rejected (with a form to fix and resubmit). */
+function showPending(info) {
+  $('#app').hidden = true;
+  if ($('#homeRoot')) $('#homeRoot').hidden = true;
+  const root = $('#authRoot');
+  root.hidden = false;
+  document.title = 'Registration status · KIDNOVA';
+  const sc = info.school || {};
+  const rejected = info.status === 'rejected';
+  if (!db) db = emptyDb();
+  const kv = (k, v) => `<div><span>${esc(k)}</span><strong>${esc(v || '—')}</strong></div>`;
+  const details = `<div class="pend-kv">${kv('School', sc.name)}${kv('Registration number', sc.regNumber)}${kv('District / Sector', [sc.district, sc.sector].filter(Boolean).join(' · '))}${kv('Cell / Village', [sc.cell, sc.village].filter(Boolean).join(' · '))}${kv('Phone', sc.phone)}${kv('Email', sc.email)}${kv('Director', sc.director)}${kv('Headteacher', sc.headteacher)}</div>`;
+  const steps = `<ol class="pend-steps">
+    <li class="done"><b>✓</b><div><strong>Registration submitted</strong><span>${info.submitted_at ? esc(fmtStamp(info.submitted_at)) : ''}</span></div></li>
+    <li class="${rejected ? 'bad' : 'now'}"><b>${rejected ? '!' : '2'}</b><div><strong>${rejected ? 'Changes requested by KIDNOVA' : 'KIDNOVA is reviewing your registration'}</strong><span>${rejected ? 'Fix the details below and submit again.' : 'You will get access as soon as it is approved.'}</span></div></li>
+    <li><b>3</b><div><strong>Set up your school</strong><span>Classes, subjects, teachers and learners</span></div></li></ol>`;
+  const form = rejected ? `<form id="resubForm" class="pend-form" novalidate><h3>Correct your registration</h3><div id="resubMsg"></div>${schoolFormHtml(sc, false)}<button type="submit" class="btn primary auth-submit mt">Submit again for review</button></form>` : '';
+  root.innerHTML = `<div class="auth-wrap reg"><aside class="auth-side">${AUTH_ART}<div class="auth-cap"><small>School registration</small><strong>${rejected ? 'Almost there.' : 'Thank you for registering.'}</strong></div></aside>
+    <section class="auth-main"><div class="auth-top"><div class="kn-brand"><span class="kn-mark">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgW')}</span><strong>KIDNOVA</strong></div><button type="button" class="pill-btn" id="pendOut">Log out</button></div>
+    <div class="reg-box">
+      <h1 class="auth-h" style="text-align:left">${rejected ? 'Your registration needs changes' : 'Registration submitted ✓'}</h1>
+      ${rejected ? `<div class="banner bad"><span><strong>Reason from KIDNOVA:</strong> ${esc(info.note || 'Please contact support.')}</span></div>` : '<div class="banner info"><span>KIDNOVA is reviewing <strong>' + esc(sc.name || info.school_name) + '</strong>. You cannot open the school until it is approved. Check back later or contact support.</span></div>'}
+      ${steps}
+      ${rejected ? '' : `<h3 class="pend-h">What you submitted</h3>${details}`}
+      ${form}
+      <div class="pend-actions"><button type="button" class="btn" id="pendCheck">↻ Check status again</button>${supportLinks('btn')}</div>
+    </div><p class="auth-foot small faint">Need help? ${SUPPORT.show}</p></section></div>`;
+  $('#pendOut').onclick = async () => { await sb.auth.signOut(); location.replace(location.pathname + '#login'); location.reload(); };
+  $('#pendCheck').onclick = () => location.reload();
+  if (rejected) {
+    db = emptyDb();
+    $('#resubForm').onsubmit = async e => {
+      e.preventDefault();
+      const btn = $('.auth-submit', e.target);
+      const msg = $('#resubMsg');
+      let data;
+      try { data = readSchoolFields(new FormData(e.target)); } catch (err) { msg.innerHTML = `<div class="banner bad"><span>${esc(err.message)}</span></div>`; return; }
+      if (ui.pendingLogo) data.logo = ui.pendingLogo;
+      btn.disabled = true; btn.textContent = 'Submitting…';
+      const { error } = await sb.rpc('kn_resubmit_school', { p_fields: data });
+      if (error) { btn.disabled = false; btn.textContent = 'Submit again for review'; msg.innerHTML = `<div class="banner bad"><span>${esc(error.message)}</span></div>`; return; }
+      const { data: again } = await sb.rpc('kn_my_school_info');
+      toast('Submitted again. KIDNOVA will review it.', 'ok', 5000);
+      showPending(again || Object.assign({}, info, { status: 'pending' }));
+    };
+  }
+}
 function showNoAccess(suspended = false) {
   $('#app').hidden = true;
   const root = $('#authRoot');
@@ -4641,7 +4857,7 @@ async function submitRegistration(token, form) {
   const { error } = await sb.rpc('kn_redeem_invite', { p_token: token, p_school_id: schoolId, p_school_name: data.name, p_reg: data.regNumber, p_director_email: email, p_data: db });
   if (error) { db = null; return fail(error.message); }
   history.replaceState(null, '', location.pathname + '#dashboard');
-  toast('Welcome to KIDNOVA! Your school is registered.', 'ok', 6000);
+  toast('Registration submitted. KIDNOVA will review it shortly.', 'ok', 6000);
   await startApp(authUser);
 }
 let started = false;
@@ -4661,10 +4877,13 @@ async function showChooser(user) {
   if (role === 'suspended') { myRole = null; showNoAccess(true); return; }
   if (!role) { myRole = null; showNoAccess(); return; }
   myRole = role;
-  const { data: me } = await sb.from('kn_members').select('school_id').eq('user_id', user.id).maybeSingle();
   let schools = [];
-  try { schools = await loadWorkspaceList(); } catch (e) { schools = []; }
-  if (!isSuper() && me) schools = schools.filter(w => w.school_id === me.school_id);
+  if (isSuper()) { try { schools = await loadWorkspaceList(); } catch (e) { schools = []; } }
+  else {
+    const { data: info } = await sb.rpc('kn_my_school_info');
+    if (info && info.status !== 'approved') { showPending(info); return; }
+    if (info) schools = [{ school_id: info.school_id, school_name: info.school_name, reg_number: info.reg_number }];
+  }
   const icoUser = '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="6" width="40" height="30" rx="4" fill="#eaf3fc"/><circle cx="18" cy="20" r="6" fill="#0b6cb5"/><path d="M8 36c1.5-7 6-10 10-10s8.5 3 10 10" fill="#7fb8e8"/><rect x="28" y="12" width="12" height="3" rx="1.5" fill="#f3c22c"/><rect x="28" y="18" width="9" height="3" rx="1.5" fill="#21a04a"/></svg>';
   const icoSchool = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#0b6cb5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>';
   const tick = '<span class="ch-tick">✓</span>';
@@ -4711,6 +4930,10 @@ async function startApp(user, opts = {}) {
     myTeacherId = me ? me.teacher_id : null;
     myFeatures = me && Array.isArray(me.features) ? me.features : [];
     let target = mySchool;
+    if (!isSuper()) {
+      const { data: info } = await sb.rpc('kn_my_school_info');
+      if (info && info.status !== 'approved') { showPending(info); return; }
+    }
     if (isSuper()) {
       await loadWorkspaceList();
       /* Never open a school automatically: only the one chosen at login, or chosen earlier in this tab. */
@@ -4729,6 +4952,7 @@ async function startApp(user, opts = {}) {
   }
   ui.welcome = !!opts.welcome;
   if (opts.welcome) toast(`Welcome, ${currentAdmin().name.split(' ')[0].charAt(0) + currentAdmin().name.split(' ')[0].slice(1).toLowerCase()}! You are signed in as ${PROFILE_NAME[myRole] || myRole}.`, 'ok', 5000);
+  if (setupNeeded() && (opts.welcome || !location.hash || location.hash === '#dashboard')) history.replaceState(null, '', location.pathname + '#setup');
   if (!location.hash || ['#register', '#login', '#home'].includes(location.hash)) history.replaceState(null, '', location.pathname + (curSchool() ? '#dashboard' : isSuper() ? '#schools' : '#dashboard'));
   applyRoute();
   render();
