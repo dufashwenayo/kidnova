@@ -708,6 +708,34 @@ tr.is-suspended td{opacity:.6}
 .th-app.upd .th-app-a .btn{background:#fff;color:#0f5a39;font-weight:700}
 .th-app-steps{margin:12px 0 0;padding:12px 12px 12px 30px;border-radius:12px;background:rgba(255,255,255,.12);font-size:13px;line-height:1.5;position:relative;z-index:1}
 .th-app-steps li+li{margin-top:6px}
+.sa-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:22px 24px;border-radius:18px;color:#fff;background:linear-gradient(120deg,#14305c 0%,#0b6cb5 70%,#2a9fd8 100%);box-shadow:0 10px 28px rgba(20,48,92,.22)}
+.sa-hero span{font-size:12.5px;color:#cfe4f7;font-weight:600;letter-spacing:.02em}
+.sa-hero h2{margin:4px 0 6px;font-size:26px;color:#fff}
+.sa-hero p{margin:0;color:#dceafa;font-size:13.5px;max-width:560px}
+.sa-hero-a{display:flex;gap:8px;flex-wrap:wrap}
+.sa-hero-a .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#fff}
+.sa-hero-a .btn:hover{background:rgba(255,255,255,.24)}
+.sa-warn{color:#b26a00}
+.sa-alerts{list-style:none;margin:0;padding:6px 18px 14px}
+.sa-alerts li{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.sa-alerts li:last-child{border-bottom:0}
+.sa-alerts li>div{flex:1}
+.sa-dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--info)}
+.sa-alerts li.warn .sa-dot{background:#e0a100}
+.sa-alerts li.bad .sa-dot{background:var(--bad)}
+.sa-acc{display:grid;gap:2px}
+.sa-acc div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.sa-acc div:last-child{border-bottom:0}
+.sa-acc b{font-variant-numeric:tabular-nums}
+.sa-me{margin-bottom:14px}
+.sa-dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0}
+.sa-dl div{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.sa-dl dt{font-size:11.5px;color:var(--muted);font-weight:600}
+.sa-dl dd{margin:3px 0 0;font-weight:600}
+.sa-rules{margin:0;padding-left:18px;display:grid;gap:10px;font-size:13.5px;line-height:1.5}
+.mem-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 18px 0}
+.mem-filters .input{width:auto;min-width:150px;flex:1 1 150px;max-width:260px}
+@media (max-width:760px){.sa-dl{grid-template-columns:1fr}.sa-hero h2{font-size:22px}}
 .th-rem .th-card-h{align-items:center}
 .th-rem-p{margin:4px 0 10px;font-size:13px;color:var(--muted)}
 .th-rem-warn{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:12.5px}
@@ -1201,6 +1229,7 @@ function readImageFile(file, maxSide, mime) {
 
 /* ---------- 2. Constants ---------- */
 const NAV = [
+  { key: 'admin', label: 'KIDNOVA Admin', group: 'Overview', superOnly: true },
   { key: 'schools', label: 'Schools', group: 'Overview', superOnly: true },
   { key: 'dashboard', label: 'Dashboard', group: 'Overview' },
   { key: 'setup', label: 'School setup', group: 'Overview', setupOnly: true },
@@ -1215,13 +1244,18 @@ const NAV = [
   { key: 'discipline', label: 'Discipline', group: 'Academic' },
   { key: 'reports', label: 'Report Generation', group: 'Academic' },
   { key: 'settings', label: 'Settings', group: 'Administration' },
+  { key: 'platform', label: 'Admin settings', group: 'Administration', superOnly: true },
 ];
+/* Pages the Super Admin uses without opening a school */
+const SUPER_PAGES = ['admin', 'schools', 'platform'];
 const PAGE_META = {
-  schools: 'Schools', register: 'Register school', setup: 'School setup', discipline: 'Discipline', tdisc: 'Conduct', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
+  admin: 'KIDNOVA Admin', platform: 'Admin settings', schools: 'Schools', register: 'Register school', setup: 'School setup', discipline: 'Discipline', tdisc: 'Conduct', thome: 'Home', tattend: 'Attendance', tmarks: 'Marks', dashboard: 'Dashboard', school: 'School Information', students: 'Students', student: 'Student profile',
   classes: 'Classes', teachers: 'Teachers', years: 'Academic Years', terms: 'Academic Terms',
   assessments: 'Assessments', attendance: 'Attendance', reports: 'Report Generation', settings: 'Settings',
 };
 const ICON = {
+  admin: '<path d="M12 2l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.3 6.1 19.9l1.7-6.7L2.5 8.8l6.9-.5z"/>',
+  platform: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.5"/>',
   schools: '<path d="M2 20h20M4 20V10l4-3 4 3v10M12 20V6l4-3 4 3v14"/><path d="M7 13h2M15 9h2M15 13h2"/>',
   setup: '<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
@@ -1767,7 +1801,9 @@ function applyRoute() {
   if (myRole === 'teacher' && !pageAllowed(ui.page)) ui.page = 'thome';
   if (myRole && !pageAllowed(ui.page)) ui.page = 'dashboard';
   if (ui.page === 'setup' && !pageAllowedSetupCheck('setup')) ui.page = 'dashboard';
-  if (isSuper() && db && !ws.schoolId && ui.page === 'dashboard') ui.page = 'schools';
+  if (isSuper() && !ws.schoolId && !SUPER_PAGES.includes(ui.page)) ui.page = ui.page === 'settings' ? 'platform' : 'admin';
+  /* Going to KIDNOVA Admin closes the open school: the Super Admin is inside a school only when needed. */
+  if (isSuper() && ws.schoolId && ui.page === 'admin') setTimeout(() => run(async () => { if (ui.page === 'admin' && ws.schoolId) { await openWorkspace(null); render(); } }), 0);
   if (ui.page === 'student') ui.studentId = decodeURIComponent(parts[1] || '');
   ui.reportMode = ui.page === 'reports' ? (parts[1] || 'list') : null;
   ui.reportRef = ui.page === 'reports' ? decodeURIComponent(parts[2] || '') : '';
@@ -1777,7 +1813,8 @@ function applyRoute() {
 function renderNav() {
   const groups = ['Overview', 'People', 'Academic', 'Administration'];
   $('#nav').innerHTML = groups.map(g => {
-    const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()) && (!n.setupOnly || setupNeeded()) && pageAllowed(n.key));
+    const items = NAV.filter(n => n.group === g && (!n.superOnly || isSuper()) && (!n.setupOnly || setupNeeded()) && pageAllowed(n.key)
+      && (!isSuper() || ws.schoolId || SUPER_PAGES.includes(n.key)));
     const current = ui.page === 'student' ? 'students' : ui.page;
     if (!items.length) return '';
     const waitingN = ws.list.filter(w => w.status === 'pending').length;
@@ -1813,7 +1850,7 @@ function renderSideSchool() {
   const sc = curSchool();
   $('#sideSchool').innerHTML = sc
     ? `<a class="side-school" href="#school">${logoHtml(sc, 'sm')}<div><strong>${esc(sc.name)}</strong><span>${esc(sc.regNumber || '')}</span></div></a>`
-    : `<a class="side-school empty" href="#schools"><span class="logo sm ph">+</span><div><strong>No school open</strong><span>${ws.list.length ? 'Choose one on Schools' : 'Invite a school on Schools'}</span></div></a>`;
+    : `<a class="side-school empty" href="#schools"><span class="logo sm ph">★</span><div><strong>KIDNOVA Admin</strong><span>No school open · ${ws.list.length ? 'open one only when needed' : 'invite a school on Schools'}</span></div></a>`;
 }
 function renderMiniCal() {
   const today = todayISO();
@@ -1876,7 +1913,7 @@ function render() {
   renderChrome();
   const page = ui.page;
   let html;
-  if (!curSchool() && page !== 'settings' && page !== 'schools') {
+  if (!curSchool() && page !== 'settings' && !SUPER_PAGES.includes(page)) {
     html = isSuper() ? `<div class="card"><div class="empty-hero"><span class="kn-mark big">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgE')}</span><h2>${ws.list.length ? 'Open a school' : 'Welcome to KIDNOVA'}</h2><p class="muted" style="margin:8px auto 16px;max-width:520px">${ws.list.length ? 'Choose a school from the Schools page or the school menu at the top to work on its records.' : 'No school has registered yet. Create a registration link on the Schools page, copy it and send it to the school. The school fills in its details and the director email, and that director gets access to their school.'}</p><button type="button" class="btn primary" data-action="nav-schools">Open Schools</button></div></div>` : `<div class="card"><div class="empty-hero"><span class="kn-mark big"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="kgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e88e5"/><stop offset="1" stop-color="#0b5aa0"/></linearGradient></defs><rect width="40" height="40" rx="11" fill="url(#kgB)"/><path d="M20 7.5l2.9 8.1 8.6.3-6.8 5.3 2.4 8.3L20 24.6l-7.1 4.9 2.4-8.3-6.8-5.3 8.6-.3z" fill="#fff"/><circle cx="31" cy="9" r="2.4" fill="#ffd166"/></svg></span><h2>Welcome to KIDNOVA</h2><p class="muted" style="margin:8px auto 16px;max-width:480px">Create the school on the School Information page before using students, classes, assessments, attendance or reports.</p><button type="button" class="btn primary" data-action="nav-school">Open School Information</button></div></div>`;
   } else {
     html = (VIEWS[page] || VIEWS.dashboard)();
@@ -2087,8 +2124,8 @@ CHANGES['logo-pick'] = async el => {
 };
 CHANGES['ws-switch'] = async el => {
   requireSuper();
-  if (!el.value) { await openWorkspace(null); go('schools'); render(); toast('School closed. You are on the overview.', 'info'); return; }
-  await openWorkspace(el.value); go('dashboard'); render(); toast('Opened ' + (curSchool() ? curSchool().name : 'school') + '.', 'info');
+  if (!el.value) { await openWorkspace(null); go('admin'); render(); toast('School closed. You are on the KIDNOVA Admin dashboard.', 'info'); return; }
+  await openWorkspace(el.value); ui.page = 'dashboard'; go('dashboard'); render(); toast('Opened ' + (curSchool() ? curSchool().name : 'school') + '.', 'info');
 };
 CHANGES['view-year'] = el => { ui.viewYearId = el.value; ui.viewTermId = null; clearTransient(); render(); };
 ACTIONS['school-new'] = () => { ui.pendingLogo = null; openForm({ title: 'Create a new school', form: 'school', arg: 'new', wide: true, submit: 'Create school', html: schoolFormHtml(null, true) }); };
@@ -2205,12 +2242,10 @@ ACTIONS['year-activate'] = async el => {
     termsOf(current.id).forEach(t => { if (t.status === 'Active') t.status = 'Completed'; });
   }
   target.status = 'Active';
-  if (!termsOf(target.id).some(t => t.status === 'Active')) {
-    const first = termsOf(target.id).find(t => t.status === 'Upcoming');
-    if (first) first.status = 'Active';
-  }
+  /* No term becomes current by itself: the Super Admin chooses it with "Switch current term". */
   resetContext();
   commit('Academic year set as current', `${target.name}${current ? ` · ${current.name} closed` : ''}`);
+  if (!termsOf(target.id).some(t => t.status === 'Active')) toast(`${target.name} is now the current year. No term is current yet: choose it with “Switch current term” when it starts.`, 'info', 8000);
 };
 ACTIONS['year-close'] = async el => {
   requireWritable();
@@ -4853,7 +4888,7 @@ const schoolNameOf = id => (ws.list.find(w => w.school_id === id) || {}).school_
 async function loadMembers() {
   const { data, error } = await sb.from('kn_members').select('user_id, email, full_name, role, school_id, features, teacher_id, suspended, created_at').order('created_at');
   ui.members = error ? { error: error.message } : { list: data };
-  if ((ui.page === 'settings' && ui.settingsSection === 'users') || ui.page === 'teachers') render();
+  if ((ui.page === 'settings' && ui.settingsSection === 'users') || ui.page === 'teachers' || ui.page === 'platform') render();
 }
 function settingsUsersHtml() {
   if (!ui.members) { loadMembers(); return '<div class="card"><div class="card-b muted">Loading users…</div></div>'; }
@@ -4861,16 +4896,27 @@ function settingsUsersHtml() {
   const me = authUser.id;
   const canManage = m => m.user_id !== me && m.role !== 'super_admin' && (isSuper() || (m.school_id === mySchool && ((isDirector() && ['admin', 'teacher'].includes(m.role)) || (myRole === 'admin' && m.role === 'teacher'))));
   const superTools = m => (isSuper() ? `<button type="button" class="btn xs" data-action="member-reset" data-id="${esc(m.user_id)}">Reset password</button>${m.user_id !== me && m.role !== 'super_admin' ? ` <button type="button" class="btn xs ${m.suspended ? 'light' : 'danger'}" data-action="member-suspend" data-id="${esc(m.user_id)}">${m.suspended ? 'Reactivate' : 'Suspend'}</button>` : ''} ` : '');
-  const rows = ui.members.list.map(m => `<tr class="${m.suspended ? 'is-suspended' : ''}"><td><div class="who"><span class="avatar ph">${esc(initials(m.full_name || m.email))}</span><div><strong>${esc(m.full_name || '—')}</strong><span>${esc(m.email)}</span></div></div></td>
+  const f = ui.memFilter || {};
+  const q = String(f.q || '').trim().toLowerCase();
+  const logins = (ui.platform && ui.platform.logins) || {};
+  const shown = ui.members.list.filter(m => (!q || `${m.full_name || ''} ${m.email}`.toLowerCase().includes(q))
+    && (!f.role || m.role === f.role) && (!f.school || (f.school === '-' ? !m.school_id : m.school_id === f.school))
+    && (!f.status || (f.status === 'suspended') === !!m.suspended));
+  const filters = isSuper() ? `<div class="mem-filters"><input class="input" type="search" placeholder="Search name or email" value="${esc(f.q || '')}" data-input="mem-q" aria-label="Search users">
+    <select class="input" data-change="mem-f" data-k="school" aria-label="School"><option value="">All schools</option>${ws.list.map(w => `<option value="${esc(w.school_id)}" ${f.school === w.school_id ? 'selected' : ''}>${esc(w.school_name)}</option>`).join('')}<option value="-" ${f.school === '-' ? 'selected' : ''}>KIDNOVA (no school)</option></select>
+    <select class="input" data-change="mem-f" data-k="role" aria-label="Role"><option value="">All roles</option>${['super_admin', 'director', 'admin', 'teacher'].map(r => `<option value="${r}" ${f.role === r ? 'selected' : ''}>${esc(ROLE_NAME[r] || r)}</option>`).join('')}</select>
+    <select class="input" data-change="mem-f" data-k="status" aria-label="Status"><option value="">Active and suspended</option><option value="active" ${f.status === 'active' ? 'selected' : ''}>Active only</option><option value="suspended" ${f.status === 'suspended' ? 'selected' : ''}>Suspended only</option></select>
+    <span class="muted small">${shown.length} of ${ui.members.list.length}</span></div>` : '';
+  const rows = shown.map(m => `<tr class="${m.suspended ? 'is-suspended' : ''}"><td><div class="who"><span class="avatar ph">${esc(initials(m.full_name || m.email))}</span><div><strong>${esc(m.full_name || '—')}</strong><span>${esc(m.email)}</span></div></div></td>
     <td>${badge(ROLE_NAME[m.role] || m.role, m.role === 'super_admin' ? 'navy' : m.role === 'director' ? 'ok' : 'info')}${m.role === 'teacher' ? `<span class="sub">${(m.features || []).map(f => esc(FEATURE_NAME[f] || f)).join(', ') || 'No features'}</span>` : ''}</td>
-    <td>${m.school_id ? esc(schoolNameOf(m.school_id)) : '<span class="muted">All schools</span>'}</td><td>${m.suspended ? badge('Suspended', 'bad') : badge('Active', 'ok')}</td><td class="nowrap">${fmtStamp(m.created_at)}</td>
+    <td>${m.school_id ? esc(schoolNameOf(m.school_id)) : '<span class="muted">All schools</span>'}</td><td>${m.suspended ? badge('Suspended', 'bad') : badge('Active', 'ok')}</td><td class="nowrap">${isSuper() && ui.platform ? (logins[m.user_id] ? fmtStamp(logins[m.user_id]) : '<span class="muted">Never</span>') : fmtStamp(m.created_at)}</td>
     <td class="r nowrap">${superTools(m)}${canManage(m) ? `${m.role === 'teacher' ? `<button type="button" class="btn xs" data-action="member-features" data-id="${esc(m.user_id)}">Features</button> ` : ''}${isSuper() && m.role !== 'teacher' ? `<button type="button" class="btn xs" data-action="member-role" data-id="${esc(m.user_id)}">${m.role === 'director' ? 'Make Administrator' : 'Make Director'}</button> ` : ''}<button type="button" class="btn xs danger" data-action="member-remove" data-id="${esc(m.user_id)}">Remove</button>` : (m.user_id === me ? '<span class="small muted">You</span>' : '')}</td></tr>`).join('');
   const intro = isSuper()
     ? 'Everyone who can sign in to KIDNOVA. As Super Admin you can reset any password and suspend any account; a suspended account cannot log in until you reactivate it.'
     : 'People with access to your school. Directors add administrators and teachers; administrators add teachers. Teachers only see the features you give them.';
   return `<div class="card"><div class="card-h"><div><h3>Users &amp; access</h3><p>${intro}</p></div>
     ${isSuper() || isDirector() || myRole === 'admin' ? '<button type="button" class="btn primary sm" data-action="member-add">Add user</button>' : ''}</div>
-    <div class="table-wrap mt"><table class="tbl"><thead><tr><th>User</th><th>Role</th><th>School</th><th>Status</th><th>Added</th><th class="r">Actions</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+    ${filters}<div class="table-wrap mt"><table class="tbl"><thead><tr><th>User</th><th>Role</th><th>School</th><th>Status</th><th>${isSuper() && ui.platform ? 'Last login' : 'Added'}</th><th class="r">Actions</th></tr></thead><tbody>${rows || `<tr><td colspan="6">${emptyState('No user matches', 'Change the search or filters.')}</td></tr>`}</tbody></table></div></div>`;
 }
 ACTIONS['member-add'] = () => {
   if (!isSuper() && !isDirector() && myRole !== 'admin') throw new AppError('Only the Super Admin, the director or an administrator can add users.');
@@ -5291,6 +5337,7 @@ function settingsActivityHtml() {
     <div class="table-wrap mt"><table class="tbl"><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Detail</th></tr></thead><tbody>${rows || `<tr><td colspan="4">${emptyState('No activity yet', 'Changes you make will be listed here.')}</td></tr>`}</tbody></table></div></div>`;
 }
 VIEWS.settings = () => {
+  if (isSuper() && !curSchool()) { setTimeout(() => go('platform'), 0); return ''; }
   const noSchool = !curSchool();
   /* School staff get the essentials only; calendar, grading, report layout and backups are Super Admin tools. */
   const base = isSuper() ? SETTINGS_SECTIONS : SETTINGS_SECTIONS.filter(([k]) => ['areas', 'classes', 'users', 'activity'].includes(k));
@@ -5304,6 +5351,133 @@ VIEWS.settings = () => {
     + `<div class="split"><nav class="subnav" aria-label="Settings sections">${sections.map(([k, l]) => `<button type="button" class="${cur === k ? 'on' : ''}" data-action="settings-section" data-section="${k}">${l}</button>`).join('')}</nav>
     <div style="min-width:0">${bodies[cur]()}</div></div>`;
 };
+
+/* ---------- 23b. KIDNOVA Admin (Super Admin's own dashboard, no school opened) ---------- */
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+async function loadPlatform(force) {
+  if (ui.platformLoading) return;
+  if (ui.platform && !ui.platform.error && !force && Date.now() - ui.platform.at < 60000) return;
+  ui.platformLoading = true;
+  try {
+    const [ov] = await Promise.all([sb.rpc('kn_platform_overview'), loadWorkspaceList().catch(() => null)]);
+    ui.platform = ov.error ? { error: ov.error.message, at: Date.now() } : { ...ov.data, at: Date.now() };
+  } catch (e) { ui.platform = { error: e.message, at: Date.now() }; }
+  ui.platformLoading = false;
+  if (['admin', 'platform'].includes(ui.page)) render();
+}
+function saAlerts(P) {
+  const today = P.today || todayISO();
+  const out = [];
+  P.schools.forEach(x => {
+    const go = `<button type="button" class="btn xs" data-action="sa-open" data-id="${esc(x.school_id)}">Open school</button>`;
+    if (x.status === 'pending') out.push(['warn', `<b>${esc(x.name)}</b> is waiting for your approval.`, '<a class="btn xs primary" href="#schools">Review</a>']);
+    else if (x.status === 'rejected') out.push(['info', `<b>${esc(x.name)}</b>: changes requested, waiting for the school to resubmit.`, '<a class="btn xs" href="#schools">View</a>']);
+    else if (!x.year) out.push(['bad', `<b>${esc(x.name)}</b> has no current academic year.`, go]);
+    else if (!x.term) out.push(['bad', `<b>${esc(x.name)}</b> has no current term${x.next_term ? ` · next: ${esc(x.next_term.name)} (opens ${fmtDate(x.next_term.open)})` : ''}. Schools cannot take attendance until you set it.`, go]);
+    else if (x.term.close < today) out.push(['warn', `<b>${esc(x.name)}</b>: ${esc(x.term.name)} ended on ${fmtDate(x.term.close)} and stays current until you switch the term.`, go]);
+    else if (x.next_term && x.next_term.open <= today) out.push(['warn', `<b>${esc(x.name)}</b>: ${esc(x.next_term.name)} was due to open on ${fmtDate(x.next_term.open)}. It starts only when you switch the term.`, go]);
+    if (x.status === 'approved' && !x.setup_done) out.push(['info', `<b>${esc(x.name)}</b>: the director has not finished the setup wizard yet.`, '']);
+  });
+  return out;
+}
+VIEWS.admin = () => {
+  if (ws.schoolId) return '<div class="card"><div class="card-b muted">Closing the school…</div></div>';
+  const P = ui.platform;
+  if (!P || (!P.error && Date.now() - P.at > 60000)) loadPlatform();
+  if (!P) return '<div class="card"><div class="card-b muted">Loading the KIDNOVA overview…</div></div>';
+  if (P.error) return `<div class="banner bad"><span>Could not load the overview: ${esc(P.error)}</span><button type="button" class="btn sm" data-action="sa-refresh">Try again</button></div>`;
+  const today = P.today || todayISO();
+  const S2 = P.schools;
+  const live = S2.filter(x => x.status === 'approved');
+  const pending = S2.filter(x => x.status === 'pending').length;
+  const learners = live.reduce((n, x) => n + x.learners, 0), girls = live.reduce((n, x) => n + x.girls, 0);
+  const teachers = live.reduce((n, x) => n + x.teachers, 0);
+  const classes = live.reduce((n, x) => n + x.classes, 0);
+  const regs = live.reduce((n, x) => n + Math.min(x.registers_today, x.classes), 0);
+  const U = P.users || {};
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const nm = currentAdmin().name.split(' ')[0]; const nice = nm.charAt(0) + nm.slice(1).toLowerCase();
+  const hero = `<section class="sa-hero"><div><span>${esc(longDate(today))} · KIDNOVA Admin</span><h2>${greet}, ${esc(nice)}</h2><p>Your own dashboard for every school. No school is open; open one only when you need to work inside it.</p></div>
+    <div class="sa-hero-a"><a class="btn" href="#schools">＋ Registration link</a><a class="btn" href="#platform">Users &amp; passwords</a><button type="button" class="btn ghost" data-action="sa-refresh" title="Refresh">↻ Refresh</button></div></section>`;
+  const tile = (cls, lbl, val, sub) => `<div class="card stat ${cls}"><span class="lbl">${lbl}</span><span class="val">${val}</span><span class="sub">${sub}</span></div>`;
+  const kpis = `<div class="grid g4 mt sa-kpis">
+    ${tile('accent', 'Schools', live.length, `${pending ? `<b class="sa-warn">${pending} waiting for approval</b>` : 'none waiting for approval'} · ${S2.length} in total`)}
+    ${tile('ok', 'Learners', learners, `${girls} girls · ${learners - girls} boys · ${classes} classes`)}
+    ${tile('info', 'Teachers', teachers, `${plural(U.teachers || 0, 'teacher login')} · ${plural(U.directors || 0, 'director')} · ${plural(U.admins || 0, 'admin')}`)}
+    ${tile('warn', 'Registers today', `${regs}/${classes}`, `${plural(U.total || 0, 'user account')}${U.suspended ? ` · ${U.suspended} suspended` : ''}`)}</div>`;
+  const alerts = saAlerts(P);
+  const alertCard = `<div class="card"><div class="card-h"><div><h3>Needs your attention</h3><p>Approvals, terms and setup across schools. Terms never switch by themselves: only you set the current term.</p></div><span class="badge ${alerts.length ? 'warn' : 'ok'}">${alerts.length || 'All clear'}</span></div>
+    ${alerts.length ? `<ul class="sa-alerts">${alerts.map(([t, msg, a]) => `<li class="${t}"><span class="sa-dot"></span><div>${msg}</div>${a}</li>`).join('')}</ul>` : `<div class="card-b">${emptyState('Nothing to do', 'Every school is approved and has a current term.')}</div>`}</div>`;
+  const rows = S2.map(x => {
+    const ended = x.term && x.term.close < today;
+    return `<tr><td><strong>${esc(x.name)}</strong><span class="sub">${esc(x.reg || '')}${x.active !== 'Active' ? ' · deactivated' : ''}</span></td>
+      <td>${badge(x.status === 'approved' ? 'Approved' : x.status === 'pending' ? 'Waiting' : 'Changes requested', x.status === 'approved' ? 'ok' : x.status === 'pending' ? 'warn' : 'info')}</td>
+      <td>${x.term ? `${esc(x.term.name)} · ${esc(x.year || '')}${ended ? ' <span class="badge warn">ended</span>' : ''}<span class="sub">${fmtDate(x.term.open)} – ${fmtDate(x.term.close)}</span>` : `<span class="badge bad">Not set</span>`}</td>
+      <td class="c num">${x.learners}</td><td class="c num">${x.teachers}</td><td class="c num">${x.classes ? `${Math.min(x.registers_today, x.classes)}/${x.classes}` : '—'}</td>
+      <td class="small">${x.last_activity ? `${esc(fmtStamp(x.last_activity))}<span class="sub">${esc(x.last_actor || '')} · ${esc(x.last_action || '')}</span>` : '<span class="muted">No activity</span>'}</td>
+      <td class="r">${x.status === 'approved' ? `<button type="button" class="btn xs primary" data-action="sa-open" data-id="${esc(x.school_id)}">Open school</button>` : '<a class="btn xs" href="#schools">Review</a>'}</td></tr>`;
+  }).join('');
+  const table = `<div class="card mt"><div class="card-h"><div><h3>All schools</h3><p>Opening a school lets you work inside it. Use “KIDNOVA Admin” in the menu to close it again.</p></div><a class="btn sm" href="#schools">Manage schools</a></div>
+    <div class="table-wrap mt"><table class="tbl"><thead><tr><th>School</th><th>Status</th><th>Current term</th><th class="c">Learners</th><th class="c">Teachers</th><th class="c">Registers today</th><th>Last activity</th><th></th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="8">${emptyState('No school yet', 'Create a registration link on the Schools page and send it to a school.')}</td></tr>`}</tbody></table></div></div>`;
+  const side = `<div class="card"><div class="card-h"><div><h3>Accounts</h3><p>Everyone who can log in</p></div><a class="btn sm" href="#platform">Manage</a></div><div class="card-b sa-acc">
+    ${[['Directors', U.directors], ['Administrators', U.admins], ['Teachers', U.teachers], ['Suspended', U.suspended]].map(([l, v]) => `<div><span>${l}</span><b>${v || 0}</b></div>`).join('')}
+    <div><span>Unused registration links</span><b>${P.open_links || 0}</b></div></div></div>`;
+  return hero + kpis + `<div class="grid g-side mt">${alertCard}${side}</div>` + table;
+};
+ACTIONS['sa-refresh'] = () => { ui.platform = null; loadPlatform(true); render(); };
+ACTIONS['sa-open'] = async el => {
+  requireSuper();
+  await openWorkspace(el.dataset.id);
+  ui.page = 'dashboard'; go('dashboard'); render();
+  toast(`Opened ${curSchool() ? curSchool().name : 'the school'}. Choose “KIDNOVA Admin” in the menu to close it.`, 'info', 5000);
+};
+
+VIEWS.platform = () => {
+  requireSuper();
+  if (!ui.platform) loadPlatform();
+  const secs = [['account', 'My account'], ['users', 'Users & passwords'], ['rules', 'Platform rules']];
+  const cur = secs.some(([k]) => k === ui.platSec) ? ui.platSec : 'account';
+  const a = currentAdmin();
+  const lastLogin = ui.platform && ui.platform.logins ? ui.platform.logins[authUser.id] : null;
+  const bodies = {
+    account: () => `<div class="card"><div class="card-h"><div><h3>My account</h3><p>The KIDNOVA Super Admin account</p></div>${badge('Super Admin', 'navy')}</div>
+      <div class="card-b"><div class="who sa-me"><span class="avatar ph">${esc(initials(a.name))}</span><div><strong>${esc(a.name)}</strong><span>${esc(a.email)}</span></div></div>
+      <dl class="sa-dl"><div><dt>Role</dt><dd>Super Admin · all schools</dd></div><div><dt>Last login</dt><dd>${lastLogin ? esc(fmtStamp(lastLogin)) : '—'}</dd></div><div><dt>Support line</dt><dd>${esc(SUPPORT.show)}</dd></div></dl></div></div>
+      <div class="card mt"><div class="card-h"><div><h3>Change my password</h3><p>Use at least 8 characters. Other devices stay signed in until they log out.</p></div></div>
+      <form data-form="sa-password"><div class="card-b form-grid">
+        ${field('New password *', '<input class="input" type="password" name="pw1" minlength="8" required autocomplete="new-password">')}
+        ${field('Repeat new password *', '<input class="input" type="password" name="pw2" minlength="8" required autocomplete="new-password">')}
+      </div><div class="card-f"><button type="submit" class="btn primary">Change my password</button></div></form></div>`,
+    users: () => `<p class="muted small mb">Reset the password of any director, administrator or teacher, or suspend an account so it cannot log in. Share new passwords privately (phone or WhatsApp), never in a group.</p>${settingsUsersHtml()}`,
+    rules: () => `<div class="card"><div class="card-h"><div><h3>Platform rules</h3><p>How KIDNOVA protects school records</p></div></div><div class="card-b"><ul class="sa-rules">
+      <li><b>Current term:</b> only you can set or switch the current term and academic year. Terms never move to the next one by themselves, even after their closing date. The database refuses term changes from any other account.</li>
+      <li><b>Schools:</b> a school can use KIDNOVA only after you approve its registration.</li>
+      <li><b>Your dashboard:</b> you start on KIDNOVA Admin with no school open. A school opens only when you choose it, and closes when you return here.</li>
+      <li><b>Passwords:</b> you can reset anyone's password. Resetting signs that person out of their other devices.</li>
+      <li><b>Suspended accounts</b> cannot log in until you reactivate them.</li>
+      <li><b>Teachers</b> only record attendance, colour levels and conduct for their own classes. They never see report cards.</li></ul></div></div>`,
+  };
+  if (cur === 'users' && !ui.members) loadMembers();
+  return pageHead('Admin settings', 'Your KIDNOVA Super Admin account, every user account and the platform rules.')
+    + `<div class="split"><nav class="subnav" aria-label="Admin settings">${secs.map(([k, l]) => `<button type="button" class="${cur === k ? 'on' : ''}" data-action="plat-sec" data-sec="${k}">${l}</button>`).join('')}</nav>
+    <div style="min-width:0">${bodies[cur]()}</div></div>`;
+};
+ACTIONS['plat-sec'] = el => { ui.platSec = el.dataset.sec; render(); };
+FORMS['sa-password'] = async fd => {
+  requireSuper();
+  const pw1 = String(fd.get('pw1') || ''), pw2 = String(fd.get('pw2') || '');
+  if (pw1.length < 8) throw new AppError('Use at least 8 characters.');
+  if (pw1 !== pw2) throw new AppError('The two passwords do not match.');
+  const { error } = await sb.auth.updateUser({ password: pw1 });
+  if (error) throw new AppError(error.message);
+  toast('Your password was changed. Use it next time you log in.', 'ok', 6000);
+  render();
+  return true;
+};
+INPUTS['mem-q'] = el => { ui.memFilter = { ...(ui.memFilter || {}), q: el.value }; const pos = el.selectionStart; render(); const n = $('input[data-input="mem-q"]'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { /* ignore */ } } };
+CHANGES['mem-f'] = el => { ui.memFilter = { ...(ui.memFilter || {}), [el.dataset.k]: el.value }; render(); };
 
 /* ---------- 24. Authentication & startup ---------- */
 ACTIONS['sign-out'] = async () => {
@@ -5641,7 +5815,7 @@ async function showChooser(user) {
     bindOut();
     $$('.ch-card[data-id]', root).forEach(b => { b.onclick = () => { picked = b.dataset.id || ''; $$('.ch-card', root).forEach(x => x.classList.toggle('on', x === b)); }; });
     $('#chBack').onclick = step1;
-    $('#chGo').onclick = () => { history.replaceState(null, '', location.pathname + (picked ? '#dashboard' : (isSuper() ? '#schools' : '#dashboard'))); startApp(user, { schoolId: picked || null, welcome: true }); };
+    $('#chGo').onclick = () => { history.replaceState(null, '', location.pathname + (picked ? '#dashboard' : (isSuper() ? '#admin' : '#dashboard'))); startApp(user, { schoolId: picked || null, welcome: true }); };
   };
   step1();
 }
@@ -5686,7 +5860,7 @@ async function startApp(user, opts = {}) {
   ui.welcome = !!opts.welcome;
   if (opts.welcome) toast(`Welcome, ${currentAdmin().name.split(' ')[0].charAt(0) + currentAdmin().name.split(' ')[0].slice(1).toLowerCase()}! You are signed in as ${PROFILE_NAME[myRole] || myRole}.`, 'ok', 5000);
   if (setupNeeded() && (opts.welcome || !location.hash || location.hash === '#dashboard')) history.replaceState(null, '', location.pathname + '#setup');
-  if (!location.hash || ['#register', '#login', '#home'].includes(location.hash)) history.replaceState(null, '', location.pathname + (curSchool() ? '#dashboard' : isSuper() ? '#schools' : '#dashboard'));
+  if (!location.hash || ['#register', '#login', '#home'].includes(location.hash)) history.replaceState(null, '', location.pathname + (curSchool() ? '#dashboard' : isSuper() ? '#admin' : '#dashboard'));
   applyRoute();
   render();
 }

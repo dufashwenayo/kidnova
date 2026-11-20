@@ -591,3 +591,90 @@ end $$;
 revoke all on function public.kn_delete_school(text, text) from public, anon;
 grant execute on function public.kn_delete_school(text, text) to authenticated;
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v10: term lock + Super Admin platform overview. Safe to re-run.
+--   * Only the Super Admin can change which academic year / term is
+--     current (or completed). School users' saves that try to change a
+--     year or term status are refused, and they cannot add a term or
+--     year that is already current or completed.
+--   * kn_platform_overview(): one summary of every school for the
+--     Super Admin dashboard, without opening any school.
+-- ===================================================================
+create or replace function public.kn_status_changes(p_old jsonb, p_new jsonb) returns boolean
+language sql immutable as $$
+  select exists (
+    select 1 from jsonb_array_elements(coalesce(p_new, '[]'::jsonb)) n
+    left join jsonb_array_elements(coalesce(p_old, '[]'::jsonb)) o on o->>'id' = n->>'id'
+    where (o is null and coalesce(n->>'status', '') in ('Active', 'Completed', 'Closed'))
+       or (o is not null and (o->>'status') is distinct from (n->>'status'))
+  ) or exists (
+    select 1 from jsonb_array_elements(coalesce(p_old, '[]'::jsonb)) o
+    where o->>'status' = 'Active'
+      and not exists (select 1 from jsonb_array_elements(coalesce(p_new, '[]'::jsonb)) n where n->>'id' = o->>'id')
+  )
+$$;
+
+create or replace function public.kn_save(p_school text, p_data jsonb, p_rev bigint) returns bigint
+language plpgsql security definer set search_path = public as $$
+declare new_rev bigint; old_data jsonb; nm text := p_data #>> '{schools,0,name}'; rg text := p_data #>> '{schools,0,regNumber}';
+begin
+  if not public.kn_can_school(p_school) then raise exception 'No access to this school'; end if;
+  if public.kn_my_role() is distinct from 'super_admin' then
+    select data into old_data from public.kn_workspace where school_id = p_school;
+    if public.kn_status_changes(old_data->'terms', p_data->'terms')
+       or public.kn_status_changes(old_data->'academicYears', p_data->'academicYears') then
+      raise exception 'Only the KIDNOVA Super Admin can change the current term or academic year.';
+    end if;
+  end if;
+  update public.kn_workspace set data = p_data, rev = rev + 1, updated_at = now(), updated_by = auth.uid(),
+         school_name = coalesce(nm, school_name), reg_number = coalesce(rg, reg_number)
+   where school_id = p_school and rev = p_rev returning rev into new_rev;
+  if new_rev is null then raise exception 'KN_CONFLICT'; end if;
+  return new_rev;
+end $$;
+
+create or replace function public.kn_platform_overview() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare today text := to_char((now() at time zone 'Africa/Kigali')::date, 'YYYY-MM-DD');
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can see the platform overview'; end if;
+  return jsonb_build_object(
+    'today', today,
+    'schools', coalesce((select jsonb_agg(x order by x->>'name') from (
+      select jsonb_build_object(
+        'school_id', w.school_id, 'name', w.school_name, 'reg', w.reg_number, 'status', w.status,
+        'created_at', w.created_at, 'updated_at', w.updated_at, 'submitted_at', w.submitted_at,
+        'active', coalesce(w.data #>> '{schools,0,status}', 'Active'),
+        'setup_done', coalesce((w.data #>> '{schools,0,setup,done}')::boolean, false),
+        'learners', (select count(*) from jsonb_array_elements(coalesce(w.data->'students', '[]')) s where coalesce(s->>'status', 'Active') = 'Active'),
+        'girls', (select count(*) from jsonb_array_elements(coalesce(w.data->'students', '[]')) s where coalesce(s->>'status', 'Active') = 'Active' and s->>'gender' = 'Female'),
+        'teachers', (select count(*) from jsonb_array_elements(coalesce(w.data->'teachers', '[]')) t where coalesce(t->>'employmentStatus', 'Active') = 'Active'),
+        'classes', (select count(*) from jsonb_array_elements(coalesce(w.data->'classes', '[]'))),
+        'assessments', (select count(*) from jsonb_array_elements(coalesce(w.data->'assessments', '[]'))),
+        'year', (select y->>'name' from jsonb_array_elements(coalesce(w.data->'academicYears', '[]')) y where y->>'status' = 'Active' limit 1),
+        'term', (select jsonb_build_object('id', t->>'id', 'name', t->>'name', 'open', t->>'openDate', 'close', t->>'closeDate')
+                   from jsonb_array_elements(coalesce(w.data->'academicYears', '[]')) y
+                   join jsonb_array_elements(coalesce(w.data->'terms', '[]')) t on t->>'yearId' = y->>'id'
+                  where y->>'status' = 'Active' and t->>'status' = 'Active' limit 1),
+        'next_term', (select jsonb_build_object('name', t->>'name', 'open', t->>'openDate')
+                   from jsonb_array_elements(coalesce(w.data->'academicYears', '[]')) y
+                   join jsonb_array_elements(coalesce(w.data->'terms', '[]')) t on t->>'yearId' = y->>'id'
+                  where y->>'status' = 'Active' and t->>'status' = 'Upcoming' order by t->>'openDate' limit 1),
+        'registers_today', (select count(distinct a->>'classId') from jsonb_array_elements(coalesce(w.data->'attendance', '[]')) a where a->>'date' = today),
+        'last_activity', (w.data #>> '{activity,0,at}'),
+        'last_actor', (w.data #>> '{activity,0,actor}'),
+        'last_action', (w.data #>> '{activity,0,action}')
+      ) x from public.kn_workspace w) q), '[]'::jsonb),
+    'users', (select jsonb_build_object(
+        'total', count(*), 'directors', count(*) filter (where role = 'director'), 'admins', count(*) filter (where role = 'admin'),
+        'teachers', count(*) filter (where role = 'teacher'), 'suspended', count(*) filter (where suspended)) from public.kn_members),
+    'logins', coalesce((select jsonb_object_agg(m.user_id, u.last_sign_in_at) from public.kn_members m join auth.users u on u.id = m.user_id), '{}'::jsonb),
+    'open_links', (select count(*) from public.kn_invites where used_at is null and (expires_at is null or expires_at > now()))
+  );
+end $$;
+
+revoke all on function public.kn_platform_overview() from public, anon;
+grant execute on function public.kn_platform_overview() to authenticated;
+revoke all on function public.kn_status_changes(jsonb, jsonb) from public, anon;
+notify pgrst, 'reload schema';
