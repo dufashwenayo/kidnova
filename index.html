@@ -630,6 +630,12 @@ textarea.input{min-height:76px;resize:vertical}
 tr.is-suspended td{opacity:.6}
 /* ---------- Approval & setup wizard ---------- */
 .nav-badge{margin-left:auto;font-style:normal;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#e2472f;color:#fff;font-size:11.5px;font-weight:800;display:inline-grid;place-items:center}
+.del-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.del-grid div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:#fff}
+.del-grid b{display:block;font-size:20px;color:var(--bad)}
+.del-grid span{font-size:11.5px;color:var(--muted)}
+.del-list{margin:0;padding-left:18px;font-size:13px;max-height:160px;overflow-y:auto}
+@media (max-width:640px){.del-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .rev-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-bottom:12px}
 .rev-f span{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
 .rev-f .input.edited{background:#fff8e1;border-color:#f3a712}
@@ -4640,7 +4646,7 @@ VIEWS.schools = () => {
     return `<tr><td><strong>${esc(w.school_name)}</strong><span class="sub">${statusBadge(w)}${w.status === 'rejected' && w.review_note ? ` <span class="small muted">${esc(w.review_note)}</span>` : ''}</span></td><td class="nowrap">${esc(w.reg_number || '—')}</td>
       <td>${dir.length ? dir.map(d => `${esc(d.full_name || '')}<span class="sub">${esc(d.email)}</span>`).join('') : '<span class="muted">—</span>'}</td>
       <td class="nowrap">${fmtStamp(w.created_at)}</td>
-      <td class="r">${w.school_id === ws.schoolId ? '<span class="badge navy">Open</span>' : `<button type="button" class="btn xs primary" data-action="ws-open" data-id="${esc(w.school_id)}">Open</button>`}</td></tr>`;
+      <td class="r nowrap">${w.school_id === ws.schoolId ? '<span class="badge navy">Open</span>' : `<button type="button" class="btn xs primary" data-action="ws-open" data-id="${esc(w.school_id)}">Open</button>`} <button type="button" class="btn xs danger" data-action="school-delete" data-id="${esc(w.school_id)}" title="Delete this school and all its data">Delete</button></td></tr>`;
   }).join('');
   const invRows = invites.map(i => {
     const st = i.used_at ? 'Used' : i.expires_at < now ? 'Expired' : 'Waiting';
@@ -4743,6 +4749,58 @@ FORMS['school-reject'] = async (fd, arg) => {
   if (error) throw new AppError(error.message);
   toast('Sent back to the school with your note.', 'info', 5000);
   ui.schoolsData = null; render();
+  return true;
+};
+/* Permanently delete a school: records, links and every staff login (emails can be reused). */
+ACTIONS['school-delete'] = async el => {
+  requireSuper();
+  const w = ws.list.find(x => x.school_id === el.dataset.id); if (!w) return;
+  const [{ data: wsRow, error: e1 }, { data: mem, error: e2 }] = await Promise.all([
+    sb.from('kn_workspace').select('data').eq('school_id', w.school_id).maybeSingle(),
+    sb.from('kn_members').select('email, full_name, role').eq('school_id', w.school_id),
+  ]);
+  if (e1 || e2) throw new AppError('Could not load the school before deleting: ' + ((e1 || e2).message));
+  const d = (wsRow && wsRow.data) || {};
+  const cnt = k => (Array.isArray(d[k]) ? d[k].length : 0);
+  const logins = (mem || []).map(m => `<li><strong>${esc(m.email)}</strong> · ${esc(ROLE_NAME[m.role] || m.role)}${m.full_name ? ` (${esc(m.full_name)})` : ''}</li>`).join('');
+  ui.delBackup = { name: w.school_name, data: d };
+  openModal({ title: `Delete ${w.school_name}`, body: `<form class="modal-form" data-form="school-delete" data-arg="${esc(w.school_id)}"><div class="modal-b">
+    <div class="banner bad" style="margin-top:0"><span><strong>This cannot be undone.</strong> Everything below is removed for good, and these people can no longer log in.</span></div>
+    <div class="del-grid">
+      <div><b>${cnt('students')}</b><span>Learners</span></div><div><b>${cnt('teachers')}</b><span>Teachers</span></div>
+      <div><b>${cnt('assessments')}</b><span>Assessments</span></div><div><b>${cnt('results')}</b><span>Results</span></div>
+      <div><b>${cnt('attendance')}</b><span>Attendance records</span></div><div><b>${cnt('reportCards')}</b><span>Report cards</span></div>
+      <div><b>${cnt('discipline')}</b><span>Discipline records</span></div><div><b>${(mem || []).length}</b><span>Login accounts</span></div></div>
+    <h4 style="margin:14px 0 6px">Login accounts that will be deleted (emails become free to use again)</h4>
+    <ul class="del-list">${logins || '<li class="muted">No login accounts</li>'}</ul>
+    <p class="small muted" style="margin:12px 0">Registration links for this school are deleted too. Keep a copy first if you may need the records later.</p>
+    <button type="button" class="btn sm" data-action="school-delete-backup">⬇ Download a backup first</button>
+    <div class="mt">${field(`Type the school name to confirm: <strong>${esc(w.school_name)}</strong>`, `<input class="input" name="confirm" autocomplete="off" data-input="del-confirm" data-name="${esc(w.school_name)}" placeholder="${esc(w.school_name)}">`)}</div>
+    </div><div class="modal-f"><button type="button" class="btn" data-action="close-modal">Cancel</button><button type="submit" class="btn danger" id="delGo" disabled>Delete permanently</button></div></form>` });
+};
+INPUTS['del-confirm'] = el => { const b = $('#delGo'); if (b) b.disabled = el.value.trim().toLowerCase() !== el.dataset.name.trim().toLowerCase(); };
+ACTIONS['school-delete-backup'] = () => {
+  const bk = ui.delBackup; if (!bk) return;
+  const blob = new Blob([JSON.stringify(bk.data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `kidnova-${bk.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-backup-${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast('Backup downloaded.', 'ok');
+};
+FORMS['school-delete'] = async (fd, arg) => {
+  requireSuper();
+  const w = ws.list.find(x => x.school_id === arg); if (!w) throw new AppError('School not found.');
+  const typed = String(fd.get('confirm') || '');
+  if (typed.trim().toLowerCase() !== w.school_name.trim().toLowerCase()) throw new AppError('Type the school name exactly to confirm.');
+  const { data, error } = await sb.rpc('kn_delete_school', { p_school: arg, p_confirm_name: typed });
+  if (error) throw new AppError(error.message);
+  if (ws.schoolId === arg) await openWorkspace(null);
+  ui.delBackup = null; ui.schoolsData = null; ui.members = null;
+  await loadWorkspaceList().catch(() => {});
+  toast(`${w.school_name} was deleted with ${data && data.logins_deleted ? data.logins_deleted : 0} login account(s).`, 'info', 7000);
+  render();
   return true;
 };
 ACTIONS['invite-new'] = () => {

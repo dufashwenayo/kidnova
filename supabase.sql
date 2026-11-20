@@ -561,3 +561,33 @@ revoke all on function public.kn_suggest_edits(text, jsonb, text), public.kn_app
 grant execute on function public.kn_suggest_edits(text, jsonb, text), public.kn_approve_with_edits(text, jsonb) to authenticated;
 
 notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v9: Super Admin can delete a school completely: its records, its
+-- registration links and the login accounts (auth users) of all its
+-- staff, so their emails can be used again. Safe to re-run.
+-- ===================================================================
+create or replace function public.kn_delete_school(p_school text, p_confirm_name text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare w record; ids uuid[]; emails text[]; n_inv int;
+begin
+  if public.kn_my_role() is distinct from 'super_admin' then raise exception 'Only the Super Admin can delete a school'; end if;
+  select * into w from public.kn_workspace where school_id = p_school for update;
+  if w is null then raise exception 'School not found'; end if;
+  if lower(trim(coalesce(p_confirm_name, ''))) <> lower(trim(w.school_name)) then raise exception 'Type the school name exactly to confirm'; end if;
+  select coalesce(array_agg(user_id), '{}'), coalesce(array_agg(email order by email), '{}') into ids, emails
+    from public.kn_members where school_id = p_school and role <> 'super_admin';
+  delete from public.kn_invites where school_id = p_school;
+  get diagnostics n_inv = row_count;
+  delete from public.kn_members where school_id = p_school and role <> 'super_admin';
+  delete from public.kn_workspace where school_id = p_school;
+  if array_length(ids, 1) > 0 then
+    delete from auth.refresh_tokens where user_id = any (select unnest(ids)::text);
+    delete from auth.sessions where user_id = any (ids);
+    delete from auth.users where id = any (ids);
+  end if;
+  return jsonb_build_object('school', w.school_name, 'logins_deleted', coalesce(array_length(ids, 1), 0), 'emails', to_jsonb(emails), 'links_deleted', n_inv);
+end $$;
+revoke all on function public.kn_delete_school(text, text) from public, anon;
+grant execute on function public.kn_delete_school(text, text) to authenticated;
+notify pgrst, 'reload schema';
