@@ -510,6 +510,12 @@ textarea.input{min-height:76px;resize:vertical}
 .t-count{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12.5px}
 .t-count i{width:10px;height:10px;border-radius:50%;background:var(--c)}
 .t-list{display:flex;flex-direction:column;gap:10px}
+.t-learner.todo{border-color:#f2c46b;background:#fffaf0}
+.t-count.todo i{background:#f2c46b}
+.t-ok{margin:12px 0;padding:14px 16px;border-radius:16px;background:#e4f4eb;border:1px solid #9fd3b6;color:#145c3a}
+.t-ok strong{display:block;font-size:15px}
+.t-ok span{font-size:13px}
+.t-save .btn:disabled{opacity:1;background:#9db6cf;border-color:#9db6cf;box-shadow:none}
 .t-learner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:16px;background:#fff}
 .t-learner>.who{flex:1;min-width:150px}
 .t-status{display:flex;gap:6px}
@@ -1023,11 +1029,11 @@ const supportLinks = (cls = 'btn sm') => `<a class="${cls}" href="tel:${SUPPORT.
 const FEATURES = [
   ['attendance', 'Attendance', 'Take daily registers for their classes'],
   ['marks', 'Assessments & marks', 'Create assessments and record levels or marks'],
-  ['reports', 'Report cards', 'View and print report cards (no issuing)'],
 ];
 const FEATURE_NAME = Object.fromEntries(FEATURES.map(f => [f[0], f[1]]));
-const PAGE_FEATURE = { tattend: 'attendance', tmarks: 'marks', reports: 'reports' };
-const TEACHER_PAGES = ['thome', 'tattend', 'tmarks', 'reports'];
+const PAGE_FEATURE = { tattend: 'attendance', tmarks: 'marks' };
+/* Teachers never open learners' report cards or any other page. */
+const TEACHER_PAGES = ['thome', 'tattend', 'tmarks'];
 let myFeatures = [];
 let myTeacherId = null;
 /* Each class has its own colour across dashboards, chips and teacher screens. */
@@ -1044,7 +1050,7 @@ const visibleClasses = () => (myRole === 'teacher' ? classList().filter(c => tea
 function requireMyClass(classId) {
   if (myRole === 'teacher' && !teacherClassIds(myTeacher()).includes(classId)) throw new AppError('You can only record for the classes assigned to you.');
 }
-const can = f => (myRole === 'teacher' ? myFeatures.includes(f) : !!myRole);
+const can = f => (myRole === 'teacher' ? ['attendance', 'marks'].includes(f) && myFeatures.includes(f) : !!myRole);
 function requireFeature(f) { if (!can(f)) throw new AppError(`Your account does not have access to ${FEATURE_NAME[f] || f}. Ask your school director.`); }
 /* Which pages each role sees. School staff never see academic calendar tools; teachers only see their features. */
 function pageAllowed(page) {
@@ -1106,6 +1112,19 @@ function setSaveState(state) {
   if (!el) return;
   el.dataset.state = state;
   el.textContent = { saved: 'All changes saved', saving: 'Saving…', pending: 'Unsaved changes', error: 'Not saved — retrying' }[state] || '';
+}
+/* Serious saves (registers, marks, assessments) wait for the database and say clearly whether they worked. */
+async function confirmSaved(msg) {
+  clearTimeout(save.timer); save.timer = null;
+  const started = Date.now();
+  await flushSave();
+  while ((save.inFlight || save.timer || save.state === 'pending' || save.state === 'saving') && Date.now() - started < 20000) {
+    if (save.inFlight) await save.inFlight; else if (save.timer) { clearTimeout(save.timer); save.timer = null; await flushSave(); } else await new Promise(r => setTimeout(r, 150));
+  }
+  if (save.state !== 'saved') throw new AppError('NOT saved. Check the internet connection and press Save again.');
+  const at = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  toast(`✓ ${msg} · saved to KIDNOVA at ${at}`, 'ok', 6000);
+  return at;
 }
 async function flushSave() {
   clearTimeout(save.timer); save.timer = null;
@@ -1272,9 +1291,16 @@ document.addEventListener('submit', e => {
   e.preventDefault();
   const fn = FORMS[name];
   if (!fn) return;
+  const btns = Array.from(f.querySelectorAll('[type=submit]'));
+  if (btns.some(b => b.dataset.busy)) return;
+  btns.forEach(b => { b.dataset.busy = '1'; b.dataset.label = b.textContent; b.disabled = true; b.textContent = 'Saving…'; });
   run(async () => {
-    const ok = await fn(new FormData(f), f.dataset.arg || '', f);
-    if (ok === true) closeModal();
+    try {
+      const ok = await fn(new FormData(f), f.dataset.arg || '', f);
+      if (ok === true) closeModal();
+    } finally {
+      btns.forEach(b => { if (b.isConnected) { b.disabled = false; b.textContent = b.dataset.label; delete b.dataset.busy; } });
+    }
   });
 });
 document.addEventListener('click', e => {
@@ -1390,7 +1416,7 @@ function renderTabbar() {
   const tb = $('#tabbar');
   if (!tb) return;
   if (myRole !== 'teacher') { tb.innerHTML = ''; return; }
-  const tabs = [['thome', 'Home', 'dashboard'], ['tattend', 'Attendance', 'attendance'], ['tmarks', 'Marks', 'assessments'], ['reports', 'Reports', 'reports']].filter(([k]) => pageAllowed(k));
+  const tabs = [['thome', 'Home', 'dashboard'], ['tattend', 'Attendance', 'attendance'], ['tmarks', 'Marks', 'assessments']].filter(([k]) => pageAllowed(k));
   tb.innerHTML = tabs.map(([k, l, i]) => `<a href="#${k}" class="${ui.page === k ? 'on' : ''}">${icon(i)}<span>${l}</span></a>`).join('');
 }
 function renderChrome() {
@@ -2634,7 +2660,7 @@ function openAssessForm(id) {
     </div><p class="muted small mt">Term: <strong>${esc(term.name)}</strong> · ${esc(year.name)}. Competency assessments are rated Achieved, Developing or Not yet.</p>`,
   });
 }
-FORMS.assess = (fd, arg) => {
+FORMS.assess = async (fd, arg) => {
   requireFeature('marks');
   requireWritable();
   const a = arg ? byId('assessments', arg) : null;
@@ -2662,16 +2688,17 @@ FORMS.assess = (fd, arg) => {
     Object.assign(a, { name, classId, areaId, kind: area.kind, maxMarks, date });
     commit('Assessment updated', `${name} · ${classNameOf(classId)}`);
   } else {
-    const rec = { id: uid('asm'), schoolId: sid(), yearId: term.yearId, termId: term.id, classId, areaId, name, kind: area.kind, maxMarks, date, createdAt: nowISO() };
+    const rec = { id: uid('asm'), schoolId: sid(), yearId: term.yearId, termId: term.id, classId, areaId, name, kind: area.kind, maxMarks, date, createdAt: nowISO(), createdBy: currentAdmin().name };
     db.assessments.push(rec);
     ui.assessId = rec.id;
     commit('Assessment created', `${name} · ${classNameOf(classId)} · ${area.name}`);
+    await confirmSaved(`Assessment created: ${name}`);
   }
   ui.assessClassId = classId;
   ui.assessAreaId = areaId;
   return true;
 };
-FORMS.results = (fd, arg) => {
+FORMS.results = async (fd, arg) => {
   requireWritable();
   requireFeature('marks');
   const asm = byId('assessments', arg);
@@ -2704,9 +2731,14 @@ FORMS.results = (fd, arg) => {
     rec.rating = asm.kind === 'competency' ? (rating || null) : null;
     rec.comment = comment;
     rec.updatedAt = nowISO();
+    rec.updatedBy = currentAdmin().name;
     if (hasValue) saved += 1;
   });
   commit('Results saved', `${asm.name} · ${area ? area.name : ''} · ${classNameOf(asm.classId)} (${saved} learners)`);
+  const at = await confirmSaved(`Marks saved: ${asm.name}, ${saved} learner${saved === 1 ? '' : 's'}`);
+  ui.tSaved = { kind: 'marks', key: asm.id, at, n: saved };
+  render();
+  if (myRole === 'teacher') window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 INPUTS['mark-input'] = el => {
   const max = Number(el.dataset.max);
@@ -2784,7 +2816,7 @@ VIEWS.assessments = () => {
     const entered = db.results.filter(r => r.assessmentId === a.id && (a.kind === 'numerical' ? r.marks !== null : r.rating)).length;
     const pcts = a.kind === 'numerical' ? db.results.filter(r => r.assessmentId === a.id && r.marks !== null).map(r => ratio(r.marks, a.maxMarks)) : [];
     return `<tr style="${selected && selected.id === a.id ? 'background:var(--blue-soft)' : ''}">
-      <td class="nowrap">${fmtDate(a.date)}</td><td><strong>${esc(a.name)}</strong></td><td>${esc(area ? area.name : '—')}</td>
+      <td class="nowrap">${fmtDate(a.date)}</td><td><strong>${esc(a.name)}</strong>${a.createdBy ? `<span class="sub">by ${esc(a.createdBy.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' '))}</span>` : ''}</td><td>${esc(area ? area.name : '—')}</td>
       <td>${a.kind === 'numerical' ? badge('Marks', 'info') : badge('Colour levels', 'navy')}</td>
       <td class="r num">${a.kind === 'numerical' ? a.maxMarks : '—'}</td><td class="r num">${entered} / ${n}</td><td class="r num">${a.kind === 'numerical' ? fmtPct(avg(pcts)) : '—'}</td>
       <td class="r nowrap"><button type="button" class="btn xs ${c.canCorrect ? 'light' : ''}" data-action="assess-open" data-id="${a.id}">${c.readOnly ? (c.canCorrect ? 'Correct marks' : 'View results') : 'Enter results'}</button> ${c.readOnly ? '' : `<button type="button" class="btn xs" data-action="assess-edit" data-id="${a.id}">Edit</button> <button type="button" class="btn xs ghost" data-action="assess-delete" data-id="${a.id}">Delete</button>`}</td></tr>`;
@@ -2839,12 +2871,12 @@ function defaultAttDate() {
   while (!isWeekday(d)) d = addDays(d, -1);
   return d;
 }
-function buildAttDraft(classId, date) {
+function buildAttDraft(classId, date, blank = false) {
   const draft = {};
   studentsIn(classId).forEach(st => {
     if (st.admissionDate > date) return;
     const rec = db.attendance.find(a => a.studentId === st.id && a.date === date);
-    draft[st.id] = { status: rec ? rec.status : 'Present', reason: rec ? rec.reason || '' : '' };
+    draft[st.id] = { status: rec ? rec.status : (blank ? null : 'Present'), reason: rec ? rec.reason || '' : '' };
   });
   return draft;
 }
@@ -2970,7 +3002,7 @@ ACTIONS['att-all'] = el => {
 INPUTS['att-reason'] = el => { const d = ui.attDraft && ui.attDraft[el.dataset.id]; if (d) d.reason = el.value; };
 CHANGES['att-class'] = el => { ui.attClassId = el.value; ui.attDraft = null; render(); };
 CHANGES['att-date'] = el => { ui.attDate = el.value || defaultAttDate(); ui.attDraft = null; render(); };
-FORMS.attendance = () => {
+FORMS.attendance = async () => {
   requireWritable();
   requireFeature('attendance');
   const c = ctx();
@@ -2981,6 +3013,9 @@ FORMS.attendance = () => {
   if (!isWeekday(date)) throw new AppError('Registers are kept for school days (Monday to Friday).');
   if (date > todayISO()) throw new AppError('Attendance cannot be recorded for a future date.');
   if (date < c.term.openDate || date > c.term.closeDate) throw new AppError(`${fmtDate(date)} is outside ${c.term.name}.`);
+  /* Every learner must be ticked one by one before the register can be saved. */
+  const missing = Object.keys(ui.attDraft || {}).filter(id => !ui.attDraft[id].status).map(id => (byId('students', id) || {}).fullName).filter(Boolean);
+  if (missing.length) throw new AppError(`Tick every learner first. Not ticked yet: ${missing.slice(0, 4).join(', ')}${missing.length > 4 ? ` and ${missing.length - 4} more` : ''}.`);
   let n = 0;
   Object.keys(ui.attDraft || {}).forEach(stId => {
     const d = ui.attDraft[stId];
@@ -2989,6 +3024,10 @@ FORMS.attendance = () => {
     n += 1;
   });
   commit('Attendance saved', `${classNameOf(classId)} · ${fmtDate(date)} · ${n} learners`);
+  const at = await confirmSaved(`Register saved: ${classNameOf(classId)}, ${fmtDate(date)}`);
+  ui.tSaved = { kind: 'att', key: `${classId}|${date}`, at, n };
+  render();
+  if (myRole === 'teacher') window.scrollTo({ top: 0, behavior: 'smooth' });
   return undefined;
 };
 
@@ -3485,22 +3524,25 @@ VIEWS.tattend = () => {
   ui.viewYearId = ay.id; ui.viewTermId = tm.id;
   ui.attClassId = clsId; ui.attDate = date;
   const key = `${clsId}|${date}`;
-  if (!ui.attDraft || ui.attKey !== key) { ui.attDraft = buildAttDraft(clsId, date); ui.attKey = key; }
+  if (!ui.attDraft || ui.attKey !== key) { ui.attDraft = buildAttDraft(clsId, date, true); ui.attKey = key; }
   const cats = settingsOf().attendanceCategories;
   const saved = db.attendance.some(a => a.classId === clsId && a.date === date);
   const learners = studentsIn(clsId).filter(st => ui.attDraft[st.id]);
   const rows = learners.map(st => {
     const d = ui.attDraft[st.id];
-    return `<div class="t-learner" data-row="${st.id}">${who(st, esc(st.regNumber))}<div class="t-status">${cats.map(cat => `<button type="button" class="${d.status === cat.key ? 'on' : ''}" style="--c:${esc(cat.color)}" data-action="t-att" data-id="${st.id}" data-status="${esc(cat.key)}" title="${esc(cat.label)}"><b>${esc(cat.label.charAt(0))}</b><small>${esc(cat.label)}</small></button>`).join('')}</div></div>`;
+    return `<div class="t-learner ${d.status ? '' : 'todo'}" data-row="${st.id}">${who(st, esc(st.regNumber))}<div class="t-status">${cats.map(cat => `<button type="button" class="${d.status === cat.key ? 'on' : ''}" style="--c:${esc(cat.color)}" data-action="t-att" data-id="${st.id}" data-status="${esc(cat.key)}" title="${esc(cat.label)}"><b>${esc(cat.label.charAt(0))}</b><small>${esc(cat.label)}</small></button>`).join('')}</div></div>`;
   }).join('');
-  const counts = cats.map(cat => `<span class="t-count" style="--c:${esc(cat.color)}"><i></i>${esc(cat.label)} <strong data-count="${esc(cat.key)}">${learners.filter(st => ui.attDraft[st.id].status === cat.key).length}</strong></span>`).join('');
+  const ticked = learners.filter(st => ui.attDraft[st.id].status).length;
+  const counts = cats.map(cat => `<span class="t-count" style="--c:${esc(cat.color)}"><i></i>${esc(cat.label)} <strong data-count="${esc(cat.key)}">${learners.filter(st => ui.attDraft[st.id].status === cat.key).length}</strong></span>`).join('')
+    + `<span class="t-count todo"><i></i>Not ticked <strong data-count="__todo">${learners.length - ticked}</strong></span>`;
+  const justSaved = ui.tSaved && ui.tSaved.kind === 'att' && ui.tSaved.key === key ? ui.tSaved : null;
   return head + `<div class="t-bar"><label class="t-date">${icon('years')}<input type="date" value="${date}" min="${tm.openDate}" max="${todayISO() < tm.closeDate ? todayISO() : tm.closeDate}" data-change="t-date" aria-label="Register date"></label>
-      <button type="button" class="btn sm" data-action="t-all">All present</button></div>
+</div>
     ${!isWeekday(date) ? '<div class="banner warn mt"><span>Registers are kept for school days. Choose a weekday.</span></div>' : ''}
-    ${saved ? '<div class="banner info mt"><span>This register was already saved. Saving again updates it.</span></div>' : ''}
+    ${justSaved ? `<div class="t-ok"><strong>✓ Register saved to KIDNOVA at ${esc(justSaved.at)}</strong><span>${justSaved.n} learners recorded. The school can see it under Attendance.</span></div>` : saved ? '<div class="banner info mt"><span>This register is already saved. Change a tick and save again to update it.</span></div>' : '<div class="banner warn mt"><span>Tick every learner one by one: <strong>P</strong> present, <strong>L</strong> late, <strong>A</strong> absent, <strong>E</strong> excused. Then save.</span></div>'}
     <div class="t-counts">${counts}</div>
     <form data-form="attendance"><div class="t-list">${rows || emptyState('No learners in this class', 'The school registers learners; they appear here automatically.')}</div>
-    ${rows ? `<div class="t-save"><button type="submit" class="btn primary">Save register · ${learners.length} learners</button></div>` : ''}</form>`;
+    ${rows ? `<div class="t-save"><button type="submit" class="btn primary" id="tAttSave" ${ticked < learners.length ? 'disabled' : ''}>${ticked < learners.length ? `Tick all learners · ${ticked} of ${learners.length}` : `Save register · ${learners.length} learners`}</button></div>` : ''}</form>`;
 };
 VIEWS.tmarks = () => {
   const c = ctx();
@@ -3541,15 +3583,16 @@ VIEWS.tmarks = () => {
       : `<div class="lv-pick t-lv" role="radiogroup" aria-label="Level for ${esc(st.fullName)}">${LEVELS.map(l => `<label class="lv" style="--c:${l.color}" title="${esc(l.label)}"><input type="radio" name="r_${st.id}" value="${l.key}" ${r.rating === l.key || (r.rating && !LEVEL_BY_KEY[r.rating] && RATING_PCT[r.rating] === l.pct) ? 'checked' : ''} ${readOnly ? 'disabled' : ''}><span>${l.code}<small>${esc(l.label)}</small></span></label>`).join('')}<label class="lv none" title="Not rated"><input type="radio" name="r_${st.id}" value="" ${r.rating ? '' : 'checked'} ${readOnly ? 'disabled' : ''}><span>—</span></label></div>`;
     return `<div class="t-learner t-learner-m">${who(st, esc(st.regNumber))}${input}<input class="input t-comment" name="c_${st.id}" value="${esc(r.comment || '')}" maxlength="160" placeholder="Comment (optional)" ${readOnly ? 'disabled' : ''}></div>`;
   }).join('');
-  return head + `<div class="t-asm-head"><button type="button" class="btn sm" data-action="t-asm-back">← Back</button><div><strong>${esc(asm.name)} · ${esc(area.name)}</strong><span>${fmtDate(asm.date)} · ${esc(classNameOf(clsId))} · ${asm.kind === 'numerical' ? `out of ${asm.maxMarks}` : 'tap a colour'}</span></div></div>
+  const marksSaved = ui.tSaved && ui.tSaved.kind === 'marks' && ui.tSaved.key === asm.id ? ui.tSaved : null;
+  return head + `${marksSaved ? `<div class="t-ok"><strong>✓ Marks saved to KIDNOVA at ${esc(marksSaved.at)}</strong><span>${marksSaved.n} learner${marksSaved.n === 1 ? '' : 's'} recorded. The school sees this under Assessments.</span></div>` : ''}<div class="t-asm-head"><button type="button" class="btn sm" data-action="t-asm-back">← Back</button><div><strong>${esc(asm.name)} · ${esc(area.name)}</strong><span>${fmtDate(asm.date)} · ${esc(classNameOf(clsId))} · ${asm.kind === 'numerical' ? `out of ${asm.maxMarks}` : 'tap a colour'}</span></div></div>
     ${asm.kind === 'numerical' ? '' : `<div class="t-key">${LEVELS.map(l => `<span><i style="background:${l.color}"></i>${l.code} ${esc(l.label)}</span>`).join('')}</div>`}
     <form data-form="results" data-arg="${asm.id}"><div class="t-list">${rows || emptyState('No learners in this class', '')}</div>
     ${rows && !readOnly ? '<div class="t-save"><button type="submit" class="btn primary">Save marks</button></div>' : ''}</form>`;
 };
 ACTIONS['t-go'] = el => { ui.tClass = el.dataset.id; ui.assessId = null; go(el.dataset.page); };
-ACTIONS['t-class'] = el => { ui.tClass = el.dataset.id; ui.tArea = null; ui.assessId = null; ui.attDraft = null; render(); };
+ACTIONS['t-class'] = el => { ui.tClass = el.dataset.id; ui.tArea = null; ui.assessId = null; ui.attDraft = null; ui.tSaved = null; render(); };
 ACTIONS['t-term'] = el => { ui.viewTermId = el.dataset.id; ui.assessId = null; render(); };
-ACTIONS['t-asm'] = el => { ui.assessId = el.dataset.id; render(); window.scrollTo(0, 0); };
+ACTIONS['t-asm'] = el => { ui.assessId = el.dataset.id; ui.tSaved = null; render(); window.scrollTo(0, 0); };
 ACTIONS['t-asm-back'] = () => { ui.assessId = null; render(); };
 ACTIONS['t-all'] = () => { Object.values(ui.attDraft || {}).forEach(d => { d.status = 'Present'; d.reason = ''; }); render(); };
 ACTIONS['t-att'] = el => {
@@ -3559,7 +3602,13 @@ ACTIONS['t-att'] = el => {
   if (d.status === 'Present') d.reason = '';
   const row = el.closest('.t-learner');
   $$('button', row).forEach(b => b.classList.toggle('on', b === el));
+  row.classList.remove('todo');
   settingsOf().attendanceCategories.forEach(cat => { const n = $(`[data-count="${cat.key}"]`); if (n) n.textContent = Object.values(ui.attDraft).filter(x => x.status === cat.key).length; });
+  const all = Object.values(ui.attDraft), done = all.filter(x => x.status).length;
+  const todo = $('[data-count="__todo"]'); if (todo) todo.textContent = all.length - done;
+  const btn = $('#tAttSave');
+  if (btn && !btn.dataset.busy) { btn.disabled = done < all.length; btn.textContent = done < all.length ? `Tick all learners · ${done} of ${all.length}` : `Save register · ${all.length} learners`; }
+  ui.tSaved = null;
 };
 CHANGES['t-date'] = el => { ui.tDate = el.value; ui.attDraft = null; render(); };
 CHANGES['t-area'] = el => { ui.tArea = el.value; ui.assessId = null; render(); };

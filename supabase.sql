@@ -29,7 +29,7 @@ alter table public.kn_members drop constraint if exists kn_members_role_check;
 alter table public.kn_members drop constraint if exists kn_members_check;
 alter table public.kn_members drop constraint if exists kn_members_scope_check;
 delete from public.kn_members where role <> 'super_admin' and school_id is null;
-alter table public.kn_members add constraint kn_members_role_check check (role in ('super_admin', 'director', 'admin'));
+alter table public.kn_members add constraint kn_members_role_check check (role in ('super_admin', 'director', 'admin', 'teacher'));
 alter table public.kn_members add constraint kn_members_scope_check check ((role = 'super_admin') = (school_id is null));
 
 create table if not exists public.kn_workspace (
@@ -334,5 +334,38 @@ end $$;
 
 revoke all on function public.kn_reset_password(uuid, text), public.kn_set_suspended(uuid, boolean) from public, anon;
 grant execute on function public.kn_reset_password(uuid, text), public.kn_set_suspended(uuid, boolean) to authenticated;
+
+notify pgrst, 'reload schema';
+
+-- ===================================================================
+-- v5: teachers can only ever have attendance and marks (never report
+-- cards or learner records). Safe to re-run.
+-- ===================================================================
+create or replace function public.kn_teacher_features(p text[]) returns text[]
+language sql immutable as $$
+  select coalesce(array(select distinct f from unnest(coalesce(p, '{}')) f where f in ('attendance', 'marks') order by f), '{}')
+$$;
+update public.kn_members set features = public.kn_teacher_features(features) where role = 'teacher';
+update public.kn_members set features = '{}' where role <> 'teacher' and features <> '{}';
+
+create or replace function public.kn_set_features(p_user uuid, p_features text[]) returns void
+language plpgsql security definer set search_path = public as $$
+declare m record; me text := public.kn_my_role(); my_school text := public.kn_my_school();
+begin
+  select * into m from public.kn_members where user_id = p_user;
+  if m is null or m.role <> 'teacher' then raise exception 'Only teacher accounts have feature permissions'; end if;
+  if not (me = 'super_admin' or (me in ('director', 'admin') and m.school_id = my_school)) then raise exception 'Not allowed'; end if;
+  update public.kn_members set features = public.kn_teacher_features(p_features) where user_id = p_user;
+end $$;
+
+drop trigger if exists kn_members_teacher_features on public.kn_members;
+create or replace function public.kn_members_clean_features() returns trigger
+language plpgsql as $$
+begin
+  new.features := case when new.role = 'teacher' then public.kn_teacher_features(new.features) else '{}' end;
+  return new;
+end $$;
+create trigger kn_members_teacher_features before insert or update on public.kn_members
+  for each row execute function public.kn_members_clean_features();
 
 notify pgrst, 'reload schema';
