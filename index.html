@@ -3343,7 +3343,7 @@ function reportSheetHtml(snap, o = {}) {
   const hasConduct = terms.some(t => t && t.conduct);
   const rowCount = snap.areas.length + new Set(snap.areas.map(r => r.group || '')).size + (hasConduct ? 2 : 0);
   const conductRows = hasConduct ? `<tr class="rw-grp"><td colspan="13">DISCIPLINE AND CONDUCT</td></tr><tr><td class="rw-area">Conduct and behaviour</td>${cols.map(t => bands.map(b => { const hit = t && !t.pending && t.conduct && t.conduct.code === b.code; return `<td class="rw-c${hit ? ' on' : ''}" style="--c:${esc(b.color)}">${hit ? '✓' : ''}</td>`; }).join('')).join('')}</tr>` : '';
-  const density = rowCount > 40 ? ' xdense' : rowCount > 27 ? ' dense' : '';
+  const density = rowCount > 40 ? ' xdense' : rowCount > 24 ? ' dense' : '';
   return `<article class="report-sheet rw${density}">
     <header class="rw-head">
       <div class="rw-id">
