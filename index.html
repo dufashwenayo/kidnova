@@ -631,6 +631,101 @@ textarea.input{min-height:76px;resize:vertical}
   .t-out{padding:3px}
 }
 tr.is-suspended td{opacity:.6}
+/* ---------- Teacher app redesign ---------- */
+.teacher-mode{background:#f2f5fa}
+.teacher-mode .topbar{background:linear-gradient(120deg,#0b4f8a,#0b6cb5 60%,#1b8ad6);border-bottom:0;box-shadow:0 6px 18px rgba(11,79,138,.22)}
+.th-top .t-top-txt strong{color:#fff}
+.th-top .t-top-txt span{color:#cfe4f7}
+.th-top .kn-mark{background:#fff;border-radius:11px;padding:2px}
+.th-top .t-out{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25);color:#fff}
+.th-top .t-out .avatar{background:#fff;color:#0b6cb5}
+.th-hero{border-radius:24px;padding:18px;color:#fff;background:radial-gradient(circle at 90% 0%,rgba(255,255,255,.28),transparent 45%),linear-gradient(135deg,#6a4cf0,#2f80ed 55%,#12a5a5);box-shadow:0 14px 30px rgba(47,128,237,.28)}
+.th-hero-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.th-hero span{font-size:12.5px;opacity:.92}
+.th-hero h2{color:#fff;font-size:23px;margin:3px 0 2px}
+.th-hero p{font-size:13px;opacity:.92}
+.th-wave{width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-weight:800;font-size:15px;opacity:1!important}
+.th-pills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.th-pills div{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:9px 10px}
+.th-pills b{display:block;font-size:20px;line-height:1.1}
+.th-pills span{font-size:11px;opacity:.95}
+.th-card{margin-top:14px;background:#fff;border-radius:20px;padding:14px;border:1px solid var(--line);box-shadow:0 4px 14px rgba(16,40,80,.05)}
+.th-card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.th-card-h h3{font-size:16px}
+.th-card-h span{font-size:12px;font-weight:700;color:var(--muted);background:var(--line-soft);padding:3px 10px;border-radius:999px}
+.th-tasks{display:flex;flex-direction:column;gap:8px}
+.th-task{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:#fbfcfe;border-radius:14px;padding:10px 12px}
+.th-task strong{display:block;font-size:14.5px;color:var(--navy-deep)}
+.th-task small{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:2px}
+.th-task>span:nth-child(2){flex:1;min-width:0}
+.th-task i{font-style:normal;font-size:22px;color:var(--faint)}
+.th-ti{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:color-mix(in srgb,var(--c) 16%,#fff)}
+.th-done{display:flex;gap:12px;align-items:center;padding:8px 4px}
+.th-done b{font-size:28px}
+.th-done strong{display:block}
+.th-done span{font-size:13px;color:var(--muted)}
+.th-qas{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:10px;margin-top:14px}
+.th-qa{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;border-radius:18px;border:0;background:#fff;box-shadow:0 4px 14px rgba(16,40,80,.06);font-weight:700;font-size:13px;color:var(--navy-deep)}
+.th-qa svg{width:44px;height:44px;padding:10px;border-radius:14px;background:var(--c);color:#fff;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;box-shadow:0 6px 14px color-mix(in srgb,var(--c) 40%,transparent)}
+.th-sec{display:flex;align-items:center;gap:8px;margin:20px 2px 10px}
+.th-sec h3{font-size:16px}
+.th-sec span{font-size:12px;font-weight:700;background:var(--navy);color:#fff;border-radius:999px;padding:1px 8px}
+.th-classes{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.th-class{flex:0 0 min(78%,300px);scroll-snap-align:start;border-radius:20px;padding:14px;color:#fff;background:linear-gradient(150deg,var(--c),color-mix(in srgb,var(--c) 66%,#000));box-shadow:0 10px 22px color-mix(in srgb,var(--c) 28%,transparent)}
+.th-class-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.th-class-h h4{color:#fff;font-size:18px}
+.th-class-h span{font-size:12px;opacity:.92}
+.th-badge{background:rgba(0,0,0,.18);border-radius:999px;padding:4px 9px;font-size:11px!important;font-weight:700;white-space:nowrap;opacity:1!important}
+.th-badge.ok{background:rgba(255,255,255,.25)}
+.th-prog{margin:12px 0}
+.th-prog div{display:flex;justify-content:space-between;font-size:12px}
+.th-prog i{display:block;height:8px;border-radius:99px;background:rgba(255,255,255,.25);margin:5px 0;overflow:hidden}
+.th-prog em{display:block;height:100%;background:#fff;border-radius:99px}
+.th-prog small{font-size:11px;opacity:.9}
+.th-class-a{display:flex;gap:8px}
+.th-class-a button{flex:1;border:0;border-radius:12px;padding:10px;background:#fff;color:color-mix(in srgb,var(--c) 78%,#000);font-weight:700;font-size:13.5px}
+.th-recent{list-style:none;margin:0;padding:0}
+.th-recent li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line-soft)}
+.th-recent li:last-child{border-bottom:0}
+.th-recent strong{display:block;font-size:13.5px}
+.th-recent small{font-size:12px;color:var(--muted)}
+.th-dot{flex:none;width:10px;height:10px;border-radius:50%;background:#21a04a;margin-top:5px}
+.th-help{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#eaf3fc,#fff);border:1px solid var(--blue-line)}
+.th-help strong{display:block}
+.th-help span{font-size:12px;color:var(--muted)}
+.th-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:2px 0 14px}
+.th-strip div{background:#fff;border-radius:14px;padding:10px 8px;border:1px solid var(--line);border-top:3px solid var(--c);text-align:center}
+.th-strip b{display:block;font-size:19px;color:var(--navy-deep);line-height:1.15}
+.th-strip span{font-size:10.5px;color:var(--muted);font-weight:600;line-height:1.2;display:block}
+.t-filter.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.th-asm{border-left:5px solid var(--c)}
+.th-grp{font-size:11px;color:var(--muted);margin-left:4px}
+.th-bar{display:block;height:6px;border-radius:99px;background:var(--line-soft);margin-top:8px;overflow:hidden;width:100%}
+.th-bar em{display:block;height:100%;border-radius:99px}
+.th-more{width:100%;margin-top:4px}
+.th-entry-h{display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;color:#fff;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 66%,#000));margin-bottom:10px}
+.th-entry-h span{display:block;font-size:12px;opacity:.9}
+.th-entry-h strong{display:block;font-size:17px;margin:2px 0 6px;line-height:1.25}
+.th-entry-h .cls-chip{background:rgba(255,255,255,.25);display:inline-flex}
+.th-back{flex:none;width:40px;height:40px;border-radius:12px;border:0;background:rgba(255,255,255,.2);color:#fff;font-size:24px;line-height:1}
+.th-rate-bar{position:sticky;top:64px;z-index:6;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin-bottom:10px;box-shadow:0 6px 16px rgba(16,40,80,.08)}
+.th-rate-top{display:flex;align-items:center;gap:10px}
+.th-rate-top span{font-size:13px;font-weight:700;white-space:nowrap}
+.th-rate-top i{flex:1;height:8px;border-radius:99px;background:var(--line-soft);overflow:hidden}
+.th-rate-top em{display:block;height:100%;background:linear-gradient(90deg,#21a04a,#2a9fd8);border-radius:99px;transition:width .2s}
+.th-setall{display:flex;align-items:center;gap:6px;margin-top:8px}
+.th-setall span{font-size:12px;color:var(--muted);margin-right:auto}
+.th-setall button{width:38px;height:32px;border:0;border-radius:9px;background:var(--c);color:#fff;font-weight:800}
+.teacher-mode .tabbar{border-radius:22px 22px 0 0}
+.teacher-mode .tabbar a.on{background:var(--navy);color:#fff}
+.teacher-mode .tabbar a.on svg{stroke:#fff}
+.teacher-mode .t-head h2{font-size:24px}
+.teacher-mode .t-learner{border-radius:18px;box-shadow:0 3px 10px rgba(16,40,80,.04)}
+@media (max-width:640px){
+  .t-filter.three{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .t-filter.three input{grid-column:1/-1}
+  .th-strip b{font-size:17px}
+}
 /* ---------- Approval & setup wizard ---------- */
 .nav-badge{margin-left:auto;font-style:normal;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#e2472f;color:#fff;font-size:11.5px;font-weight:800;display:inline-grid;place-items:center}
 .del-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
@@ -1585,7 +1680,7 @@ function renderTopbar() {
   const switchBtn = sc && ay && isSuper() ? `<button type="button" class="btn primary sm" data-action="open-switch-term">Switch term</button>` : '';
   const a = currentAdmin();
   if (myRole === 'teacher') {
-    $('#topbar').innerHTML = `<div class="t-top"><span class="kn-mark">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgT')}</span><div class="t-top-txt"><strong>${esc(sc ? sc.name : 'KIDNOVA')}</strong><span>${tm ? `${esc(tm.name)} · ${esc(ay.name)}` : 'No current term'}</span></div>
+    $('#topbar').innerHTML = `<div class="t-top th-top"><span class="kn-mark">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgT')}</span><div class="t-top-txt"><strong>${esc(sc ? sc.name : 'KIDNOVA')}</strong><span>${tm ? `${esc(tm.name)} · ${esc(ay.name)}` : 'No current term'}</span></div>
       <button type="button" class="t-out" data-action="sign-out" title="Sign out ${esc(a.email)}"><span class="avatar ph">${esc(initials(a.name))}</span><span class="t-out-l">Sign out</span></button></div>`;
     return;
   }
@@ -2959,7 +3054,7 @@ FORMS.results = async (fd, arg) => {
     if (hasValue) saved += 1;
   });
   commit('Results saved', `${asm.name} · ${area ? area.name : ''} · ${classNameOf(asm.classId)} (${saved} learners)`);
-  const at = await confirmSaved(`Marks saved: ${asm.name}, ${saved} learner${saved === 1 ? '' : 's'}`);
+  const at = await confirmSaved(`Levels saved: ${asm.name}, ${saved} learner${saved === 1 ? '' : 's'}`);
   ui.tSaved = { kind: 'marks', key: asm.id, at, n: saved };
   render();
   if (myRole === 'teacher') window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3848,35 +3943,66 @@ function tClassId() {
 }
 const tClassChips = act => `<div class="t-chips">${visibleClasses().map(cl => `<button type="button" class="t-chip ${cl.id === ui.tClass ? 'on' : ''}" style="--c:${classColor(cl)}" data-action="${act}" data-id="${cl.id}">${esc(cl.name)} <small>${studentsIn(cl.id).length}</small></button>`).join('')}</div>`;
 const tNoClass = () => `<div class="t-empty"><span class="kn-mark big">${$('.brand .kn-mark').innerHTML.replace(/kgA/g, 'kgN')}</span><h3>No class assigned yet</h3><p>Ask your school director to assign your classes in KIDNOVA. Then they appear here.</p><div class="row" style="justify-content:center">${supportLinks('btn sm')}</div></div>`;
+/* Assessments in the teacher's classes this term that still have learners without a level. */
+function tToRate(cls, term) {
+  if (!term) return [];
+  const ids = cls.map(c => c.id);
+  return S('assessments').filter(a => ids.includes(a.classId) && a.termId === term.id).map(a => {
+    const n = studentsIn(a.classId).length;
+    const got = db.results.filter(r => r.assessmentId === a.id && !!r.rating).length;
+    return { a, n, left: Math.max(0, n - got) };
+  }).filter(x => x.left > 0).sort((x, y) => (x.a.date < y.a.date ? 1 : -1));
+}
 VIEWS.thome = () => {
   const t = myTeacher();
   const c = ctx();
   const cls = visibleClasses();
   const name = t ? t.fullName.split(/\s+/)[0] : currentAdmin().name;
+  const nice = name.charAt(0) + name.slice(1).toLowerCase();
   const today = todayISO();
   const hour = new Date().getHours();
   const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  if (!cls.length) return `<section class="th-hero"><span>${esc(longDate(today))}</span><h2>${greet}, ${esc(nice)} 👋</h2><p>Welcome to KIDNOVA</p></section>${tNoClass()}`;
+  const missing = can('attendance') ? registersMissingToday(cls) : [];
+  const rate = can('marks') ? tToRate(cls, c.term) : [];
+  const leftTotal = rate.reduce((m, x) => m + x.left, 0);
+  const absentToday = db.attendance.filter(a => cls.some(cl => cl.id === a.classId) && a.date === today && a.status === 'Absent').length;
+  const takenToday = cls.filter(cl => db.attendance.some(a => a.classId === cl.id && a.date === today)).length;
+  const hero = `<section class="th-hero"><div class="th-hero-top"><div><span>${esc(longDate(today))}</span><h2>${greet}, ${esc(nice)} 👋</h2><p>${c.term ? `${esc(c.term.name)} · ${esc(c.year.name)}` : 'No current term yet'}</p></div><span class="th-wave">${esc(initials(t ? t.fullName : name))}</span></div>
+    <div class="th-pills">${can('attendance') ? `<div><b>${takenToday}/${cls.length}</b><span>Registers today</span></div>` : ''}${can('marks') ? `<div><b>${leftTotal}</b><span>Levels to give</span></div>` : ''}<div><b>${absentToday}</b><span>Absent today</span></div></div></section>`;
+  const tasks = [];
+  missing.forEach(cl => tasks.push(`<button type="button" class="th-task" data-action="t-go" data-page="tattend" data-id="${cl.id}"><span class="th-ti" style="--c:#f3a712">⏰</span><span><strong>Take attendance</strong><small>${classChip(cl)} · ${studentsIn(cl.id).length} learners</small></span><i>›</i></button>`));
+  rate.slice(0, 3).forEach(x => tasks.push(`<button type="button" class="th-task" data-action="t-open-asm" data-id="${x.a.id}"><span class="th-ti" style="--c:#2a9fd8">🎨</span><span><strong>Rate ${x.left} learner${x.left === 1 ? '' : 's'}</strong><small>${esc((byId('learningAreas', x.a.areaId) || {}).name || x.a.name)} · ${classChip(byId('classes', x.a.classId))}</small></span><i>›</i></button>`));
+  if (rate.length > 3) tasks.push(`<button type="button" class="th-task more" data-action="t-marks-tab"><span class="th-ti" style="--c:#8e5cf0">＋</span><span><strong>${rate.length - 3} more assessment${rate.length - 3 === 1 ? '' : 's'} to finish</strong><small>Open Assess</small></span><i>›</i></button>`);
+  const todayCard = `<section class="th-card"><div class="th-card-h"><h3>Today</h3><span>${tasks.length ? `${tasks.length} to do` : 'All done'}</span></div>${tasks.length ? `<div class="th-tasks">${tasks.join('')}</div>` : '<div class="th-done"><b>🎉</b><div><strong>Everything is up to date</strong><span>Registers taken and every assessment rated.</span></div></div>'}</section>`;
+  const qa = [
+    can('attendance') ? `<button type="button" class="th-qa" style="--c:#21a04a" data-action="t-go" data-page="tattend" data-id="${(missing[0] || cls[0]).id}">${icon('attendance')}<span>Take attendance</span></button>` : '',
+    can('marks') ? `<button type="button" class="th-qa" style="--c:#2a9fd8" data-action="t-quick-asm">${icon('assessments')}<span>New assessment</span></button>` : '',
+    can('discipline') ? `<button type="button" class="th-qa" style="--c:#8e5cf0" data-action="disc-new">${icon('discipline')}<span>Conduct note</span></button>` : '',
+  ].filter(Boolean).join('');
   const regDate = defaultAttDate();
-  const cards = cls.map(cl => {
+  const classCards = cls.map(cl => {
     const n = studentsIn(cl.id).length;
     const taken = db.attendance.some(a => a.classId === cl.id && a.date === regDate);
     const asms = c.term ? S('assessments').filter(a => a.classId === cl.id && a.termId === c.term.id) : [];
-    const entered = asms.reduce((m, a) => m + db.results.filter(r => r.assessmentId === a.id && (a.kind === 'numerical' ? r.marks !== null : !!r.rating)).length, 0);
-    const expected = asms.length * n;
-    const lead = classAssignment(cl.id) && t && classAssignment(cl.id).teacherId === t.id;
-    return `<article class="t-class" style="--c:${classColor(cl)}">
-      <div class="t-class-h"><div><h3>${esc(cl.name)}</h3><span>${n} learner${n === 1 ? '' : 's'}${lead ? ' · Class teacher' : ''}</span></div><span class="t-class-badge">${esc(cl.code || cl.name.slice(0, 3).toUpperCase())}</span></div>
-      <div class="t-class-stats"><div><strong>${taken ? '✓ Taken' : 'Not yet'}</strong><span>Register ${regDate === today ? 'today' : fmtDate(regDate)}</span></div><div><strong>${asms.length}</strong><span>Assessments</span></div><div><strong>${expected ? Math.round((entered / expected) * 100) + '%' : '—'}</strong><span>Marks entered</span></div></div>
-      <div class="t-class-a">${can('attendance') ? `<button type="button" class="btn" data-action="t-go" data-page="tattend" data-id="${cl.id}">${icon('attendance')} Attendance</button>` : ''}${can('marks') ? `<button type="button" class="btn" data-action="t-go" data-page="tmarks" data-id="${cl.id}">${icon('assessments')} Marks</button>` : ''}</div>
-    </article>`;
+    const got = asms.reduce((m, a) => m + db.results.filter(r => r.assessmentId === a.id && !!r.rating).length, 0);
+    const pct = asms.length && n ? Math.round((got / (asms.length * n)) * 100) : 0;
+    const lead = t && classAssignment(cl.id) && classAssignment(cl.id).teacherId === t.id;
+    return `<article class="th-class" style="--c:${classColor(cl)}"><div class="th-class-h"><div><h4>${esc(cl.name)}</h4><span>${n} learners${lead ? ' · ★ class teacher' : ''}</span></div><span class="th-badge ${taken ? 'ok' : ''}">${taken ? '✓ Register' : 'No register'}</span></div>
+      <div class="th-prog"><div><span>Levels given</span><b>${pct}%</b></div><i><em style="width:${pct}%"></em></i><small>${asms.length} assessments this term</small></div>
+      <div class="th-class-a">${can('attendance') ? `<button type="button" data-action="t-go" data-page="tattend" data-id="${cl.id}">Attendance</button>` : ''}${can('marks') ? `<button type="button" data-action="t-go" data-page="tmarks" data-id="${cl.id}">Assess</button>` : ''}</div></article>`;
   }).join('');
-  const missingToday = can('attendance') ? registersMissingToday(cls) : [];
-  const reminder = missingToday.length ? `<div class="t-remind"><div><strong>⏰ Attendance not taken today</strong><span>${missingToday.map(cl => classChip(cl)).join(' ')}</span></div><button type="button" class="btn" data-action="t-go" data-page="tattend" data-id="${missingToday[0].id}">Take attendance</button></div>` : '';
-  return reminder + `<section class="t-hello"><div><span>${esc(fmtDate(today))}</span><h2>${greet}, ${esc(name)} 👋</h2><p>${c.term ? `${esc(c.term.name)} · ${esc(c.year.name)}` : 'No current term yet'} · ${cls.length} class${cls.length === 1 ? '' : 'es'}</p></div></section>
-    <h3 class="t-sec">My classes</h3>
-    ${cards ? `<div class="t-classes">${cards}</div>` : tNoClass()}
-    <div class="t-help"><div><strong>Need help?</strong><span>Quick support ${SUPPORT.show}</span></div><div class="row">${supportLinks('btn sm')}</div></div>`;
+  const me = currentAdmin().name;
+  const recent = db.activity.filter(a => a.schoolId === sid() && a.actor === me).slice(0, 5).map(a => `<li><span class="th-dot"></span><div><strong>${esc(a.action)}</strong><small>${esc(a.detail || '')} · ${esc(fmtStamp(a.at))}</small></div></li>`).join('');
+  return hero + todayCard
+    + (qa ? `<div class="th-qas">${qa}</div>` : '')
+    + `<div class="th-sec"><h3>My classes</h3><span>${cls.length}</span></div><div class="th-classes">${classCards}</div>`
+    + (recent ? `<section class="th-card"><div class="th-card-h"><h3>My recent work</h3></div><ul class="th-recent">${recent}</ul></section>` : '')
+    + `<div class="th-help"><div><strong>Need help?</strong><span>Quick support ${SUPPORT.show}</span></div><div class="row">${supportLinks('btn sm')}</div></div>`;
 };
+ACTIONS['t-open-asm'] = el => { ui.assessId = el.dataset.id; ui.tSaved = null; go('tmarks'); window.scrollTo(0, 0); };
+ACTIONS['t-quick-asm'] = () => { ui.assessId = null; go('tmarks'); setTimeout(() => run(() => ACTIONS['t-asm-new']()), 60); };
+
 /* School-day helpers for the date picker */
 const prevSchoolDay = d => { let x = addDays(d, -1); while (!isWeekday(x)) x = addDays(x, -1); return x; };
 const nextSchoolDay = d => { let x = addDays(d, 1); while (!isWeekday(x)) x = addDays(x, 1); return x; };
@@ -3935,7 +4061,8 @@ VIEWS.tattend = () => {
   const counts = cats.map(cat => `<span class="t-count" style="--c:${esc(cat.color)}"><i></i>${esc(cat.label)} <strong data-count="${esc(cat.key)}">${learners.filter(st => ui.attDraft[st.id].status === cat.key).length}</strong></span>`).join('')
     + `<span class="t-count todo"><i></i>Not ticked <strong data-count="__todo">${learners.length - ticked}</strong></span>`;
   const justSaved = ui.tSaved && ui.tSaved.kind === 'att' && ui.tSaved.key === key ? ui.tSaved : null;
-  return head + picker
+  const tickBar = rows ? `<div class="th-rate-bar"><div class="th-rate-top"><span>${ticked} of ${learners.length} ticked</span><i><em style="width:${learners.length ? Math.round((ticked / learners.length) * 100) : 0}%" id="tTickBar"></em></i></div></div>` : '';
+  return head + picker + tickBar
     + (!isWeekday(date) ? '<div class="banner warn mt"><span>Registers are kept for school days. Choose a weekday.</span></div>' : '')
     + (justSaved ? `<div class="t-ok"><strong>✓ Register saved to KIDNOVA at ${esc(justSaved.at)}</strong><span>${justSaved.n} learners recorded. The school can see it under Attendance and it counts on report cards.</span></div>` : saved ? '<div class="banner info mt"><span>This register is already saved. Change a tick and save again to update it.</span></div>' : '<div class="banner warn mt"><span>Tick every learner: <strong>P</strong> present, <strong>L</strong> late, <strong>A</strong> absent, <strong>E</strong> excused. For an absent learner, call the parent and write the reason.</span></div>')
     + `<div class="t-counts">${counts}</div>
@@ -3959,11 +4086,7 @@ function tAttListHtml(cls) {
   const termRate = rateFromRecords(recs).rate;
   const missing = registersMissingToday(cls);
   const absentToday = recs.filter(a => a.date === todayISO() && a.status === 'Absent').length;
-  const stats = `<div class="t-stats">
-    <div class="card stat accent"><span class="lbl">Registers this term</span><span class="val">${registers.length}</span><span class="sub">${esc(tm.name)}</span></div>
-    <div class="card stat ok"><span class="lbl">Attendance rate</span><span class="val">${fmtPct(termRate)}</span><span class="sub">all your classes</span></div>
-    <div class="card stat warn"><span class="lbl">Not taken today</span><span class="val">${missing.length}</span><span class="sub">${missing.length ? missing.map(c => esc(c.name)).join(', ') : 'all done'}</span></div>
-    <div class="card stat info"><span class="lbl">Absent today</span><span class="val">${absentToday}</span><span class="sub">learners</span></div></div>`;
+  const stats = tStrip([[registers.length, 'Registers', '#0b6cb5'], [fmtPct(termRate), 'Attendance', '#21a04a'], [missing.length, 'Not taken today', '#f3a712'], [absentToday, 'Absent today', '#e2472f']]);
   const items = shown.map(r => {
     const cl = byId('classes', r.classId);
     const counts = cats.map(cat => { const n = r.list.filter(a => a.status === cat.key).length; return n ? `<span class="t-count" style="--c:${esc(cat.color)}"><i></i>${esc(cat.label.charAt(0))} <strong>${n}</strong></span>` : ''; }).join('');
@@ -3982,6 +4105,21 @@ function tAttListHtml(cls) {
     <div class="t-filter one"><select class="input" data-change="t-aclass" aria-label="Filter by class"><option value="">All my classes</option>${cls.map(c => `<option value="${c.id}" ${c.id === filterCls ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></div>
     <div class="t-asms">${items || '<div class="t-empty"><h3>No registers yet this term</h3><p>Tap “+ Take attendance” to record today’s register.</p></div>'}</div>`;
 }
+const ratedCount = asm => studentsIn(asm.classId).filter(st => { const r = resultOf(asm.id, st.id); return r && r.rating; }).length;
+function tUpdateRated() {
+  const groups = $$('.t-lv'); if (!groups.length) return;
+  const done = groups.filter(g => { const ch = $('input:checked', g); return ch && ch.value; }).length;
+  const t = $('#tRated'), b = $('#tRatedBar');
+  if (t) t.textContent = `${done} of ${groups.length} rated`;
+  if (b) b.style.width = `${Math.round((done / groups.length) * 100)}%`;
+}
+CHANGES['t-rate'] = () => tUpdateRated();
+ACTIONS['t-setall'] = el => {
+  let n = 0;
+  $$('.t-lv').forEach(g => { const ch = $('input:checked', g); if (!ch || !ch.value) { const r = $(`input[value="${el.dataset.level}"]`, g); if (r && !r.disabled) { r.checked = true; n += 1; } } });
+  tUpdateRated();
+  toast(n ? `${n} learner${n === 1 ? '' : 's'} set to ${LEVEL_BY_KEY[el.dataset.level].label}. Check, then press Save.` : 'Everyone already has a level.', 'info', 3500);
+};
 function tEntryHtml(asm, c) {
   const area = byId('learningAreas', asm.areaId) || { name: '—' };
   const clsId = asm.classId;
@@ -3990,23 +4128,25 @@ function tEntryHtml(asm, c) {
     const r = resultOf(asm.id, st.id) || { marks: null, rating: null, comment: '' };
     const input = asm.kind === 'numerical'
       ? `<div class="t-mark"><input class="input" type="number" inputmode="numeric" min="0" max="${asm.maxMarks}" name="m_${st.id}" value="${r.marks !== null && r.marks !== undefined ? r.marks : ''}" data-input="mark-input" data-id="${st.id}" data-max="${asm.maxMarks}" ${readOnly ? 'disabled' : ''} aria-label="Marks for ${esc(st.fullName)}"><span>/ ${asm.maxMarks}</span><span id="gr_${st.id}">${r.marks !== null && r.marks !== undefined ? bandBadge(ratio(r.marks, asm.maxMarks)) : ''}</span><span id="pct_${st.id}" hidden></span></div>`
-      : `<div class="lv-pick t-lv" role="radiogroup" aria-label="Level for ${esc(st.fullName)}">${LEVELS.map(l => `<label class="lv" style="--c:${l.color}" title="${esc(l.label)}"><input type="radio" name="r_${st.id}" value="${l.key}" ${r.rating === l.key || (r.rating && !LEVEL_BY_KEY[r.rating] && RATING_PCT[r.rating] === l.pct) ? 'checked' : ''} ${readOnly ? 'disabled' : ''}><span>${l.code}<small>${esc(l.label)}</small></span></label>`).join('')}<label class="lv none" title="Not rated"><input type="radio" name="r_${st.id}" value="" ${r.rating ? '' : 'checked'} ${readOnly ? 'disabled' : ''}><span>—</span></label></div>`;
+      : `<div class="lv-pick t-lv" role="radiogroup" aria-label="Level for ${esc(st.fullName)}">${LEVELS.map(l => `<label class="lv" style="--c:${l.color}" title="${esc(l.label)}"><input type="radio" name="r_${st.id}" value="${l.key}" data-change="t-rate" ${r.rating === l.key || (r.rating && !LEVEL_BY_KEY[r.rating] && RATING_PCT[r.rating] === l.pct) ? 'checked' : ''} ${readOnly ? 'disabled' : ''}><span>${l.code}<small>${esc(l.label)}</small></span></label>`).join('')}<label class="lv none" title="Not rated"><input data-change="t-rate" type="radio" name="r_${st.id}" value="" ${r.rating ? '' : 'checked'} ${readOnly ? 'disabled' : ''}><span>—</span></label></div>`;
     return `<div class="t-learner t-learner-m">${who(st, esc(st.regNumber))}${input}<input class="input t-comment" name="c_${st.id}" value="${esc(r.comment || '')}" maxlength="160" placeholder="Comment (optional)" ${readOnly ? 'disabled' : ''}></div>`;
   }).join('');
   const marksSaved = ui.tSaved && ui.tSaved.kind === 'marks' && ui.tSaved.key === asm.id ? ui.tSaved : null;
   const cl = byId('classes', clsId);
-  return `${marksSaved ? `<div class="t-ok"><strong>✓ Marks saved to KIDNOVA at ${esc(marksSaved.at)}</strong><span>${marksSaved.n} learner${marksSaved.n === 1 ? '' : 's'} recorded. The school sees this under Assessments.</span></div>` : ''}
-    <div class="t-asm-head"><button type="button" class="btn sm" data-action="t-asm-back">← All assessments</button><div><strong>${esc(asm.name)} · ${esc(area.name)}</strong><span>${fmtDate(asm.date)} · ${classChip(cl)} · ${asm.kind === 'numerical' ? `out of ${asm.maxMarks}` : 'tap a colour'}</span></div></div>
+  return `${marksSaved ? `<div class="t-ok"><strong>✓ Levels saved to KIDNOVA at ${esc(marksSaved.at)}</strong><span>${marksSaved.n} learner${marksSaved.n === 1 ? '' : 's'} recorded. The school sees this under Assessments.</span></div>` : ''}
+    <div class="th-entry-h" style="--c:${classColor(cl)}"><button type="button" class="th-back" data-action="t-asm-back" aria-label="All assessments">‹</button><div><span>${esc(asm.name)} · ${fmtDate(asm.date)}</span><strong>${esc(area.name)}</strong>${classChip(cl)}</div></div>
+    ${readOnly ? '' : `<div class="th-rate-bar"><div class="th-rate-top"><span id="tRated">${ratedCount(asm)} of ${studentsIn(clsId).length} rated</span><i><em id="tRatedBar" style="width:${studentsIn(clsId).length ? Math.round((ratedCount(asm) / studentsIn(clsId).length) * 100) : 0}%"></em></i></div>
+      <div class="th-setall"><span>Set the rest to</span>${LEVELS.map(l => `<button type="button" style="--c:${l.color}" data-action="t-setall" data-level="${l.key}" title="${esc(l.label)}">${l.code}</button>`).join('')}</div></div>`}
     ${readOnly ? '<div class="banner warn mb"><span>This term is closed. Marks can be viewed but not changed.</span></div>' : ''}
     ${asm.kind === 'numerical' ? '' : `<div class="t-key">${LEVELS.map(l => `<span><i style="background:${l.color}"></i>${l.code} ${esc(l.label)}</span>`).join('')}</div>`}
     <form data-form="results" data-arg="${asm.id}"><div class="t-list">${rows || emptyState('No learners in this class', '')}</div>
-    ${rows && !readOnly ? '<div class="t-save"><button type="submit" class="btn primary">Save marks</button></div>' : ''}</form>`;
+    ${rows && !readOnly ? '<div class="t-save"><button type="submit" class="btn primary">Save levels</button></div>' : ''}</form>`;
 }
 VIEWS.tmarks = () => {
   const c = ctx();
   const cls = visibleClasses();
   if (!cls.length) return tNoClass();
-  const head = `<div class="t-head"><h2>Marks</h2><p>Your recorded assessments. Open one to record or correct, or add a new one.</p></div>`;
+  const head = `<div class="t-head"><h2>Assessments</h2><p>Your assessments this term. Open one to give or correct colour levels, or add a new one.</p></div>`;
   if (!c.term) return head + '<div class="banner warn mt"><span>There is no current term yet.</span></div>';
   let asm = ui.assessId ? byId('assessments', ui.assessId) : null;
   if (asm && (!cls.some(x => x.id === asm.classId) || asm.termId !== c.term.id)) asm = null;
@@ -4019,26 +4159,29 @@ VIEWS.tmarks = () => {
   const noAsmClasses = cls.filter(cl => !all.some(x => x.classId === cl.id)).length;
   const toRecord = all.reduce((m, a) => m + Math.max(0, studentsIn(a.classId).length - done(a)), 0);
   const filterCls = ui.tMClass && myIds.includes(ui.tMClass) ? ui.tMClass : '';
+  const subjOpts = (filterCls ? classAreas(filterCls) : areas);
+  const filterArea = ui.tMArea && subjOpts.some(a => a.id === ui.tMArea) ? ui.tMArea : '';
   const q = String(ui.tq || '').trim().toLowerCase();
-  const list = all.filter(a => (!filterCls || a.classId === filterCls) && (!q || [a.name, (byId('learningAreas', a.areaId) || {}).name, classNameOf(a.classId)].some(v => String(v || '').toLowerCase().includes(q))));
+  const list = all.filter(a => (!filterCls || a.classId === filterCls) && (!filterArea || a.areaId === filterArea) && (!q || [a.name, (byId('learningAreas', a.areaId) || {}).name, classNameOf(a.classId)].some(v => String(v || '').toLowerCase().includes(q))));
   const termChips = c.terms.length > 1 ? `<div class="t-terms">${c.terms.map(tm => `<button type="button" class="${tm.id === c.term.id ? 'on' : ''}" data-action="t-term" data-id="${tm.id}">${esc(tm.name)}${tm.status === 'Active' ? ' · now' : ''}</button>`).join('')}</div>` : '';
-  const stats = `<div class="t-stats">
-    <div class="card stat accent"><span class="lbl">Assessments this term</span><span class="val">${all.length}</span><span class="sub">${esc(c.term.name)}</span></div>
-    <div class="card stat warn"><span class="lbl">Results to record</span><span class="val">${toRecord}</span><span class="sub">learners not yet marked</span></div>
-    <div class="card stat info"><span class="lbl">Subjects without assessments</span><span class="val">${noAsmSubjects}</span><span class="sub">of ${areas.length} subjects</span></div>
-    <div class="card stat ok"><span class="lbl">Classes without assessments</span><span class="val">${noAsmClasses}</span><span class="sub">of ${cls.length} classes</span></div></div>`;
-  const items = list.map(a => {
+  const stats = tStrip([[all.length, 'Assessments', '#0b6cb5'], [toRecord, 'Levels to give', '#f3a712'], [noAsmSubjects, 'Subjects not assessed', '#8e5cf0'], [noAsmClasses, 'Classes not assessed', '#21a04a']]);
+  const limit = ui.tMLimit || 20;
+  const items = list.slice(0, limit).map(a => {
     const n = studentsIn(a.classId).length, got = done(a);
     const area = byId('learningAreas', a.areaId) || { name: '—' };
-    return `<button type="button" class="t-asm" data-action="t-asm" data-id="${a.id}">
-      <div class="t-asm-main"><span class="t-asm-date">${fmtDate(a.date)}</span><strong>${esc(area.name)}</strong><span>${esc(a.name)} · ${classChip(byId('classes', a.classId))}</span></div>
-      <div class="t-asm-side"><span class="badge ${got >= n && n ? 'ok' : got ? 'warn' : 'bad'}">${got} / ${n}</span><span class="t-asm-go">${got >= n && n ? 'Edit' : 'Record'} ›</span></div></button>`;
-  }).join('');
+    const pct = n ? Math.round((got / n) * 100) : 0;
+    const cl = byId('classes', a.classId);
+    return `<button type="button" class="t-asm th-asm" style="--c:${classColor(cl)}" data-action="t-asm" data-id="${a.id}">
+      <div class="t-asm-main"><span class="t-asm-date">${fmtDate(a.date)} · ${esc(a.name)}</span><strong>${esc(area.name)}</strong><span>${classChip(cl)}${area.group ? `<small class="th-grp">${esc(area.group.charAt(0) + area.group.slice(1).toLowerCase())}</small>` : ''}</span>
+        <i class="th-bar"><em style="width:${pct}%;background:${got >= n && n ? '#21a04a' : '#f3a712'}"></em></i></div>
+      <div class="t-asm-side"><span class="badge ${got >= n && n ? 'ok' : got ? 'warn' : 'bad'}">${got}/${n}</span><span class="t-asm-go">${got >= n && n ? 'Edit' : 'Rate'} ›</span></div></button>`;
+  }).join('') + (list.length > limit ? `<button type="button" class="btn th-more" data-action="t-more">Show ${Math.min(20, list.length - limit)} more · ${list.length - limit} left</button>` : '');
   return head + termChips + stats + `
-    <div class="t-tools"><div class="t-tools-l"><h3>All assessments <span class="t-badge">${list.length}</span></h3></div>
+    <div class="t-tools"><div class="t-tools-l"><h3>Assessments <span class="t-badge">${list.length}</span></h3></div>
       ${c.readOnly ? '' : '<button type="button" class="btn primary" data-action="t-asm-new">+ Add assessment</button>'}</div>
-    <div class="t-filter"><select class="input" data-change="t-mclass" aria-label="Filter by class"><option value="">All my classes</option>${cls.map(cl => `<option value="${cl.id}" ${cl.id === filterCls ? 'selected' : ''}>${esc(cl.name)}</option>`).join('')}</select>
-      <input class="input" type="search" placeholder="Search subject or name" value="${esc(ui.tq || '')}" data-change="t-search" aria-label="Search assessments"></div>
+    <div class="t-filter three"><select class="input" data-change="t-mclass" aria-label="Filter by class"><option value="">All my classes</option>${cls.map(cl => `<option value="${cl.id}" ${cl.id === filterCls ? 'selected' : ''}>${esc(cl.name)}</option>`).join('')}</select>
+      <select class="input" data-change="t-marea" aria-label="Filter by subject"><option value="">All subjects</option>${subjOpts.map(a => `<option value="${a.id}" ${a.id === filterArea ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select>
+      <input class="input" type="search" placeholder="Search" value="${esc(ui.tq || '')}" data-change="t-search" aria-label="Search assessments"></div>
     ${c.readOnly && c.canCorrect ? '<div class="banner info mt"><span>Previous term: open an assessment to correct marks. New assessments are not allowed here.</span></div>' : ''}
     <div class="t-asms">${items || `<div class="t-empty"><h3>No assessments yet</h3><p>${c.readOnly ? 'Nothing was recorded in this term.' : 'Tap “+ Add assessment” to create the first one.'}</p></div>`}</div>`;
 };
@@ -4055,7 +4198,7 @@ ACTIONS['t-asm-new'] = () => {
   const clsId = ui.tMClass && cls.some(x => x.id === ui.tMClass) ? ui.tMClass : (cls.some(x => x.id === ui.tClass) ? ui.tClass : cls[0].id);
   const first = classAreas(clsId)[0];
   const today = todayISO() < c.term.openDate ? c.term.openDate : todayISO() > c.term.closeDate ? c.term.closeDate : todayISO();
-  const count = S('assessments').filter(a => a.classId === clsId && a.termId === c.term.id).length;
+  const count = S('assessments').filter(a => a.classId === clsId && a.termId === c.term.id && first && a.areaId === first.id).length;
   openForm({ title: 'Add assessment', form: 'assess', submit: 'Create and record', html: `<div class="form-grid">
     ${field('Class *', `<select class="input" name="classId" data-change="t-asm-class">${cls.map(cl => `<option value="${cl.id}" ${cl.id === clsId ? 'selected' : ''}>${esc(cl.name)}</option>`).join('')}</select>`)}
     ${field('Subject *', `<select class="input" name="areaId" id="tAsmArea" data-change="t-asm-area">${tAreaOptions(clsId, first && first.id)}</select>`)}
@@ -4068,23 +4211,28 @@ CHANGES['t-asm-class'] = el => {
   const s2 = $('#tAsmArea'); if (!s2) return;
   s2.innerHTML = tAreaOptions(el.value, null);
   CHANGES['t-asm-area'](s2);
-  const nm = el.form && el.form.elements.name;
-  const c = ctx();
-  if (nm && /^Assessment \d+$/.test(nm.value) && c.term) nm.value = `Assessment ${S('assessments').filter(x => x.classId === el.value && x.termId === c.term.id).length + 1}`;
+
 };
 CHANGES['t-asm-area'] = el => {
   const o = el.selectedOptions && el.selectedOptions[0];
   const w = $('#tAsmMaxWrap'), m = $('#tAsmMax');
   if (w) w.hidden = !(o && o.dataset.kind === 'numerical');
   if (m && o && o.dataset.max) m.value = o.dataset.max;
+  const nm = el.form && el.form.elements.name, c = ctx();
+  if (nm && /^Assessment \d+$/.test(nm.value) && c.term) nm.value = `Assessment ${S('assessments').filter(x => x.areaId === el.value && x.termId === c.term.id).length + 1}`;
 };
-CHANGES['t-mclass'] = el => { ui.tMClass = el.value; render(); };
+CHANGES['t-mclass'] = el => { ui.tMClass = el.value; ui.tMArea = ''; ui.tMLimit = 20; render(); };
+CHANGES['t-marea'] = el => { ui.tMArea = el.value; ui.tMLimit = 20; render(); };
+ACTIONS['t-more'] = () => { ui.tMLimit = (ui.tMLimit || 20) + 20; render(); };
+/* Compact number strip used at the top of every teacher section (instead of big cards). */
+const tStrip = items => `<div class="th-strip">${items.map(([v, l, c]) => `<div style="--c:${c}"><b>${esc(String(v))}</b><span>${esc(l)}</span></div>`).join('')}</div>`;
 CHANGES['t-search'] = el => { ui.tq = el.value; render(); };
 CHANGES['t-att-class'] = el => { ui.tClass = el.value; ui.attDraft = null; ui.tSaved = null; render(); };
 ACTIONS['t-day'] = el => { ui.tDate = el.dataset.date; ui.attDraft = null; ui.tSaved = null; render(); };
 INPUTS['t-reason'] = el => { const d = ui.attDraft && ui.attDraft[el.dataset.id]; if (d) d.reason = el.value; el.classList.remove('need'); };
 ACTIONS['t-go'] = el => {
   ui.tClass = el.dataset.id; ui.assessId = null;
+  if (el.dataset.page === 'tmarks') { ui.tMClass = el.dataset.id; ui.tMArea = ''; ui.tMLimit = 20; }
   if (el.dataset.page === 'tattend') { ui.tAttOpen = true; ui.tDate = null; ui.attDraft = null; ui.tSaved = null; }
   go(el.dataset.page);
 };
@@ -4112,6 +4260,7 @@ ACTIONS['t-att'] = el => {
   settingsOf().attendanceCategories.forEach(cat => { const n = $(`[data-count="${cat.key}"]`); if (n) n.textContent = Object.values(ui.attDraft).filter(x => x.status === cat.key).length; });
   const all = Object.values(ui.attDraft), done = all.filter(x => x.status).length;
   const todo = $('[data-count="__todo"]'); if (todo) todo.textContent = all.length - done;
+  const tb = $('#tTickBar'); if (tb) { tb.style.width = `${Math.round((done / all.length) * 100)}%`; const lbl = tb.closest('.th-rate-top').querySelector('span'); if (lbl) lbl.textContent = `${done} of ${all.length} ticked`; }
   const btn = $('#tAttSave');
   if (btn && !btn.dataset.busy) { btn.disabled = done < all.length; btn.textContent = done < all.length ? `Tick all learners · ${done} of ${all.length}` : `Save register · ${all.length} learners`; }
   ui.tSaved = null;
@@ -4184,6 +4333,7 @@ VIEWS.tdisc = () => {
   if (!cls.length) return tNoClass();
   const { all } = discData(cls.map(c => c.id));
   return `<div class="t-head"><h2>Conduct</h2><p>Record good behaviour and concerns for your learners. They appear on the report card.</p></div>`
+    + tStrip([[all.filter(r => r.type === 'positive').length, 'Positive', '#21a04a'], [all.filter(r => r.type === 'minor').length, 'Minor', '#f3a712'], [all.filter(r => r.type === 'serious').length, 'Serious', '#e2472f'], [all.filter(r => r.type !== 'positive' && !r.parentInformed).length, 'Parents to inform', '#0b6cb5']])
     + `<div class="t-tools"><h3>This term <span class="t-badge">${all.length}</span></h3><button type="button" class="btn primary" data-action="disc-new">+ Add record</button></div>`
     + discFilterHtml(cls) + discListHtml(discFilter(all), false);
 };
